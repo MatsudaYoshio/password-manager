@@ -107,7 +107,9 @@ const initialState: { activeNode: TreeNode; itemCount: number; itemData: { main:
 };
 
 const addNewItem = (itemData: TreeNode[], title: string): void => {
-  itemData.push(new TreeNode({ title, credentials: [] }));
+  const newTreeNode = new TreeNode({ title, credentials: [] });
+  itemData.push(newTreeNode);
+  itemSlice.actions.switchActiveNodeById(newTreeNode.id);
 };
 
 const itemSlice = createSlice({
