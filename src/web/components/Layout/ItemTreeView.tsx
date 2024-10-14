@@ -79,7 +79,6 @@ export default function ItemTreeView() {
 
   const switchActiveNodeIdHandler = (id: string) => {
     dispatch(itemActions.switchActiveNodeById(id));
-    // console.log(item);
   };
 
   const getTreeItemsFromData = (treeItems: TreeNode[]) => {

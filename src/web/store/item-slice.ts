@@ -166,12 +166,15 @@ const itemSlice = createSlice({
         }
       }
     },
+
     addNewTopItem: (state) => {
       addNewItem(state.itemData.staging, `item${state.itemCount++}`);
     },
     addNewSubItemById: (state, action: PayloadAction<string>) => {
       const queue = new Queue<TreeNode>();
-      for (const node of state.itemData.staging) {
+      const staging = state.itemData.staging.map((node) => ({ ...node }));
+
+      for (const node of staging) {
         queue.enqueue(node);
       }
 
@@ -183,6 +186,7 @@ const itemSlice = createSlice({
             node.children = [];
           }
           addNewItem(node.children, `item${state.itemCount++}`);
+          state.itemData.staging = staging;
           return;
         } else {
           // IDが一致しないなら子要素を探す
@@ -196,8 +200,9 @@ const itemSlice = createSlice({
     },
     RemoveItemAndChildById: (state, action: PayloadAction<string>) => {
       const queue = new Queue<{ nodes: TreeNode[]; index: number }>();
-      for (let i = 0; i < state.itemData.staging.length; i++) {
-        queue.enqueue({ nodes: state.itemData.staging, index: i });
+      const staging = state.itemData.staging.map((node) => ({ ...node }));
+      for (let i = 0; i < staging.length; i++) {
+        queue.enqueue({ nodes: staging, index: i });
       }
 
       while (!queue.isEmpty) {
@@ -205,6 +210,7 @@ const itemSlice = createSlice({
         if (nodes[index].id === action.payload) {
           // IDが一致したらその要素と子要素を削除する
           nodes.splice(index, 1);
+          state.itemData.staging = staging;
           return;
         } else {
           // IDが一致しないなら子要素を探す
