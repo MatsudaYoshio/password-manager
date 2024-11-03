@@ -16,6 +16,7 @@ import { itemActions } from "../../store/item-slice";
 import { Fragment } from "react";
 import AddBoxIcon from "@mui/icons-material/AddBox";
 import IndeterminateCheckBoxIcon from "@mui/icons-material/IndeterminateCheckBox";
+import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 
 const DetailView = () => {
   const dispatch = useDispatch();
@@ -108,31 +109,39 @@ const DetailView = () => {
   const showCredentials = () => {
     return credentials.map((credential) => {
       return (
-        <Box key={credential.id} display="flex" alignItems="center" sx={{ flexGrow: 1 }}>
-          <FormControl sx={{ m: 1, width: "25ch" }} variant="outlined">
-            <TextField id={credential.id} label="Name" variant="outlined" defaultValue={credential.name} onChange={updateNameHandler} />
-          </FormControl>
-          <FormControl sx={{ m: 1, width: "25ch" }} variant="outlined">
-            <InputLabel htmlFor="outlined-adornment-password">Value</InputLabel>
-            <OutlinedInput
-              id={credential.id}
-              type={credential.showValue ? "text" : "password"}
-              defaultValue={credential.value}
-              onChange={updatePasswordHandler}
-              endAdornment={
-                <InputAdornment position="end">
-                  <IconButton id={credential.id} aria-label="toggle password visibility" onClick={updateShowValueHandler} onMouseDown={mouseDownPasswordHandler} edge="end">
-                    {credential.showValue ? <Visibility /> : <VisibilityOff />}
-                  </IconButton>
-                </InputAdornment>
-              }
-              label="value"
-            />
-          </FormControl>
-          <IconButton color="error" onClick={() => removeCredentialHandler(credential.id)}>
-            <IndeterminateCheckBoxIcon />
-          </IconButton>
-        </Box>
+        <div>
+          <Box key={credential.id} display="flex" alignItems="center" sx={{ flexGrow: 1 }}>
+            <IconButton onClick={() => navigator.clipboard.writeText(credential.name)}>
+              <ContentCopyIcon />
+            </IconButton>
+            <FormControl sx={{ m: 1, width: "25ch" }} variant="outlined">
+              <TextField id={credential.id} label="Name" variant="outlined" defaultValue={credential.name} onChange={updateNameHandler} />
+            </FormControl>
+            <IconButton onClick={() => navigator.clipboard.writeText(credential.value)}>
+              <ContentCopyIcon />
+            </IconButton>
+            <FormControl sx={{ m: 1, width: "25ch" }} variant="outlined">
+              <InputLabel htmlFor="outlined-adornment-password">Value</InputLabel>
+              <OutlinedInput
+                id={credential.id}
+                type={credential.showValue ? "text" : "password"}
+                defaultValue={credential.value}
+                onChange={updatePasswordHandler}
+                endAdornment={
+                  <InputAdornment position="end">
+                    <IconButton id={credential.id} aria-label="toggle password visibility" onClick={updateShowValueHandler} onMouseDown={mouseDownPasswordHandler} edge="end">
+                      {credential.showValue ? <Visibility /> : <VisibilityOff />}
+                    </IconButton>
+                  </InputAdornment>
+                }
+                label="value"
+              />
+            </FormControl>
+            <IconButton color="error" onClick={() => removeCredentialHandler(credential.id)}>
+              <IndeterminateCheckBoxIcon />
+            </IconButton>
+          </Box>
+        </div>
       );
     });
   };
@@ -145,7 +154,7 @@ const DetailView = () => {
           <div>{showCredentials()}</div>
         </Typography>
       </Box>
-      <Box display="flex" alignItems="center" justifyContent="center" sx={{ flexGrow: 1 }}>
+      <Box display="flex" alignItems="left" justifyContent="left" sx={{ flexGrow: 1, ml: 40 }}>
         <IconButton color="primary" onClick={addNewCredentialHandler}>
           <AddBoxIcon />
         </IconButton>
