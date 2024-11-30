@@ -1,5 +1,6 @@
+import { BrowserWindow, app, dialog, ipcMain } from "electron";
+import * as fs from "fs";
 import path from "path";
-import { BrowserWindow, app } from "electron";
 
 const createWindow = () => {
   const mainWindow = new BrowserWindow({
@@ -7,7 +8,7 @@ const createWindow = () => {
     height: 600,
     webPreferences: {
       nodeIntegration: false,
-      contextIsolation: false,
+      contextIsolation: true,
       preload: path.resolve(__dirname, "preload.js"),
     },
   });
@@ -23,6 +24,7 @@ const createWindow = () => {
     ],
     margins: { top: 0 },
   };
+
   mainWindow.webContents.print(options, (success, errorType) => {
     if (!success) console.log(errorType);
   });
@@ -36,3 +38,35 @@ app.whenReady().then(() => {
 });
 
 app.once("window-all-closed", () => app.quit());
+
+ipcMain.handle("read-nodes", async () => {
+  return JSON.parse(fs.readFileSync("data.json", "utf-8"));
+});
+
+ipcMain.handle("save-nodes", (event, data) => {
+  const dialogResponses = Object.freeze({
+    NO: {
+      text: "No",
+      id: 0,
+    },
+    YES: {
+      text: "Yes",
+      id: 1,
+    },
+  });
+
+  dialog
+    .showMessageBox({
+      type: "question",
+      message: "現在の内容で保存してもよろしいですか？",
+      buttons: Object.values(dialogResponses).map((response) => response.text),
+      defaultId: dialogResponses.YES.id,
+      cancelId: dialogResponses.NO.id,
+    })
+    .then((result) => {
+      if (result.response === dialogResponses.YES.id) {
+        fs.writeFileSync("data.json", JSON.stringify(data));
+      }
+    })
+    .catch((err) => console.error(err));
+});

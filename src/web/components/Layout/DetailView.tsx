@@ -109,8 +109,8 @@ const DetailView = () => {
   const showCredentials = () => {
     return credentials.map((credential) => {
       return (
-        <div>
-          <Box key={credential.id} display="flex" alignItems="center" sx={{ flexGrow: 1 }}>
+        <div key={credential.id}>
+          <Box display="flex" alignItems="center" sx={{ flexGrow: 1 }}>
             <IconButton onClick={() => navigator.clipboard.writeText(credential.name)}>
               <ContentCopyIcon />
             </IconButton>

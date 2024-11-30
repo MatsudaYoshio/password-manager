@@ -54,7 +54,7 @@ const preload: Configuration = {
 
 const renderer: Configuration = {
   ...common,
-  target: "web",
+  target: "electron-renderer",
   entry: {
     app: "./src/web/index.tsx",
   },

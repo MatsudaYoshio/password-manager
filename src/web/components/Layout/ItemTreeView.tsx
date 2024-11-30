@@ -1,16 +1,15 @@
+import TreeItem, { TreeItemProps, treeItemClasses } from "@mui/lab/TreeItem";
+import TreeView from "@mui/lab/TreeView";
+import Collapse from "@mui/material/Collapse";
 import SvgIcon, { SvgIconProps } from "@mui/material/SvgIcon";
 import { alpha, styled } from "@mui/material/styles";
-import TreeView from "@mui/lab/TreeView";
-import TreeItem, { TreeItemProps, treeItemClasses } from "@mui/lab/TreeItem";
-import Collapse from "@mui/material/Collapse";
-import { useSpring, animated } from "@react-spring/web";
 import { TransitionProps } from "@mui/material/transitions";
+
+import { animated, useSpring } from "@react-spring/web";
 import { useDispatch, useSelector } from "react-redux";
 
-// import { TreeNode, TreeNodeData } from "../../interfaces/tree-node";
 import TreeNode from "../../models/treeNode";
-import TreeNodeData from "../../models/treeNodeData";
-import { itemActions } from "../../store/item-slice";
+import { itemActions, stagingItemData } from "../../store/item-slice";
 
 function MinusSquare(props: SvgIconProps) {
   return (
@@ -74,8 +73,7 @@ const StyledTreeItem = styled((props: TreeItemProps) => <TreeItem {...props} Tra
 export default function ItemTreeView() {
   const dispatch = useDispatch();
 
-  const item = useSelector((state: { item: { itemData: { main: TreeNode[]; staging: TreeNode[] } } }) => state.item.itemData.staging);
-  // 木構造を扱う　https://qiita.com/horiuchie/items/f47528422acf0d84a70e
+  const item = useSelector(stagingItemData);
 
   const switchActiveNodeIdHandler = (id: string) => {
     dispatch(itemActions.switchActiveNodeById(id));
@@ -91,68 +89,6 @@ export default function ItemTreeView() {
     });
   };
 
-  // 指定されたIDのchildrenにノードを追加する関数
-  // 途中で見つかったら打ち切る処理入れればもっと早い c
-  const addNodeById = (nodes: TreeNode[], targetId: string, newNode: TreeNode): void => {
-    for (const node of nodes) {
-      if (node.id === targetId) {
-        if (!node.children) {
-          node.children = [];
-        }
-        node.children.push(newNode);
-        return;
-      }
-
-      if (node.children) {
-        addNodeById(node.children, targetId, newNode);
-      }
-    }
-  };
-
-  // 指定されたIDのchildrenに新しいノードを追加
-  // addNodeById(sampleData, "3_June", newMonthNode);
-
-  // console.log(sampleData);
-
-  // 指定されたIDの要素と配下要素も含めて削除する関数
-  const removeNodeById = (nodes: TreeNode[], targetId: string): void => {
-    for (let i = 0; i < nodes.length; i++) {
-      const node = nodes[i];
-
-      if (node.id === targetId) {
-        nodes.splice(i, 1);
-        return;
-      }
-
-      if (node.children) {
-        removeNodeById(node.children, targetId);
-      }
-    }
-  };
-
-  // removeNodeById(sampleData, "3_June");
-
-  // console.log(sampleData);
-
-  const editNodeById = (nodes: TreeNode[], targetId: string, newData: Partial<TreeNodeData>): void => {
-    for (let i = 0; i < nodes.length; i++) {
-      const node = nodes[i];
-
-      if (node.id === targetId) {
-        nodes[i].data = { ...node.data, ...newData }; // 新しいデータで更新
-        return;
-      }
-
-      if (node.children) {
-        editNodeById(node.children, targetId, newData);
-      }
-    }
-  };
-
-  // editNodeById(sampleData, "1_Fall", { title: "UpdatedMonth" });
-
-  // console.log(sampleData);
-
   return (
     <TreeView
       aria-label="customized"
@@ -162,24 +98,7 @@ export default function ItemTreeView() {
       defaultEndIcon={<CloseSquare />}
       sx={{ height: 264, flexGrow: 1, maxWidth: 400, overflowY: "auto", mt: 1 }}
     >
-      {
-        getTreeItemsFromData(item)
-
-        /* <StyledTreeItem nodeId="1" label="Main">
-        <StyledTreeItem nodeId="2" label="Hello" />
-        <StyledTreeItem nodeId="3" label="Subtree with children">
-          <StyledTreeItem nodeId="6" label="Hello" />
-          <StyledTreeItem nodeId="7" label="Sub-subtree with children">
-            <StyledTreeItem nodeId="9" label="Child 1" />
-            <StyledTreeItem nodeId="10" label="Child 2" />
-            <StyledTreeItem nodeId="11" label="Child 3" />
-          </StyledTreeItem>
-          <StyledTreeItem nodeId="8" label="Hello" />
-        </StyledTreeItem>
-        <StyledTreeItem nodeId="4" label="World" />
-        <StyledTreeItem nodeId="5" label="Something something" />
-      </StyledTreeItem> */
-      }
+      {getTreeItemsFromData(item)}
     </TreeView>
   );
 }

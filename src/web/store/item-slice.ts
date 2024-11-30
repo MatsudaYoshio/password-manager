@@ -1,123 +1,44 @@
-import { PayloadAction, createSlice } from "@reduxjs/toolkit";
-import { uuidv7 } from "uuidv7";
+import { PayloadAction, createSelector, createSlice } from "@reduxjs/toolkit";
 
-import Credential from "../models/credential";
-import TreeNode from "../models/treeNode";
 import { Queue } from "../data_structures/queue";
-import TreeNodeData from "../models/treeNodeData";
+import TreeNode from "../models/treeNode";
 
-const rootNodeId: string = `0-${uuidv7()}`;
+import { plainToInstance } from "class-transformer";
 
-const SAMPLE_DATA = [
-  {
-    id: rootNodeId,
-    data: {
-      title: "Seasons",
-      credentials: [],
-    },
-    children: [
-      {
-        id: `${uuidv7()}`,
-        data: {
-          title: "Summer",
-          credentials: [new Credential({ name: "sample", value: "abc" })],
-        },
-        children: [
-          {
-            id: `${uuidv7()}`,
-            data: {
-              title: "Hot",
-              credentials: [],
-            },
-            children: [
-              {
-                id: `${uuidv7()}`,
-                data: {
-                  title: "June",
-                  credentials: [
-                    {
-                      id: uuidv7(),
-                      name: uuidv7(),
-                      value: "abc",
-                      showValue: false,
-                      description: "sample",
-                    },
-                  ],
-                },
-              },
-              {
-                id: `${uuidv7()}`,
-                data: {
-                  title: "7月",
-                  credentials: [],
-                },
-              },
-            ],
-          },
-          {
-            id: `${uuidv7()}`,
-            data: {
-              title: "August",
-              credentials: [],
-            },
-          },
-        ],
-      },
-      {
-        id: `${uuidv7()}`,
-        data: {
-          title: "Fall",
-          credentials: [],
-        },
-        children: [
-          {
-            id: `${uuidv7()}`,
-            data: {
-              title: "September",
-              credentials: [],
-            },
-          },
-          {
-            id: `${uuidv7()}`,
-            data: {
-              title: "October",
-              credentials: [],
-            },
-          },
-          {
-            id: `${uuidv7()}`,
-            data: {
-              title: "November",
-              credentials: [],
-            },
-          },
-        ],
-      },
-    ],
-  },
-];
+const getInitialNodes = async (): Promise<TreeNode[]> => plainToInstance(TreeNode, await (window as any).api.readNodes());
+
+const initialNodes = getInitialNodes();
 
 const initialState: { activeNode: TreeNode; itemCount: number; itemData: { main: TreeNode[]; staging: TreeNode[] } } = {
   activeNode: {} as TreeNode,
   itemCount: 1,
   itemData: {
-    main: SAMPLE_DATA,
-    staging: SAMPLE_DATA,
+    main: await initialNodes.then((nodes) => nodes),
+    staging: await initialNodes.then((nodes) => nodes),
   },
 };
 
 const addNewItem = (itemData: TreeNode[], title: string): void => {
   const newTreeNode = new TreeNode({ title, credentials: [] });
+  if (!Object.isExtensible(itemData)) {
+    itemData = [...itemData];
+  }
   itemData.push(newTreeNode);
   itemSlice.actions.switchActiveNodeById(newTreeNode.id);
 };
+
+const itemData = (state: { item: { itemData: { main: TreeNode[]; staging: TreeNode[] } } }) => state.item.itemData;
+export const hasDifferenceBetweenMainAndStaging = createSelector([itemData], (itemData) => {
+  return JSON.stringify(itemData.main) !== JSON.stringify(itemData.staging);
+});
+export const stagingItemData = createSelector([itemData], (itemData) => itemData.staging);
 
 const itemSlice = createSlice({
   name: "item",
   initialState: {
     activeNode: initialState.itemData.staging[0],
     itemCount: initialState.itemCount,
-    itemData: initialState.itemData,
+    itemData: structuredClone(initialState.itemData),
   },
   reducers: {
     switchActiveNodeById: (state, action: PayloadAction<string>) => {
@@ -166,7 +87,6 @@ const itemSlice = createSlice({
         }
       }
     },
-
     addNewTopItem: (state) => {
       addNewItem(state.itemData.staging, `item${state.itemCount++}`);
     },
@@ -222,6 +142,9 @@ const itemSlice = createSlice({
           }
         }
       }
+    },
+    updateMainState: (state) => {
+      state.itemData.main = state.itemData.staging;
     },
   },
 });
