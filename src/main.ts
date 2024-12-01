@@ -1,6 +1,8 @@
-import { BrowserWindow, app, dialog, ipcMain } from "electron";
+import { BrowserWindow, app, dialog, ipcMain, safeStorage } from "electron";
 import * as fs from "fs";
 import path from "path";
+
+const CREDENTIALS_PATH = "credentials.bin";
 
 const createWindow = () => {
   const mainWindow = new BrowserWindow({
@@ -40,7 +42,8 @@ app.whenReady().then(() => {
 app.once("window-all-closed", () => app.quit());
 
 ipcMain.handle("read-nodes", async () => {
-  return JSON.parse(fs.readFileSync("data.json", "utf-8"));
+  const encrypted = fs.readFileSync(CREDENTIALS_PATH);
+  return JSON.parse(safeStorage.decryptString(encrypted));
 });
 
 ipcMain.handle("save-nodes", async (event, data) => {
@@ -65,7 +68,8 @@ ipcMain.handle("save-nodes", async (event, data) => {
     });
 
     if (result.response === dialogResponses.YES.id) {
-      fs.writeFileSync("data.json", JSON.stringify(data));
+      const encrypted = safeStorage.encryptString(JSON.stringify(data));
+      fs.writeFileSync(CREDENTIALS_PATH, new Uint8Array(encrypted));
       return true;
     }
   } catch (err) {
