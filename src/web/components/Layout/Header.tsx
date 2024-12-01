@@ -20,10 +20,12 @@ const Header = () => {
   const itemData = useSelector(stagingItemData);
   const hasDifference = useSelector(hasDifferenceBetweenMainAndStaging);
 
-  const saveHandler = () => {
+  const saveHandler = async () => {
     if (hasDifference) {
-      dispatch(itemActions.updateMainState());
-      (window as any).api.saveNodes(itemData);
+      const hasSaved = await (window as any).api.saveNodes(itemData);
+      if (hasSaved) {
+        dispatch(itemActions.updateMainState());
+      }
     }
   };
 
