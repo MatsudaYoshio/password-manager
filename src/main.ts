@@ -42,6 +42,12 @@ app.whenReady().then(() => {
 app.once("window-all-closed", () => app.quit());
 
 ipcMain.handle("read-nodes", async () => {
+  if (!safeStorage.isEncryptionAvailable()) {
+    dialog.showMessageBox({
+      type: "warning",
+      message: "機密情報の復号処理で問題が発生しました。",
+    });
+  }
   const encrypted = fs.readFileSync(CREDENTIALS_PATH);
   return JSON.parse(safeStorage.decryptString(encrypted));
 });
