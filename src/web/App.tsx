@@ -1,25 +1,25 @@
+import { grey } from "@mui/material/colors";
 import { Fragment } from "react";
-import "./App.css";
-import Header from "./components/Layout/Header";
-import DetailView from "./components/Layout/DetailView";
-import Box from "@mui/material/Box";
-import ItemTreeView from "./components/Layout/ItemTreeView";
+import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
 
-// Windowサイズ変えるレイアウト
-// https://www.npmjs.com/package/react-splitter-layout
+import "./App.css";
+import DetailView from "./components/Layout/DetailView";
+import Header from "./components/Layout/Header";
+import ItemTreeView from "./components/Layout/ItemTreeView";
 
 export const App = () => {
   return (
     <Fragment>
       <Header />
-      <Box display="grid" gridTemplateColumns="repeat(12, 1fr)" sx={{ height: "100%" }}>
-        <Box gridColumn="span 4">
+      <PanelGroup direction="horizontal">
+        <Panel defaultSize={20} minSize={10} maxSize={30}>
           <ItemTreeView />
-        </Box>
-        <Box gridColumn="span 8">
+        </Panel>
+        <PanelResizeHandle style={{ width: "1px", backgroundColor: grey[300] }} />
+        <Panel>
           <DetailView />
-        </Box>
-      </Box>
+        </Panel>
+      </PanelGroup>
     </Fragment>
   );
 };
