@@ -12,11 +12,19 @@ export const App = () => {
     <Fragment>
       <Header />
       <PanelGroup direction="horizontal">
-        <Panel defaultSize={20} minSize={10} maxSize={30}>
+        <Panel
+          defaultSize={20}
+          minSize={10}
+          maxSize={30}
+          style={{
+            overflowY: "auto",
+            overflowX: "hidden",
+          }}
+        >
           <ItemTreeView />
         </Panel>
         <PanelResizeHandle style={{ width: "1px", backgroundColor: grey[300] }} />
-        <Panel>
+        <Panel style={{ overflow: "auto" }}>
           <DetailView />
         </Panel>
       </PanelGroup>

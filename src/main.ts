@@ -13,6 +13,7 @@ const createWindow = () => {
       contextIsolation: true,
       preload: path.resolve(__dirname, "preload.js"),
     },
+    autoHideMenuBar: true,
   });
 
   const options = {
