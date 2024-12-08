@@ -33,7 +33,8 @@ const createWindow = () => {
   });
 
   mainWindow.loadFile("dist/index.html");
-  // mainWindow.webContents.openDevTools({ mode: "detach" });
+
+  mainWindow.on("closed", () => app.quit());
 };
 
 app.whenReady().then(() => {
