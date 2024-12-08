@@ -90,14 +90,7 @@ export default function ItemTreeView() {
   };
 
   return (
-    <TreeView
-      aria-label="customized"
-      defaultExpanded={["1"]}
-      defaultCollapseIcon={<MinusSquare />}
-      defaultExpandIcon={<PlusSquare />}
-      defaultEndIcon={<CloseSquare />}
-      sx={{ height: 264, flexGrow: 1, maxWidth: 400, overflowY: "auto", mt: 1 }}
-    >
+    <TreeView aria-label="customized" defaultExpanded={["1"]} defaultCollapseIcon={<MinusSquare />} defaultExpandIcon={<PlusSquare />} defaultEndIcon={<CloseSquare />}>
       {getTreeItemsFromData(item)}
     </TreeView>
   );

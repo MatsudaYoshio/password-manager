@@ -1,22 +1,24 @@
-import * as React from "react";
-import Box from "@mui/material/Box";
-import Typography from "@mui/material/Typography";
-import IconButton from "@mui/material/IconButton";
-import OutlinedInput from "@mui/material/OutlinedInput";
-import InputLabel from "@mui/material/InputLabel";
-import InputAdornment from "@mui/material/InputAdornment";
-import FormControl from "@mui/material/FormControl";
-import TextField from "@mui/material/TextField";
+import AddBoxIcon from "@mui/icons-material/AddBox";
+import ContentCopyIcon from "@mui/icons-material/ContentCopy";
+import IndeterminateCheckBoxIcon from "@mui/icons-material/IndeterminateCheckBox";
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
-import { useDispatch, useSelector } from "react-redux";
-import TreeNode from "../../models/treeNode";
-import Credential from "../../models/credential";
-import { itemActions } from "../../store/item-slice";
+import Box from "@mui/material/Box";
+import FormControl from "@mui/material/FormControl";
+import IconButton from "@mui/material/IconButton";
+import InputAdornment from "@mui/material/InputAdornment";
+import InputLabel from "@mui/material/InputLabel";
+import OutlinedInput from "@mui/material/OutlinedInput";
+import TextField from "@mui/material/TextField";
+import Typography from "@mui/material/Typography";
+
+import * as React from "react";
 import { Fragment } from "react";
-import AddBoxIcon from "@mui/icons-material/AddBox";
-import IndeterminateCheckBoxIcon from "@mui/icons-material/IndeterminateCheckBox";
-import ContentCopyIcon from "@mui/icons-material/ContentCopy";
+import { useDispatch, useSelector } from "react-redux";
+
+import Credential from "../../models/credential";
+import TreeNode from "../../models/treeNode";
+import { itemActions } from "../../store/item-slice";
 
 const DetailView = () => {
   const dispatch = useDispatch();
@@ -35,23 +37,20 @@ const DetailView = () => {
 
   const updateTitleHandler = (event: React.ChangeEvent<HTMLInputElement>) => {
     setTitle(event.target.value);
-
-    dispatch(
-      itemActions.updateActiveNode({
-        id: activeNode.id,
-        data: {
-          title: event.target.value,
-          credentials,
-        },
-      })
-    );
-    dispatch(itemActions.commitActiveItem());
+    const updatedTreeNode = {
+      id: activeNode.id,
+      data: {
+        title: event.target.value,
+        credentials,
+      },
+    };
+    dispatch(itemActions.updateActiveNode(updatedTreeNode));
+    dispatch(itemActions.updateItem(updatedTreeNode));
   };
 
   const updateNameHandler = (event: React.ChangeEvent<HTMLInputElement>) => {
     const updatedCredentials = credentials.map((credential) => (credential.id === event.target.id ? new Credential({ ...credential, name: event.target.value }) : credential));
     setCredentials(updatedCredentials);
-
     dispatchNewCredential(updatedCredentials);
   };
 
@@ -68,42 +67,39 @@ const DetailView = () => {
   };
 
   const dispatchNewCredential = (updatedCredentials: Credential[]) => {
-    dispatch(
-      itemActions.updateActiveNode({
-        id: activeNode.id,
-        data: {
-          title,
-          credentials: updatedCredentials,
-        },
-      })
-    );
-    dispatch(itemActions.commitActiveItem());
+    const newTreeNode = {
+      id: activeNode.id,
+      data: {
+        title,
+        credentials: updatedCredentials,
+      },
+    };
+    dispatch(itemActions.updateActiveNode(newTreeNode));
+    dispatch(itemActions.updateItem(newTreeNode));
   };
 
   const addNewCredentialHandler = () => {
-    dispatch(
-      itemActions.updateActiveNode({
-        id: activeNode.id,
-        data: {
-          title: activeNode.data.title,
-          credentials: [...credentials, new Credential({})],
-        },
-      })
-    );
-    dispatch(itemActions.commitActiveItem());
+    const newTreeNode = {
+      id: activeNode.id,
+      data: {
+        title,
+        credentials: [...credentials, new Credential({})],
+      },
+    };
+    dispatch(itemActions.updateActiveNode(newTreeNode));
+    dispatch(itemActions.updateItem(newTreeNode));
   };
 
   const removeCredentialHandler = (id: string) => {
-    dispatch(
-      itemActions.updateActiveNode({
-        id: activeNode.id,
-        data: {
-          title: activeNode.data.title,
-          credentials: credentials.filter((credential) => credential.id !== id),
-        },
-      })
-    );
-    dispatch(itemActions.commitActiveItem());
+    const updatedTreeNode = {
+      id: activeNode.id,
+      data: {
+        title,
+        credentials: credentials.filter((credential) => credential.id !== id),
+      },
+    };
+    dispatch(itemActions.updateActiveNode(updatedTreeNode));
+    dispatch(itemActions.updateItem(updatedTreeNode));
   };
 
   const showCredentials = () => {

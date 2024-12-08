@@ -1,4 +1,4 @@
-import { PayloadAction, createSelector, createSlice } from "@reduxjs/toolkit";
+import { PayloadAction, createSelector, createSlice, current } from "@reduxjs/toolkit";
 
 import { Queue } from "../data_structures/queue";
 import TreeNode from "../models/treeNode";
@@ -43,9 +43,8 @@ const itemSlice = createSlice({
   reducers: {
     switchActiveNodeById: (state, action: PayloadAction<string>) => {
       const queue = new Queue<TreeNode>();
-      for (const node of state.itemData.staging) {
-        queue.enqueue(node);
-      }
+
+      state.itemData.staging.forEach((node) => queue.enqueue(node));
 
       while (!queue.isEmpty) {
         const node = queue.dequeue();
@@ -65,25 +64,22 @@ const itemSlice = createSlice({
     updateActiveNode: (state, action: PayloadAction<TreeNode>) => {
       state.activeNode = action.payload;
     },
-    commitActiveItem: (state) => {
+    updateItem: (state, action: PayloadAction<TreeNode>) => {
       const queue = new Queue<TreeNode>();
-      for (const node of state.itemData.staging) {
-        queue.enqueue(node);
-      }
+      const stagingCopy = state.itemData.staging.map((node) => ({ ...node }));
+      stagingCopy.forEach((node) => queue.enqueue(node));
 
       while (!queue.isEmpty) {
         const node = queue.dequeue();
-        if (node.id === state.activeNode.id) {
+        if (node.id === action.payload.id) {
           // IDが一致したらその要素を差し替える
-          node.data = state.activeNode.data;
+          node.data = action.payload.data;
+          state.itemData.staging = stagingCopy;
           return;
-        } else {
-          // IDが一致しないなら子要素を探す
-          if (node.children) {
-            for (const child of node.children) {
-              queue.enqueue(child);
-            }
-          }
+        }
+        // IDが一致しないなら子要素を探す
+        if (node.children) {
+          node.children.forEach((child) => queue.enqueue(child));
         }
       }
     },
@@ -92,11 +88,8 @@ const itemSlice = createSlice({
     },
     addNewSubItemById: (state, action: PayloadAction<string>) => {
       const queue = new Queue<TreeNode>();
-      const staging = state.itemData.staging.map((node) => ({ ...node }));
-
-      for (const node of staging) {
-        queue.enqueue(node);
-      }
+      const stagingCopy = state.itemData.staging.map((node) => ({ ...node }));
+      stagingCopy.forEach((node) => queue.enqueue(node));
 
       while (!queue.isEmpty) {
         const node = queue.dequeue();
@@ -106,23 +99,20 @@ const itemSlice = createSlice({
             node.children = [];
           }
           addNewItem(node.children, `item${state.itemCount++}`);
-          state.itemData.staging = staging;
+          state.itemData.staging = stagingCopy;
           return;
-        } else {
-          // IDが一致しないなら子要素を探す
-          if (node.children) {
-            for (const child of node.children) {
-              queue.enqueue(child);
-            }
-          }
+        }
+        // IDが一致しないなら子要素を探す
+        if (node.children) {
+          node.children.forEach((child) => queue.enqueue(child));
         }
       }
     },
     RemoveItemAndChildById: (state, action: PayloadAction<string>) => {
       const queue = new Queue<{ nodes: TreeNode[]; index: number }>();
-      const staging = state.itemData.staging.map((node) => ({ ...node }));
-      for (let i = 0; i < staging.length; i++) {
-        queue.enqueue({ nodes: staging, index: i });
+      const stagingCopy = state.itemData.staging.map((node) => ({ ...node }));
+      for (let i = 0; i < stagingCopy.length; i++) {
+        queue.enqueue({ nodes: stagingCopy, index: i });
       }
 
       while (!queue.isEmpty) {
@@ -130,7 +120,7 @@ const itemSlice = createSlice({
         if (nodes[index].id === action.payload) {
           // IDが一致したらその要素と子要素を削除する
           nodes.splice(index, 1);
-          state.itemData.staging = staging;
+          state.itemData.staging = stagingCopy;
           return;
         } else {
           // IDが一致しないなら子要素を探す
