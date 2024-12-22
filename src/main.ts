@@ -1,8 +1,9 @@
 import { BrowserWindow, app, dialog, ipcMain, safeStorage } from "electron";
 import * as fs from "fs";
 import path from "path";
+import passwordManagerTray from "./passwordManagerTray";
 
-const CREDENTIALS_PATH = "credentials.bin";
+const CREDENTIALS_PATH = path.join(app.getAppPath(), "credentials.bin");
 
 const createWindow = () => {
   const mainWindow = new BrowserWindow({
@@ -35,6 +36,8 @@ const createWindow = () => {
   mainWindow.loadFile("dist/index.html");
 
   mainWindow.on("closed", () => app.quit());
+
+  new passwordManagerTray(mainWindow);
 };
 
 app.whenReady().then(() => {
