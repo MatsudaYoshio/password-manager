@@ -10,6 +10,8 @@ class passwordManagerTray extends Tray {
     super(passwordManagerTray.ICON_PATH);
     this.mainWindow = mainWindow;
 
+    this.setToolTip("Password Manager");
+
     this.on("click", this.onClick);
   }
 
