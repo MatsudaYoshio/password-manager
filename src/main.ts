@@ -1,41 +1,13 @@
-import { BrowserWindow, app, dialog, ipcMain, safeStorage } from "electron";
+import { app, dialog, ipcMain, safeStorage } from "electron";
 import * as fs from "fs";
 import path from "path";
+import MainWindow from "./mainWindow";
 import passwordManagerTray from "./passwordManagerTray";
 
 const CREDENTIALS_PATH = path.join(app.getAppPath(), "credentials.bin");
 
 const createWindow = () => {
-  const mainWindow = new BrowserWindow({
-    width: 1100,
-    height: 600,
-    webPreferences: {
-      nodeIntegration: false,
-      contextIsolation: true,
-      preload: path.resolve(__dirname, "preload.js"),
-    },
-    autoHideMenuBar: true,
-  });
-
-  const options = {
-    silent: true,
-    deviceName: "My-Printer",
-    pageRanges: [
-      {
-        from: 0,
-        to: 1,
-      },
-    ],
-    margins: { top: 0 },
-  };
-
-  mainWindow.webContents.print(options, (success, errorType) => {
-    if (!success) console.log(errorType);
-  });
-
-  mainWindow.loadFile("dist/index.html");
-
-  mainWindow.on("closed", () => app.quit());
+  const mainWindow = new MainWindow();
 
   new passwordManagerTray(mainWindow);
 };
