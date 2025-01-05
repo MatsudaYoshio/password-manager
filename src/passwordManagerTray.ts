@@ -2,7 +2,7 @@ import { app, BrowserWindow, Tray, Menu } from "electron";
 import path from "path";
 
 class passwordManagerTray extends Tray {
-  static readonly ICON_PATH: string = path.join(app.getAppPath(), "src/assets", "tray_image.ico");
+  static readonly ICON_PATH: string = path.join(app.getAppPath(), "src/assets", "key.ico");
   static readonly MENU_CONFIG = Menu.buildFromTemplate([
     {
       label: "Exit",

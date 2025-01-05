@@ -12,6 +12,7 @@ class MainWindow extends BrowserWindow {
         preload: path.resolve(__dirname, "preload.js"),
       },
       autoHideMenuBar: true,
+      icon: path.join(app.getAppPath(), "src/assets", "key.ico"),
     });
 
     this.loadFile("dist/index.html");
