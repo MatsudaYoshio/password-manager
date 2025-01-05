@@ -5,6 +5,7 @@ import MainWindow from "./mainWindow";
 import passwordManagerTray from "./passwordManagerTray";
 
 const CREDENTIALS_PATH = path.join(app.getAppPath(), "credentials.bin");
+const SAMPLE_CREDENTIALS_PATH = path.join(app.getAppPath(), "sample_credentials.json");
 
 const createWindow = () => {
   const mainWindow = new MainWindow();
@@ -25,8 +26,15 @@ ipcMain.handle("read-nodes", async () => {
       message: "機密情報の復号処理で問題が発生しました。",
     });
   }
-  const encrypted = fs.readFileSync(CREDENTIALS_PATH);
-  return JSON.parse(safeStorage.decryptString(encrypted));
+
+  try {
+    const encrypted = fs.readFileSync(CREDENTIALS_PATH);
+    safeStorage.decryptString(encrypted);
+    return JSON.parse(safeStorage.decryptString(encrypted));
+  } catch (err) {
+    console.log("Failed to read credentials from file. Using sample data instead.");
+    return JSON.parse(fs.readFileSync(SAMPLE_CREDENTIALS_PATH, "utf-8"));
+  }
 });
 
 ipcMain.handle("save-nodes", async (event, data) => {
