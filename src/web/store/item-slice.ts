@@ -7,14 +7,14 @@ import { plainToInstance } from "class-transformer";
 
 const getInitialNodes = async (): Promise<TreeNode[]> => plainToInstance(TreeNode, await (window as any).api.readNodes());
 
-const initialNodes = getInitialNodes();
+const initialNodes = await getInitialNodes();
 
 const initialState: { activeNode: TreeNode; itemCount: number; itemData: { main: TreeNode[]; staging: TreeNode[] } } = {
   activeNode: {} as TreeNode,
   itemCount: 1,
   itemData: {
-    main: await initialNodes.then((nodes) => nodes),
-    staging: await initialNodes.then((nodes) => nodes),
+    main: initialNodes,
+    staging: initialNodes,
   },
 };
 
