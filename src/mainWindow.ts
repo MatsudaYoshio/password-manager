@@ -6,6 +6,7 @@ class MainWindow extends BrowserWindow {
     super({
       width: 1100,
       height: 600,
+      title: "Password Manager",
       webPreferences: {
         nodeIntegration: false,
         contextIsolation: true,

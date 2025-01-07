@@ -1,11 +1,7 @@
-import { app, dialog, ipcMain, safeStorage } from "electron";
-import * as fs from "fs";
-import path from "path";
+import { app } from "electron";
+import setupIpcHandlers from "./ipcHandlers";
 import MainWindow from "./mainWindow";
 import passwordManagerTray from "./passwordManagerTray";
-
-const CREDENTIALS_PATH = path.join(app.getAppPath(), "credentials.bin");
-const SAMPLE_CREDENTIALS_PATH = path.join(app.getAppPath(), "sample_credentials.json");
 
 const createWindow = () => {
   const mainWindow = new MainWindow();
@@ -15,57 +11,7 @@ const createWindow = () => {
 
 app.whenReady().then(() => {
   createWindow();
+  setupIpcHandlers();
 });
 
 app.once("window-all-closed", () => app.quit());
-
-ipcMain.handle("read-nodes", async () => {
-  if (!safeStorage.isEncryptionAvailable()) {
-    dialog.showMessageBox({
-      type: "warning",
-      message: "機密情報の復号処理で問題が発生しました。",
-    });
-  }
-
-  try {
-    const encrypted = fs.readFileSync(CREDENTIALS_PATH);
-    safeStorage.decryptString(encrypted);
-    return JSON.parse(safeStorage.decryptString(encrypted));
-  } catch (err) {
-    console.log("Failed to read credentials from file. Using sample data instead.");
-    return JSON.parse(fs.readFileSync(SAMPLE_CREDENTIALS_PATH, "utf-8"));
-  }
-});
-
-ipcMain.handle("save-nodes", async (event, data) => {
-  const dialogResponses = Object.freeze({
-    NO: {
-      text: "No",
-      id: 0,
-    },
-    YES: {
-      text: "Yes",
-      id: 1,
-    },
-  });
-
-  try {
-    const result = await dialog.showMessageBox({
-      type: "question",
-      message: "現在の内容で保存してもよろしいですか？",
-      buttons: Object.values(dialogResponses).map((response) => response.text),
-      defaultId: dialogResponses.YES.id,
-      cancelId: dialogResponses.NO.id,
-    });
-
-    if (result.response === dialogResponses.YES.id) {
-      const encrypted = safeStorage.encryptString(JSON.stringify(data));
-      fs.writeFileSync(CREDENTIALS_PATH, new Uint8Array(encrypted));
-      return true;
-    }
-  } catch (err) {
-    console.error(err);
-  } finally {
-    return false;
-  }
-});
