@@ -28,6 +28,12 @@ const handleReadNodes = async () => {
     return JSON.parse(decrypted);
   } catch (err) {
     console.log("Failed to read credentials from file. Using sample data instead.: ", err);
+
+    dialog.showMessageBox({
+      type: "info",
+      message: "パスワード情報が見つかりませんでしたので、代わりにサンプルデータを読み込みます。",
+    });
+
     return readSampleData();
   }
 };
