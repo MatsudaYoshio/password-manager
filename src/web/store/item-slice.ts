@@ -1,4 +1,4 @@
-import { PayloadAction, createSelector, createSlice, current } from "@reduxjs/toolkit";
+import { PayloadAction, createSelector, createSlice } from "@reduxjs/toolkit";
 
 import { Queue } from "../data_structures/queue";
 import TreeNode from "../models/treeNode";
