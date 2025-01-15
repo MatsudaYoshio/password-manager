@@ -9,37 +9,16 @@ import Stack from "@mui/material/Stack";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
 
-import { useDispatch, useSelector } from "react-redux";
-
-import TreeNode from "../../models/treeNode";
-import { hasDifferenceBetweenMainAndStaging, itemActions, stagingItemData } from "../../store/item-slice";
+import useAddNewSubItem from "../../hooks/useAddNewSubItem";
+import useAddNewTopItem from "../../hooks/useAddNewTopItem";
+import useRemoveSubtree from "../../hooks/useRemoveSubtree";
+import useSaveItems from "../../hooks/useSaveItems";
 
 const Header = () => {
-  const dispatch = useDispatch();
-  const activeNode = useSelector((state: { item: { activeNode: TreeNode; itemData: TreeNode[] } }) => state.item.activeNode);
-  const itemData = useSelector(stagingItemData);
-  const hasDifference = useSelector(hasDifferenceBetweenMainAndStaging);
-
-  const saveHandler = async () => {
-    if (hasDifference) {
-      const hasSaved = await (window as any).api.saveNodes(itemData);
-      if (hasSaved) {
-        dispatch(itemActions.updateMainState());
-      }
-    }
-  };
-
-  const addNewTopItemHandler = () => {
-    dispatch(itemActions.addNewTopItem());
-  };
-
-  const addNewSubItemHandler = () => {
-    dispatch(itemActions.addNewSubItemById(activeNode.id));
-  };
-
-  const RemoveItemAndChildHandler = () => {
-    dispatch(itemActions.RemoveItemAndChildById(activeNode.id));
-  };
+  const saveHandler = useSaveItems();
+  const addNewTopItemHandler = useAddNewTopItem();
+  const addNewSubItemHandler = useAddNewSubItem();
+  const RemoveSubTreeHandler = useRemoveSubtree();
 
   return (
     <Box sx={{ flexGrow: 1 }}>
@@ -56,7 +35,7 @@ const Header = () => {
               <IconButton style={{ color: "#ffffff" }} onClick={addNewSubItemHandler}>
                 <NoteAddIcon />
               </IconButton>
-              <IconButton style={{ color: "#d50000" }} onClick={RemoveItemAndChildHandler}>
+              <IconButton style={{ color: "#d50000" }} onClick={RemoveSubTreeHandler}>
                 <DeleteForeverIcon />
               </IconButton>
             </Stack>

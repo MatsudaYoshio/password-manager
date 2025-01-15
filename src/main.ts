@@ -1,17 +1,17 @@
 import { app } from "electron";
 import setupIpcHandlers from "./ipcHandlers";
-import setUpMainMenu from "./mainMenu";
+import MainMenu from "./mainMenu";
 import MainWindow from "./mainWindow";
 import passwordManagerTray from "./passwordManagerTray";
 
 const createWindow = () => {
   const mainWindow = new MainWindow();
   new passwordManagerTray(mainWindow);
+  new MainMenu(mainWindow);
 };
 
 app.whenReady().then(() => {
   createWindow();
-  setUpMainMenu();
   setupIpcHandlers();
 });
 
