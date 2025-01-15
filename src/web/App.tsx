@@ -17,29 +17,17 @@ export const App = () => {
   const addSubItemHandler = useAddNewSubItem();
   const removeSubtreeHandler = useRemoveSubtree();
 
-  useEffect(() => {
-    const handler = () => saveHandler();
-    (window as any).api.onSaveData(handler);
-    return () => (window as any).api.offSaveData(handler);
-  }, [saveHandler]);
+  const setupEventListener = (eventName: string, handler: () => void) =>
+    useEffect(() => {
+      const eventHandler = () => handler();
+      (window as any).api[`on${eventName}`](eventHandler);
+      return () => (window as any).api[`off${eventName}`](eventHandler);
+    }, [handler]);
 
-  useEffect(() => {
-    const handler = () => addTopItemHandler();
-    (window as any).api.onAddTopItem(handler);
-    return () => (window as any).api.offAddTopItem(handler);
-  }, [addTopItemHandler]);
-
-  useEffect(() => {
-    const handler = () => addSubItemHandler();
-    (window as any).api.onAddSubItem(handler);
-    return () => (window as any).api.offAddSubItem(handler);
-  }, [addSubItemHandler]);
-
-  useEffect(() => {
-    const handler = () => removeSubtreeHandler();
-    (window as any).api.onRemoveSubtree(handler);
-    return () => (window as any).api.offRemoveSubtree(handler);
-  }, [removeSubtreeHandler]);
+  setupEventListener("SaveData", saveHandler);
+  setupEventListener("AddTopItem", addTopItemHandler);
+  setupEventListener("AddSubItem", addSubItemHandler);
+  setupEventListener("RemoveSubtree", removeSubtreeHandler);
 
   return (
     <Fragment>
