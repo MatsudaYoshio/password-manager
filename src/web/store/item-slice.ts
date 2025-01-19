@@ -136,6 +136,9 @@ const itemSlice = createSlice({
     updateMainState: (state) => {
       state.itemData.main = state.itemData.staging;
     },
+    updateStagingData: (state, action: PayloadAction<TreeNode[]>) => {
+      state.itemData.staging = action.payload;
+    },
   },
 });
 

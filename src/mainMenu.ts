@@ -1,7 +1,13 @@
-import { app, BrowserWindow, Menu, MenuItemConstructorOptions, ipcRenderer } from "electron";
+import { app, BrowserWindow, dialog, Menu, MenuItemConstructorOptions } from "electron";
+import * as fs from "fs";
+
+import QuestionDialog from "./questionDialog";
+
+const readFile2String = (path: fs.PathOrFileDescriptor, encoding: BufferEncoding = "utf-8") => fs.readFileSync(path, encoding);
 
 class MainMenu {
   constructor(mainWindow: BrowserWindow) {
+    const questionDialog = new QuestionDialog();
     const menuTemplate = [
       {
         label: "ファイル",
@@ -9,8 +15,30 @@ class MainMenu {
           {
             label: "データの保存",
             accelerator: "CmdOrCtrl+S",
-            click: () => {
-              mainWindow.webContents.send("save-data");
+            click: () => mainWindow.webContents.send("save-data"),
+          },
+          {
+            label: "データのインポート",
+            click: async () => {
+              questionDialog.showMessageBox("現在のデータを消去して新たなデータを読み込みます。よろしいですか？", () => {
+                dialog
+                  .showOpenDialog({
+                    properties: ["openFile"],
+                    title: "インポートしたいデータファイルの選択",
+                    filters: [
+                      {
+                        name: "JSONファイル",
+                        extensions: ["json"],
+                      },
+                    ],
+                  })
+                  .then((result) => {
+                    if (result.canceled) return;
+                    mainWindow.webContents.send("import-data", JSON.parse(readFile2String(result.filePaths[0])));
+                  })
+                  .catch((err) => console.log("Error: ", err));
+                return true;
+              });
             },
           },
           {

@@ -1,7 +1,7 @@
 import { app, BrowserWindow, Tray, Menu } from "electron";
 import path from "path";
 
-class passwordManagerTray extends Tray {
+class PasswordManagerTray extends Tray {
   static readonly ICON_PATH: string = path.join(app.getAppPath(), "src/assets", "key.ico");
   static readonly MENU_CONFIG = Menu.buildFromTemplate([
     {
@@ -13,7 +13,7 @@ class passwordManagerTray extends Tray {
   private mainWindow: BrowserWindow;
 
   constructor(mainWindow: BrowserWindow) {
-    super(passwordManagerTray.ICON_PATH);
+    super(PasswordManagerTray.ICON_PATH);
     this.mainWindow = mainWindow;
 
     this.setToolTip("Password Manager");
@@ -23,7 +23,7 @@ class passwordManagerTray extends Tray {
   }
 
   onClick = () => (this.mainWindow.isVisible() ? this.mainWindow.hide() : this.mainWindow.show());
-  onRightClick = () => this.popUpContextMenu(passwordManagerTray.MENU_CONFIG);
+  onRightClick = () => this.popUpContextMenu(PasswordManagerTray.MENU_CONFIG);
 }
 
-export default passwordManagerTray;
+export default PasswordManagerTray;

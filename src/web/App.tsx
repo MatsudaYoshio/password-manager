@@ -1,33 +1,15 @@
 import { grey } from "@mui/material/colors";
-import { Fragment, useEffect } from "react";
+import { Fragment } from "react";
 import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
 
 import "./App.css";
 import DetailView from "./components/Layout/DetailView";
 import Header from "./components/Layout/Header";
 import ItemTreeView from "./components/Layout/ItemTreeView";
-import useAddNewSubItem from "./hooks/useAddNewSubItem";
-import useAddNewTopItem from "./hooks/useAddNewTopItem";
-import useRemoveSubtree from "./hooks/useRemoveSubtree";
-import useSaveItems from "./hooks/useSaveItems";
+import useEventListeners from "./hooks/useEventListeners";
 
 export const App = () => {
-  const saveHandler = useSaveItems();
-  const addTopItemHandler = useAddNewTopItem();
-  const addSubItemHandler = useAddNewSubItem();
-  const removeSubtreeHandler = useRemoveSubtree();
-
-  const setupEventListener = (eventName: string, handler: () => void) =>
-    useEffect(() => {
-      const eventHandler = () => handler();
-      (window as any).api[`on${eventName}`](eventHandler);
-      return () => (window as any).api[`off${eventName}`](eventHandler);
-    }, [handler]);
-
-  setupEventListener("SaveData", saveHandler);
-  setupEventListener("AddTopItem", addTopItemHandler);
-  setupEventListener("AddSubItem", addSubItemHandler);
-  setupEventListener("RemoveSubtree", removeSubtreeHandler);
+  useEventListeners();
 
   return (
     <Fragment>
