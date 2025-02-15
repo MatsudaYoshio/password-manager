@@ -36,7 +36,17 @@ class MainMenu {
                     if (result.canceled) return;
                     mainWindow.webContents.send("import-data", JSON.parse(readFile2String(result.filePaths[0])));
                   })
-                  .catch((err) => console.log("Error: ", err));
+                  .catch((err) => {
+                    console.log("[Error Log]", err);
+                    let message = "JSONファイルの解析に失敗しました。";
+                    if (err instanceof SyntaxError) {
+                      message = "JSONファイルの内容がJSON形式として不正なので読み込みに失敗しました。";
+                    }
+                    dialog.showMessageBox({
+                      type: "warning",
+                      message: message,
+                    });
+                  });
                 return true;
               });
             },
