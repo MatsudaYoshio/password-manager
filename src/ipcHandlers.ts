@@ -19,6 +19,8 @@ const readFile2Buffer = (path: fs.PathOrFileDescriptor) => fs.readFileSync(path)
 
 const getSampleJsonData = () => JSON.parse(readFile2String(SAMPLE_CREDENTIALS_PATH));
 
+const questionDialog = new QuestionDialog();
+
 const saveEncryptedData = (path: string, data: TreeNode[]) => {
   const encrypted = safeStorage.encryptString(JSON.stringify(data));
   fs.writeFileSync(path, new Uint8Array(encrypted));
@@ -59,13 +61,10 @@ const handleReadNodes = async () => {
 };
 
 const handleSaveNodes = async (event: Electron.IpcMainInvokeEvent, data: TreeNode[]) => {
-  const dialog = new QuestionDialog();
-  dialog.showMessageBox("現在の内容で保存してもよろしいですか？", () => saveEncryptedData(CREDENTIALS_PATH, data));
+  questionDialog.showMessageBox("現在の内容で保存してもよろしいですか？", () => saveEncryptedData(CREDENTIALS_PATH, data));
 };
 
 const handleExportNodes = async (event: Electron.IpcMainInvokeEvent, data: TreeNode[]) => {
-  const questionDialog = new QuestionDialog();
-
   questionDialog.showMessageBox(
     "機密情報を暗号化した状態で保存しますか？",
     () => {
