@@ -4,12 +4,14 @@ import useAddNewTopItem from "./useAddNewTopItem";
 import useImportItems from "./useImportItems";
 import useRemoveSubtree from "./useRemoveSubtree";
 import useSaveItems from "./useSaveItems";
+import useExportItems from "./useExportItems";
 
 const useEventListeners = () => {
   const saveHandler = useSaveItems();
   const addTopItemHandler = useAddNewTopItem();
   const addSubItemHandler = useAddNewSubItem();
   const removeSubtreeHandler = useRemoveSubtree();
+  const exportItemHandler = useExportItems();
   const importItems = useImportItems();
 
   const setupEventListener = (eventName: string, handler: () => void) =>
@@ -23,6 +25,7 @@ const useEventListeners = () => {
   setupEventListener("AddTopItem", addTopItemHandler);
   setupEventListener("AddSubItem", addSubItemHandler);
   setupEventListener("RemoveSubtree", removeSubtreeHandler);
+  setupEventListener("ExportData", exportItemHandler);
 };
 
 export default useEventListeners;

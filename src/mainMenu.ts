@@ -18,6 +18,10 @@ class MainMenu {
             click: () => mainWindow.webContents.send("save-data"),
           },
           {
+            label: "データのエクスポート",
+            click: () => mainWindow.webContents.send("export-data"),
+          },
+          {
             label: "データのインポート",
             click: async () => {
               questionDialog.showMessageBox("現在のデータを消去して新たなデータを読み込みます。よろしいですか？", () => {
@@ -47,7 +51,6 @@ class MainMenu {
                       message: message,
                     });
                   });
-                return true;
               });
             },
           },

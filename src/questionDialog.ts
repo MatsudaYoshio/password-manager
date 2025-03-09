@@ -12,7 +12,7 @@ class QuestionDialog {
     },
   });
 
-  async showMessageBox(questionMessage: string, yesCallback: () => boolean): Promise<boolean> {
+  async showMessageBox(questionMessage: string, yesCallback: () => void = () => {}, noCallback: () => void = () => {}) {
     try {
       const result = await dialog.showMessageBox({
         type: "question",
@@ -22,11 +22,11 @@ class QuestionDialog {
         cancelId: QuestionDialog.dialogResponses.NO.id,
       });
 
-      if (result.response === QuestionDialog.dialogResponses.YES.id) return yesCallback();
+      if (result.response === QuestionDialog.dialogResponses.YES.id) yesCallback();
+      if (result.response === QuestionDialog.dialogResponses.NO.id) noCallback();
     } catch (err) {
-      console.log("Error: ", err);
+      console.log("[Error Log]", err);
     }
-    return false;
   }
 }
 
