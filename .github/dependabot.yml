@@ -1,0 +1,22 @@
+version: 2
+updates:
+  # npm パッケージ更新（React, TypeScript, Electron 含む）
+  - package-ecosystem: "npm"
+    directory: "/" # ルートに package.json がある場合
+    schedule:
+      interval: "weekly" # or "daily" にすれば毎日更新
+    open-pull-requests-limit: 10
+    allow:
+      - dependency-type: "all" # devDependenciesも含める
+    commit-message:
+      prefix: "deps"
+      include: "scope"
+    labels:
+      - "dependencies"
+      - "dependabot"
+
+  # GitHub Actions ワークフローの更新
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
