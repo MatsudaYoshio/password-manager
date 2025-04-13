@@ -2,11 +2,11 @@ import { app, dialog, ipcMain, safeStorage } from "electron";
 import * as fs from "fs";
 import path from "path";
 
-import QuestionDialog from "./questionDialog";
-import TreeNode from "./web/models/treeNode";
+import QuestionDialog from "./dialogs/questionDialog";
+import TreeNode from "../renderer/models/treeNode";
 
-const CREDENTIALS_PATH = path.join(app.getAppPath(), "credentials.bin");
-const SAMPLE_CREDENTIALS_PATH = path.join(app.getAppPath(), "sample_credentials.json");
+const CREDENTIALS_PATH = path.join(app.getAppPath(), "src", "credentials", "credentials.bin");
+const SAMPLE_CREDENTIALS_PATH = path.join(app.getAppPath(), "src", "credentials", "sample_credentials.json");
 
 const setupIpcHandlers = () => {
   ipcMain.handle("read-nodes", handleReadNodes);
