@@ -1,5 +1,5 @@
 import { contextBridge, ipcRenderer } from "electron";
-import TreeNode from "./web/models/treeNode";
+import TreeNode from "../renderer/models/treeNode";
 
 contextBridge.exposeInMainWorld("api", {
   readNodes: () => ipcRenderer.invoke("read-nodes"),

@@ -1,7 +1,7 @@
 import { app, BrowserWindow, dialog, Menu, MenuItemConstructorOptions } from "electron";
 import * as fs from "fs";
 
-import QuestionDialog from "./questionDialog";
+import QuestionDialog from "./dialogs/questionDialog";
 
 const readFile2String = (path: fs.PathOrFileDescriptor, encoding: BufferEncoding = "utf-8") => fs.readFileSync(path, encoding);
 
