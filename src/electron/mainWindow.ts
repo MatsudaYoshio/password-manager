@@ -1,5 +1,7 @@
 import { BrowserWindow, app } from "electron";
 import path from "path";
+import { ICON_PATH } from "../shared/constants";
+import store from "./store";
 
 class MainWindow extends BrowserWindow {
   constructor() {
@@ -12,12 +14,18 @@ class MainWindow extends BrowserWindow {
         contextIsolation: true,
         preload: path.resolve(__dirname, "preload.js"),
       },
-      icon: path.join(app.getAppPath(), "src/assets", "key.ico"),
+      icon: ICON_PATH,
     });
 
     this.loadFile("dist/index.html");
 
     this.on("closed", () => app.quit());
+
+    if (store.get("backupEnabled")) {
+      this.webContents.once("did-finish-load", () => {
+        this.webContents.send("export-data");
+      });
+    }
   }
 }
 

@@ -1,13 +1,17 @@
 import { app, BrowserWindow, dialog, Menu, MenuItemConstructorOptions } from "electron";
 import * as fs from "fs";
 
-import QuestionDialog from "./questionDialog";
+import QuestionDialog from "./dialogs/questionDialog";
+import SettingsWindow from "./subWindows/settingsWindow";
 
 const readFile2String = (path: fs.PathOrFileDescriptor, encoding: BufferEncoding = "utf-8") => fs.readFileSync(path, encoding);
 
 class MainMenu {
+  private settingsWindow: SettingsWindow | null = null;
+
   constructor(mainWindow: BrowserWindow) {
     const questionDialog = new QuestionDialog();
+
     const menuTemplate = [
       {
         label: "ファイル",
@@ -83,6 +87,21 @@ class MainMenu {
                 },
               ]
             : []),
+        ],
+      },
+      {
+        label: "設定",
+        submenu: [
+          {
+            label: "設定",
+            click: () => {
+              if (!this.settingsWindow || this.settingsWindow.isDestroyed()) {
+                this.settingsWindow = new SettingsWindow(mainWindow);
+              } else {
+                this.settingsWindow.focus();
+              }
+            },
+          },
         ],
       },
     ] as MenuItemConstructorOptions[];

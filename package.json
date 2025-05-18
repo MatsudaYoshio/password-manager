@@ -5,10 +5,10 @@
   "version": "0.1.0",
   "license": "MIT",
   "author": {
-    "name": "yoshi"
+    "name": "MatsudaYoshio"
   },
   "repository": {
-    "url": "https://github.com/yoshi/password-manager.git"
+    "url": "https://github.com/MatsudaYoshio/password-manager.git"
   },
   "main": "dist/main.js",
   "scripts": {
@@ -16,7 +16,7 @@
     "build": "rimraf dist && cross-env NODE_ENV=\"production\" webpack --progress",
     "dev:webpack": "cross-env NODE_ENV=\"development\" webpack --progress",
     "dev:electron": "wait-on dist/main.js dist/index.html && electronmon .",
-    "package": "electron-packager . PasswordManager --icon=./src/assets/key.ico --overwrite --out=release"
+    "package": "electron-packager . PasswordManager --icon=./src/electron/assets/key.ico --overwrite --out=release"
   },
   "electronmon": {
     "patterns": [
@@ -32,6 +32,7 @@
     "@react-spring/web": "^9.7.3",
     "@reduxjs/toolkit": "^2.0.1",
     "class-transformer": "^0.5.1",
+    "electron-store": "^8.2.0",
     "jsonfile": "^6.1.0",
     "normalize.css": "^8.0.1",
     "react": "^18.2.0",
@@ -53,17 +54,20 @@
     "@types/uuid": "^9.0.5",
     "cross-env": "^7.0.3",
     "css-loader": "^6.8.1",
-    "electron": "^25.5.0",
+    "electron": "^35.0.0",
     "electronmon": "^2.0.2",
     "html-webpack-plugin": "^5.5.3",
     "mini-css-extract-plugin": "^2.7.6",
     "npm-run-all": "^4.1.5",
     "rimraf": "^5.0.1",
     "ts-loader": "^9.4.4",
-    "ts-node": "^10.9.1",
-    "typescript": "^5.1.6",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.8.3",
     "wait-on": "^7.0.1",
     "webpack": "^5.88.2",
     "webpack-cli": "^5.1.4"
+  },
+  "volta": {
+    "node": "20.19.0"
   }
 }

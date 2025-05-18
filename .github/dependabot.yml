@@ -14,9 +14,3 @@ updates:
     labels:
       - "dependencies"
       - "dependabot"
-
-  # GitHub Actions ワークフローの更新
-  - package-ecosystem: "github-actions"
-    directory: "/"
-    schedule:
-      interval: "weekly"

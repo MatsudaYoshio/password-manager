@@ -1,8 +1,7 @@
 import { app, BrowserWindow, Tray, Menu } from "electron";
-import path from "path";
+import { ICON_PATH } from "../shared/constants";
 
 class PasswordManagerTray extends Tray {
-  static readonly ICON_PATH: string = path.join(app.getAppPath(), "src/assets", "key.ico");
   static readonly MENU_CONFIG = Menu.buildFromTemplate([
     {
       label: "Exit",
@@ -13,7 +12,7 @@ class PasswordManagerTray extends Tray {
   private mainWindow: BrowserWindow;
 
   constructor(mainWindow: BrowserWindow) {
-    super(PasswordManagerTray.ICON_PATH);
+    super(ICON_PATH);
     this.mainWindow = mainWindow;
 
     this.setToolTip("Password Manager");

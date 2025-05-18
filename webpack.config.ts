@@ -10,7 +10,7 @@ const common: Configuration = {
   output: {
     publicPath: "./",
     filename: "[name].js",
-    assetModuleFilename: "assets/[name][ext]",
+    assetModuleFilename: "electron/assets/[name][ext]",
   },
   resolve: {
     extensions: [".js", ".ts", ".jsx", ".tsx", ".json"],
@@ -40,7 +40,7 @@ const main: Configuration = {
   ...common,
   target: "electron-main",
   entry: {
-    main: "./src/main.ts",
+    main: "./src/electron/main.ts",
   },
 };
 
@@ -48,7 +48,7 @@ const preload: Configuration = {
   ...common,
   target: "electron-preload",
   entry: {
-    preload: "./src/preload.ts",
+    preload: "./src/electron/preload.ts",
   },
 };
 
@@ -56,13 +56,21 @@ const renderer: Configuration = {
   ...common,
   target: "electron-renderer",
   entry: {
-    app: "./src/web/index.tsx",
+    app: "./src/renderer/index.tsx",
+    settings: "./src/renderer/settings.tsx", // 設定画面のエントリーポイント
   },
   plugins: [
     new MiniCssExtractPlugin(),
     new HtmlWebpackPlugin({
       inject: "body",
-      template: "./src/web/index.html",
+      template: "./src/renderer/index.html",
+      chunks: ["app"],
+    }),
+    new HtmlWebpackPlugin({
+      inject: "body",
+      template: "./src/renderer/settings.html",
+      filename: "settings.html",
+      chunks: ["settings"],
     }),
   ],
 };
