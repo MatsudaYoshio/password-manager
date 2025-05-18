@@ -4,6 +4,8 @@ import path from "path";
 
 import QuestionDialog from "./dialogs/questionDialog";
 import TreeNode from "../renderer/models/treeNode";
+import store from "./store";
+import { BackupSettings } from "../shared/types/BackupSettings";
 
 const CREDENTIALS_PATH = path.join(app.getAppPath(), "src", "credentials", "credentials.bin");
 const SAMPLE_CREDENTIALS_PATH = path.join(app.getAppPath(), "src", "credentials", "sample_credentials.json");
@@ -12,6 +14,9 @@ const setupIpcHandlers = () => {
   ipcMain.handle("read-nodes", handleReadNodes);
   ipcMain.handle("save-nodes", handleSaveNodes);
   ipcMain.handle("export-nodes", handleExportNodes);
+  ipcMain.handle("get-backup-settings", handleGetBackupSettings);
+  ipcMain.handle("update-setting", handleUpdateSetting);
+  ipcMain.handle("select-backup-path", handleSelectBackupPath);
 };
 
 const readFile2String = (path: fs.PathOrFileDescriptor, encoding: BufferEncoding = "utf-8") => fs.readFileSync(path, encoding);
@@ -24,6 +29,17 @@ const questionDialog = new QuestionDialog();
 const saveEncryptedData = (path: string, data: TreeNode[]) => {
   const encrypted = safeStorage.encryptString(JSON.stringify(data));
   fs.writeFileSync(path, new Uint8Array(encrypted));
+};
+
+const generateExportFilePath = (extension: string) => {
+  const now = new Date();
+  const pad = (n: number) => n.toString().padStart(2, "0");
+  const fileName = `credentials_${now.getFullYear()}${pad(now.getMonth() + 1)}${pad(now.getDate())}${pad(now.getHours())}${pad(now.getMinutes())}${pad(now.getSeconds())}.${extension}`;
+  const backupPath = store.get("backupPath") as string;
+  if (backupPath) {
+    return path.join(backupPath, fileName);
+  }
+  return path.join(app.getPath("desktop"), fileName);
 };
 
 const exportErrorlog = (err: any) => {
@@ -71,7 +87,7 @@ const handleExportNodes = async (event: Electron.IpcMainInvokeEvent, data: TreeN
       dialog
         .showSaveDialog({
           title: "エクスポート先のファイルの選択",
-          defaultPath: "credentials.bin",
+          defaultPath: generateExportFilePath("bin"),
           filters: [
             {
               name: "バイナリファイル",
@@ -89,7 +105,7 @@ const handleExportNodes = async (event: Electron.IpcMainInvokeEvent, data: TreeN
       dialog
         .showSaveDialog({
           title: "エクスポート先のファイルの選択",
-          defaultPath: "credentials.json",
+          defaultPath: generateExportFilePath("json"),
           filters: [
             {
               name: "JSONファイル",
@@ -104,6 +120,24 @@ const handleExportNodes = async (event: Electron.IpcMainInvokeEvent, data: TreeN
         .catch((err) => exportErrorlog(err));
     }
   );
+};
+
+const handleGetSetting = (key: string) => store.get(key);
+
+const handleUpdateSetting = (event: Electron.IpcMainInvokeEvent, key: string, value: any) => store.set(key, value);
+
+const handleGetBackupSettings = () => {
+  return {
+    backupEnabled: handleGetSetting("backupEnabled"),
+    backupPath: handleGetSetting("backupPath"),
+  } as BackupSettings;
+};
+
+const handleSelectBackupPath = async () => {
+  const result = await dialog.showOpenDialog({
+    properties: ["openDirectory"],
+  });
+  return result.filePaths[0] || null;
 };
 
 export default setupIpcHandlers;

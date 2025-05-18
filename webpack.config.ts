@@ -57,12 +57,20 @@ const renderer: Configuration = {
   target: "electron-renderer",
   entry: {
     app: "./src/renderer/index.tsx",
+    settings: "./src/renderer/settings.tsx", // 設定画面のエントリーポイント
   },
   plugins: [
     new MiniCssExtractPlugin(),
     new HtmlWebpackPlugin({
       inject: "body",
       template: "./src/renderer/index.html",
+      chunks: ["app"],
+    }),
+    new HtmlWebpackPlugin({
+      inject: "body",
+      template: "./src/renderer/settings.html",
+      filename: "settings.html",
+      chunks: ["settings"],
     }),
   ],
 };

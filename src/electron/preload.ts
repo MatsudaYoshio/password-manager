@@ -24,4 +24,8 @@ contextBridge.exposeInMainWorld("api", {
 
   onExportData: (callback: any) => ipcRenderer.on("export-data", () => callback()),
   offExportData: () => ipcRenderer.removeAllListeners("export-data"),
+
+  getBackupSettings: () => ipcRenderer.invoke("get-backup-settings"),
+  updateSetting: (key: string, value: any) => ipcRenderer.invoke("update-setting", key, value),
+  selectBackupPath: () => ipcRenderer.invoke("select-backup-path"),
 });
