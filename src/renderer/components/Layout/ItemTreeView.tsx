@@ -73,7 +73,8 @@ const StyledTreeItem = styled((props: TreeItemProps) => <TreeItem {...props} Tra
 export default function ItemTreeView() {
   const dispatch = useDispatch();
 
-  const item = useSelector(stagingItemData);
+  const items = useSelector(stagingItemData); // Renamed from 'item' to 'items'
+  const activeNode = useSelector((state: { item: { activeNode: TreeNode } }) => state.item.activeNode); // Get activeNode
 
   const switchActiveNodeIdHandler = (id: string) => {
     dispatch(itemActions.switchActiveNodeById(id));
@@ -90,8 +91,15 @@ export default function ItemTreeView() {
   };
 
   return (
-    <TreeView aria-label="customized" defaultExpanded={["1"]} defaultCollapseIcon={<MinusSquare />} defaultExpandIcon={<PlusSquare />} defaultEndIcon={<CloseSquare />}>
-      {getTreeItemsFromData(item)}
+    <TreeView
+      aria-label="customized"
+      defaultExpanded={["1"]} // Consider if this needs to be dynamic too
+      defaultCollapseIcon={<MinusSquare />}
+      defaultExpandIcon={<PlusSquare />}
+      defaultEndIcon={<CloseSquare />}
+      selected={activeNode ? activeNode.id : undefined} // Pass activeNode.id here
+    >
+      {getTreeItemsFromData(items)}
     </TreeView>
   );
 }
