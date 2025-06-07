@@ -33,14 +33,12 @@
     "@reduxjs/toolkit": "^2.0.1",
     "class-transformer": "^0.5.1",
     "electron-store": "^8.2.0",
-    "jsonfile": "^6.1.0",
     "normalize.css": "^8.0.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-redux": "^9.0.4",
     "react-resizable-panels": "^2.1.7",
     "redux": "^5.0.1",
-    "uuid": "^9.0.1",
     "uuidv7": "^0.6.3"
   },
   "devDependencies": {
