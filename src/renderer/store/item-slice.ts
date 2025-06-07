@@ -9,7 +9,6 @@ const getInitialNodes = async (): Promise<TreeNode[]> => plainToInstance(TreeNod
 
 const initialNodes = await getInitialNodes();
 
-// Helper function to find the parent of a node
 const findParentNode = (itemId: string, nodes: TreeNode[]): TreeNode | null => {
   for (const node of nodes) {
     if (node.children) {
@@ -160,11 +159,7 @@ const itemSlice = createSlice({
         if (parentNode) {
           state.activeNode = parentNode;
         } else {
-          if (state.itemData.staging.length > 0) {
-            state.activeNode = state.itemData.staging[0];
-          } else {
-            state.activeNode = {} as TreeNode;
-          }
+          state.activeNode = state.itemData.staging.length > 0 ? state.itemData.staging[0] : ({} as TreeNode);
         }
       }
     },
