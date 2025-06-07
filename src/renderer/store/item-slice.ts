@@ -9,6 +9,24 @@ const getInitialNodes = async (): Promise<TreeNode[]> => plainToInstance(TreeNod
 
 const initialNodes = await getInitialNodes();
 
+// Helper function to find the parent of a node
+const findParentNode = (itemId: string, nodes: TreeNode[]): TreeNode | null => {
+  for (const node of nodes) {
+    if (node.children) {
+      for (const child of node.children) {
+        if (child.id === itemId) {
+          return node;
+        }
+        const parent = findParentNode(itemId, [child]);
+        if (parent) {
+          return parent;
+        }
+      }
+    }
+  }
+  return null;
+};
+
 const initialState: { activeNode: TreeNode; itemCount: number; itemData: { main: TreeNode[]; staging: TreeNode[] } } = {
   activeNode: {} as TreeNode,
   itemCount: 1,
@@ -109,19 +127,24 @@ const itemSlice = createSlice({
       }
     },
     RemoveItemAndChildById: (state, action: PayloadAction<string>) => {
+      const itemIdToDelete = action.payload;
+      const parentNode = findParentNode(itemIdToDelete, state.itemData.staging);
+
       const queue = new Queue<{ nodes: TreeNode[]; index: number }>();
       const stagingCopy = state.itemData.staging.map((node) => ({ ...node }));
       for (let i = 0; i < stagingCopy.length; i++) {
         queue.enqueue({ nodes: stagingCopy, index: i });
       }
 
+      let itemRemoved = false;
       while (!queue.isEmpty) {
         const { nodes, index } = queue.dequeue();
-        if (nodes[index].id === action.payload) {
+        if (nodes[index].id === itemIdToDelete) {
           // IDが一致したらその要素と子要素を削除する
           nodes.splice(index, 1);
           state.itemData.staging = stagingCopy;
-          return;
+          itemRemoved = true;
+          break;
         } else {
           // IDが一致しないなら子要素を探す
           const children = nodes[index].children;
@@ -129,6 +152,18 @@ const itemSlice = createSlice({
             for (let i = 0; i < children.length; i++) {
               queue.enqueue({ nodes: children, index: i });
             }
+          }
+        }
+      }
+
+      if (itemRemoved) {
+        if (parentNode) {
+          state.activeNode = parentNode;
+        } else {
+          if (state.itemData.staging.length > 0) {
+            state.activeNode = state.itemData.staging[0];
+          } else {
+            state.activeNode = {} as TreeNode;
           }
         }
       }
