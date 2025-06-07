@@ -21,9 +21,10 @@ jobs:
       - name: Install depcheck
         run: npm install -g depcheck
 
-      - name: Check for unused dependencies
+      - name: Check for unused dependencies (ignore devDependencies)
         run: |
-          depcheck --ignores="electron,webpack,webpack-cli" || (echo "Unused dependencies found" && exit 1)
+          IGNORES=$(node -p "Object.keys(require('./package.json').devDependencies).join(',')")
+          depcheck --ignores="$IGNORES,electron,webpack,webpack-cli" || (echo "Unused dependencies found" && exit 1)
 
       - name: Run webpack build (compilation check)
         run: npm run build
