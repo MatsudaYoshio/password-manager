@@ -1,11 +1,12 @@
 import SvgIcon, { SvgIconProps } from "@mui/material/SvgIcon";
 import { RichTreeView } from "@mui/x-tree-view/RichTreeView";
 import { TreeViewBaseItem } from "@mui/x-tree-view/models";
-import { useCallback } from "react";
+import { useCallback, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
 import TreeNode from "../../models/treeNode";
 import { itemActions, stagingItemData } from "../../store/item-slice";
+import { alpha } from "@mui/material/styles";
 
 const MinusSquare = (props: SvgIconProps) => (
   <SvgIcon fontSize="inherit" style={{ width: 14, height: 14 }} {...props}>
@@ -59,7 +60,7 @@ export default function ItemTreeView() {
   return (
     <RichTreeView
       aria-label="customized"
-      items={getTreeItemsFromData(items)}
+      items={useMemo(() => getTreeItemsFromData(items), [items])}
       defaultExpandedItems={["1"]}
       selectedItems={activeNode ? activeNode.id : undefined}
       onItemClick={handleItemClick}
@@ -74,7 +75,7 @@ export default function ItemTreeView() {
         "& .MuiTreeItem-group": {
           marginLeft: 15,
           paddingLeft: 18,
-          borderLeft: "1px dashed rgba(0, 0, 0, 0.4)", // Simplified for now
+          borderLeft: (theme) => `1px dashed ${alpha(theme.palette.text.primary, 0.4)}`,
         },
         // Opacity for close icon (end icon)
         "& .MuiTreeItem-iconContainer .close": {
