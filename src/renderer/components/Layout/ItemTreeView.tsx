@@ -1,6 +1,7 @@
 import SvgIcon, { SvgIconProps } from "@mui/material/SvgIcon";
 import { RichTreeView } from "@mui/x-tree-view/RichTreeView";
 import { TreeViewBaseItem } from "@mui/x-tree-view/models";
+import { useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
 import TreeNode from "../../models/treeNode";
@@ -30,9 +31,12 @@ export default function ItemTreeView() {
   const items = useSelector(stagingItemData);
   const activeNode = useSelector((state: { item: { activeNode: TreeNode } }) => state.item.activeNode);
 
-  const handleItemClick = (_: React.SyntheticEvent, itemId: string) => {
-    dispatch(itemActions.switchActiveNodeById(itemId));
-  };
+  const handleItemClick = useCallback(
+    (_: React.SyntheticEvent, itemId: string) => {
+      dispatch(itemActions.switchActiveNodeById(itemId));
+    },
+    [dispatch]
+  );
 
   /**
    * This function maps each TreeNode to a TreeViewBaseItem by assigning the id and title.
