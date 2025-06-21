@@ -4,9 +4,9 @@ import { TreeViewBaseItem } from "@mui/x-tree-view/models";
 import { useCallback, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
+import { alpha } from "@mui/material/styles";
 import TreeNode from "../../models/treeNode";
 import { itemActions, stagingItemData } from "../../store/item-slice";
-import { alpha } from "@mui/material/styles";
 
 const MinusSquare = (props: SvgIconProps) => (
   <SvgIcon fontSize="inherit" style={{ width: 14, height: 14 }} {...props}>
@@ -41,7 +41,7 @@ export default function ItemTreeView() {
   );
 
   const handleExpandedItemsChange = useCallback(
-    (_event: React.SyntheticEvent | null, itemIds: string[]) => {
+    (_: React.SyntheticEvent | null, itemIds: string[]) => {
       dispatch(itemActions.setExpandedItemIds(itemIds));
     },
     [dispatch]

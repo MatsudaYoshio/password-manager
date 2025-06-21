@@ -32,6 +32,6 @@ contextBridge.exposeInMainWorld("api", {
   // TreeView state
   saveTreeViewExpandedItems: (expandedItemIds: string[]) => ipcRenderer.invoke("save-tree-view-expanded-items", expandedItemIds),
   getTreeViewExpandedItems: () => ipcRenderer.invoke("get-tree-view-expanded-items"),
-  saveTreeViewSelectedItemId: (selectedItemId: string | undefined) => ipcRenderer.invoke("save-tree-view-selected-item-id", selectedItemId),
+  saveTreeViewSelectedItemId: (selectedItemId: string | null | undefined) => ipcRenderer.invoke("save-tree-view-selected-item-id", selectedItemId),
   getTreeViewSelectedItemId: () => ipcRenderer.invoke("get-tree-view-selected-item-id"),
 });

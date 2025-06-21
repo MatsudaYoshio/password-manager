@@ -5,9 +5,11 @@ import TreeNode from "../models/treeNode";
 
 import { plainToInstance } from "class-transformer";
 
-const getInitialNodes = async (): Promise<TreeNode[]> => plainToInstance(TreeNode, await (window as any).api.readNodes());
-const getInitialExpandedItemIds = async (): Promise<string[]> => await (window as any).api.getTreeViewExpandedItems();
-const getInitialSelectedItemId = async (): Promise<string | undefined> => await (window as any).api.getTreeViewSelectedItemId();
+const { api } = window as any;
+
+const getInitialNodes = async (): Promise<TreeNode[]> => plainToInstance(TreeNode, await api.readNodes());
+const getInitialExpandedItemIds = async (): Promise<string[]> => await api.getTreeViewExpandedItems();
+const getInitialSelectedItemId = async (): Promise<string | undefined> => await api.getTreeViewSelectedItemId();
 
 const initialNodes = await getInitialNodes();
 const initialExpandedItemIds = await getInitialExpandedItemIds();
@@ -46,11 +48,7 @@ const findParentNode = (itemId: string, nodes: TreeNode[]): TreeNode | null => {
   return null;
 };
 
-const initialActiveNode: TreeNode | null = initialSelectedItemId
-  ? findNodeById(initialSelectedItemId, initialNodes)
-  : initialNodes && initialNodes.length > 0
-  ? initialNodes[0]
-  : null;
+const initialActiveNode: TreeNode | null = initialSelectedItemId ? findNodeById(initialSelectedItemId, initialNodes) : initialNodes && initialNodes.length > 0 ? initialNodes[0] : null;
 
 const initialState: {
   activeNode: TreeNode | null;
@@ -112,11 +110,11 @@ const itemSlice = createSlice({
         }
       }
       state.activeNode = foundNode;
-      (window as any).api.saveTreeViewSelectedItemId(state.activeNode ? state.activeNode.id : null);
+      api.saveTreeViewSelectedItemId(state.activeNode ? state.activeNode.id : null);
     },
     updateActiveNode: (state, action: PayloadAction<TreeNode | null>) => {
       state.activeNode = action.payload;
-      (window as any).api.saveTreeViewSelectedItemId(state.activeNode ? state.activeNode.id : null);
+      api.saveTreeViewSelectedItemId(state.activeNode ? state.activeNode.id : null);
     },
     updateItem: (state, action: PayloadAction<TreeNode>) => {
       const queue = new Queue<TreeNode>();
@@ -198,7 +196,7 @@ const itemSlice = createSlice({
         } else {
           state.activeNode = state.itemData.staging.length > 0 ? state.itemData.staging[0] : null;
         }
-        (window as any).api.saveTreeViewSelectedItemId(state.activeNode ? state.activeNode.id : null);
+        api.saveTreeViewSelectedItemId(state.activeNode ? state.activeNode.id : null);
       }
     },
     updateMainState: (state) => {
@@ -209,7 +207,7 @@ const itemSlice = createSlice({
     },
     setExpandedItemIds: (state, action: PayloadAction<string[]>) => {
       state.expandedItemIds = action.payload;
-      (window as any).api.saveTreeViewExpandedItems(state.expandedItemIds);
+      api.saveTreeViewExpandedItems(state.expandedItemIds);
     },
   },
 });

@@ -2,11 +2,11 @@ import { app, dialog, ipcMain, safeStorage } from "electron";
 import * as fs from "fs";
 import path from "path";
 
-import QuestionDialog from "./dialogs/questionDialog";
 import TreeNode from "../renderer/models/treeNode";
-import store from "./store";
-import { BackupSettings } from "../shared/types/BackupSettings";
 import { STORE_KEY_TREE_VIEW_EXPANDED_ITEMS, STORE_KEY_TREE_VIEW_SELECTED_ITEM_ID } from "../shared/constants";
+import { BackupSettings } from "../shared/types/BackupSettings";
+import QuestionDialog from "./dialogs/questionDialog";
+import store from "./store";
 
 const CREDENTIALS_PATH = path.join(app.getAppPath(), "src", "credentials", "credentials.bin");
 const SAMPLE_CREDENTIALS_PATH = path.join(app.getAppPath(), "src", "credentials", "sample_credentials.json");
@@ -129,7 +129,7 @@ const handleExportNodes = async (event: Electron.IpcMainInvokeEvent, data: TreeN
 
 const handleGetSetting = (key: string) => store.get(key);
 
-const handleUpdateSetting = (event: Electron.IpcMainInvokeEvent, key: string, value: any) => store.set(key, value);
+const handleUpdateSetting = (_: Electron.IpcMainInvokeEvent, key: string, value: any) => store.set(key, value);
 
 const handleGetBackupSettings = () => {
   return {
@@ -145,7 +145,7 @@ const handleSelectBackupPath = async () => {
   return result.filePaths[0] || null;
 };
 
-const handleSaveTreeViewExpandedItems = (event: Electron.IpcMainInvokeEvent, expandedItemIds: string[]) => {
+const handleSaveTreeViewExpandedItems = (_: Electron.IpcMainInvokeEvent, expandedItemIds: string[]) => {
   store.set(STORE_KEY_TREE_VIEW_EXPANDED_ITEMS, expandedItemIds);
 };
 
@@ -154,8 +154,8 @@ const handleGetTreeViewExpandedItems = (): string[] => {
   return Array.isArray(items) ? items : [];
 };
 
-const handleSaveTreeViewSelectedItemId = (event: Electron.IpcMainInvokeEvent, selectedItemId: string | null | undefined) => {
-  if (selectedItemId === undefined || selectedItemId === null) {
+const handleSaveTreeViewSelectedItemId = (_: Electron.IpcMainInvokeEvent, selectedItemId: string | null | undefined) => {
+  if (selectedItemId == null) {
     store.delete(STORE_KEY_TREE_VIEW_SELECTED_ITEM_ID);
   } else {
     store.set(STORE_KEY_TREE_VIEW_SELECTED_ITEM_ID, selectedItemId);
