@@ -2,10 +2,11 @@ import { app, dialog, ipcMain, safeStorage } from "electron";
 import * as fs from "fs";
 import path from "path";
 
-import QuestionDialog from "./dialogs/questionDialog";
 import TreeNode from "../renderer/models/treeNode";
-import store from "./store";
+import { STORE_KEY_TREE_VIEW_EXPANDED_ITEMS, STORE_KEY_TREE_VIEW_SELECTED_ITEM_ID } from "../shared/constants";
 import { BackupSettings } from "../shared/types/BackupSettings";
+import QuestionDialog from "./dialogs/questionDialog";
+import store from "./store";
 
 const CREDENTIALS_PATH = path.join(app.getAppPath(), "src", "credentials", "credentials.bin");
 const SAMPLE_CREDENTIALS_PATH = path.join(app.getAppPath(), "src", "credentials", "sample_credentials.json");
@@ -17,6 +18,10 @@ const setupIpcHandlers = () => {
   ipcMain.handle("get-backup-settings", handleGetBackupSettings);
   ipcMain.handle("update-setting", handleUpdateSetting);
   ipcMain.handle("select-backup-path", handleSelectBackupPath);
+  ipcMain.handle("save-tree-view-expanded-items", handleSaveTreeViewExpandedItems);
+  ipcMain.handle("get-tree-view-expanded-items", handleGetTreeViewExpandedItems);
+  ipcMain.handle("save-tree-view-selected-item-id", handleSaveTreeViewSelectedItemId);
+  ipcMain.handle("get-tree-view-selected-item-id", handleGetTreeViewSelectedItemId);
 };
 
 const readFile2String = (path: fs.PathOrFileDescriptor, encoding: BufferEncoding = "utf-8") => fs.readFileSync(path, encoding);
@@ -124,7 +129,7 @@ const handleExportNodes = async (event: Electron.IpcMainInvokeEvent, data: TreeN
 
 const handleGetSetting = (key: string) => store.get(key);
 
-const handleUpdateSetting = (event: Electron.IpcMainInvokeEvent, key: string, value: any) => store.set(key, value);
+const handleUpdateSetting = (_: Electron.IpcMainInvokeEvent, key: string, value: any) => store.set(key, value);
 
 const handleGetBackupSettings = () => {
   return {
@@ -138,6 +143,28 @@ const handleSelectBackupPath = async () => {
     properties: ["openDirectory"],
   });
   return result.filePaths[0] || null;
+};
+
+const handleSaveTreeViewExpandedItems = (_: Electron.IpcMainInvokeEvent, expandedItemIds: string[]) => {
+  store.set(STORE_KEY_TREE_VIEW_EXPANDED_ITEMS, expandedItemIds);
+};
+
+const handleGetTreeViewExpandedItems = (): string[] => {
+  const items = store.get(STORE_KEY_TREE_VIEW_EXPANDED_ITEMS);
+  return Array.isArray(items) ? items : [];
+};
+
+const handleSaveTreeViewSelectedItemId = (_: Electron.IpcMainInvokeEvent, selectedItemId: string | null | undefined) => {
+  if (selectedItemId == null) {
+    store.delete(STORE_KEY_TREE_VIEW_SELECTED_ITEM_ID);
+  } else {
+    store.set(STORE_KEY_TREE_VIEW_SELECTED_ITEM_ID, selectedItemId);
+  }
+};
+
+const handleGetTreeViewSelectedItemId = (): string | undefined => {
+  // store.get は値がない場合 undefined を返すので、そのまま返す
+  return store.get(STORE_KEY_TREE_VIEW_SELECTED_ITEM_ID) as string | undefined;
 };
 
 export default setupIpcHandlers;

@@ -28,4 +28,10 @@ contextBridge.exposeInMainWorld("api", {
   getBackupSettings: () => ipcRenderer.invoke("get-backup-settings"),
   updateSetting: (key: string, value: any) => ipcRenderer.invoke("update-setting", key, value),
   selectBackupPath: () => ipcRenderer.invoke("select-backup-path"),
+
+  // TreeView state
+  saveTreeViewExpandedItems: (expandedItemIds: string[]) => ipcRenderer.invoke("save-tree-view-expanded-items", expandedItemIds),
+  getTreeViewExpandedItems: () => ipcRenderer.invoke("get-tree-view-expanded-items"),
+  saveTreeViewSelectedItemId: (selectedItemId: string | null | undefined) => ipcRenderer.invoke("save-tree-view-selected-item-id", selectedItemId),
+  getTreeViewSelectedItemId: () => ipcRenderer.invoke("get-tree-view-selected-item-id"),
 });
