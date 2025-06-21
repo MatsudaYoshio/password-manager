@@ -25,12 +25,12 @@ const DetailView = () => {
 
   const activeNode = useSelector((state: { item: { activeNode: TreeNode } }) => state.item.activeNode);
 
-  const [title, setTitle] = React.useState(activeNode.data.title);
-  const [credentials, setCredentials] = React.useState(activeNode.data.credentials);
+  const [title, setTitle] = React.useState(activeNode?.data?.title ?? "");
+  const [credentials, setCredentials] = React.useState(activeNode?.data?.credentials ?? []);
 
   React.useEffect(() => {
-    setTitle(activeNode.data.title);
-    setCredentials(activeNode.data.credentials);
+    setTitle(activeNode?.data?.title ?? "");
+    setCredentials(activeNode?.data?.credentials ?? []);
   }, [activeNode]);
 
   const mouseDownPasswordHandler = (event: React.MouseEvent<HTMLButtonElement>) => event.preventDefault();
