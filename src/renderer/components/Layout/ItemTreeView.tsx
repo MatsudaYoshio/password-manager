@@ -30,11 +30,19 @@ export default function ItemTreeView() {
   const dispatch = useDispatch();
 
   const items = useSelector(stagingItemData);
-  const activeNode = useSelector((state: { item: { activeNode: TreeNode } }) => state.item.activeNode);
+  const activeNode = useSelector((state: { item: { activeNode: TreeNode | null } }) => state.item.activeNode);
+  const expandedItemIds = useSelector((state: { item: { expandedItemIds: string[] } }) => state.item.expandedItemIds);
 
   const handleItemClick = useCallback(
     (_: React.SyntheticEvent, itemId: string) => {
       dispatch(itemActions.switchActiveNodeById(itemId));
+    },
+    [dispatch]
+  );
+
+  const handleExpandedItemsChange = useCallback(
+    (_event: React.SyntheticEvent | null, itemIds: string[]) => {
+      dispatch(itemActions.setExpandedItemIds(itemIds));
     },
     [dispatch]
   );
@@ -61,9 +69,10 @@ export default function ItemTreeView() {
     <RichTreeView
       aria-label="customized"
       items={useMemo(() => getTreeItemsFromData(items), [items])}
-      defaultExpandedItems={["1"]}
-      selectedItems={activeNode ? activeNode.id : undefined}
+      expandedItems={expandedItemIds}
+      selectedItems={activeNode ? activeNode.id : null}
       onItemClick={handleItemClick}
+      onExpandedItemsChange={handleExpandedItemsChange}
       slots={{
         collapseIcon: MinusSquare,
         expandIcon: PlusSquare,
