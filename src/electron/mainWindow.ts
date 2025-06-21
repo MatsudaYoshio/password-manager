@@ -17,7 +17,7 @@ class MainWindow extends BrowserWindow {
       icon: ICON_PATH,
     });
 
-    this.loadFile("dist/index.html");
+    this.loadFile(path.join(__dirname, "index.html"));
 
     this.on("closed", () => app.quit());
 

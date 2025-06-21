@@ -8,8 +8,8 @@ import { BackupSettings } from "../shared/types/BackupSettings";
 import QuestionDialog from "./dialogs/questionDialog";
 import store from "./store";
 
-const CREDENTIALS_PATH = path.join(app.getAppPath(), "src", "credentials", "credentials.bin");
-const SAMPLE_CREDENTIALS_PATH = path.join(app.getAppPath(), "src", "credentials", "sample_credentials.json");
+const CREDENTIALS_PATH = path.join(__dirname, "credentials", "credentials.bin");
+const SAMPLE_CREDENTIALS_PATH = path.join(__dirname, "credentials", "sample_credentials.json");
 
 const setupIpcHandlers = () => {
   ipcMain.handle("read-nodes", handleReadNodes);
