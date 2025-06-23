@@ -41,7 +41,7 @@
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-redux": "^9.0.4",
-    "react-resizable-panels": "^2.1.7",
+    "react-resizable-panels": "^3.0.3",
     "redux": "^5.0.1",
     "uuidv7": "^1.0.2"
   },
