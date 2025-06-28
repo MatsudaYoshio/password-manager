@@ -1,11 +1,12 @@
-name: Build Check
+name: Build & Release Check
 
 on:
   pull_request:
+    types: [opened, synchronize, reopened]
     branches: [dev]
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -22,9 +23,16 @@ jobs:
         run: npm install -g depcheck
 
       - name: Check for unused dependencies (ignore devDependencies)
+        shell: bash
         run: |
           IGNORES=$(node -p "Object.keys(require('./package.json').devDependencies).join(',')")
           depcheck --ignores="$IGNORES,electron,webpack,webpack-cli" || (echo "Unused dependencies found" && exit 1)
 
-      - name: Run webpack build (compilation check)
-        run: npm run build
+      - name: Run release (build & package)
+        run: npm run release
+
+      - name: Upload release artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-artifacts
+          path: release/PasswordManager-*
