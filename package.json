@@ -50,7 +50,7 @@
     "@trivago/prettier-plugin-sort-imports": "^4.3.0",
     "@types/electron": "^1.6.12",
     "@types/jsonfile": "^6.1.4",
-    "@types/node": "^20.5.0",
+    "@types/node": "^24.0.3",
     "@types/react": "^18.2.20",
     "@types/react-dom": "^18.2.7",
     "@types/uuid": "^10.0.0",
