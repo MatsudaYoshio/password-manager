@@ -47,7 +47,7 @@
   },
   "devDependencies": {
     "@electron/packager": "^18.3.6",
-    "@trivago/prettier-plugin-sort-imports": "^4.3.0",
+    "@trivago/prettier-plugin-sort-imports": "^5.2.2",
     "@types/electron": "^1.6.12",
     "@types/jsonfile": "^6.1.4",
     "@types/node": "^24.0.3",
