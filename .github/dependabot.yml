@@ -5,7 +5,7 @@ updates:
     directory: "/" # ルートに package.json がある場合
     schedule:
       interval: "weekly" # or "daily" にすれば毎日更新
-    open-pull-requests-limit: 10
+    open-pull-requests-limit: 20
     allow:
       - dependency-type: "all" # devDependenciesも含める
     commit-message:
