@@ -55,7 +55,7 @@
     "@types/react-dom": "^18.2.7",
     "@types/uuid": "^10.0.0",
     "copyfiles": "^2.4.1",
-    "cross-env": "^7.0.3",
+    "cross-env": "^10.0.0",
     "css-loader": "^6.8.1",
     "electron": "^35.0.0",
     "electronmon": "^2.0.2",
@@ -66,7 +66,7 @@
     "ts-loader": "^9.4.4",
     "ts-node": "^10.9.2",
     "typescript": "^5.8.3",
-    "wait-on": "^7.0.1",
+    "wait-on": "^8.0.4",
     "webpack": "^5.88.2",
     "webpack-cli": "^5.1.4"
   },
