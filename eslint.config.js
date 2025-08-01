@@ -30,7 +30,7 @@ module.exports = [
       ...tsPlugin.configs.recommended.rules,
       'prettier/prettier': 'error',
       'react/react-in-jsx-scope': 'off',
-      '@typescript-eslint/no-unused-vars': ['warn', { argsIgnorePattern: '^_' }],
+'@typescript-eslint/no-unused-vars': ['warn', { argsIgnorePattern: '^_' }], // Ignore unused arguments starting with _
     },
     settings: {
       react: { version: 'detect' },
