@@ -1,9 +1,9 @@
-import { uuidv7 } from "uuidv7";
+import { uuidv7 } from 'uuidv7';
 
 class Credential {
   public readonly id: string = uuidv7();
-  public name: string = "";
-  public value: string = "";
+  public name: string = '';
+  public value: string = '';
   public showValue: boolean = false;
   public description?: string;
 

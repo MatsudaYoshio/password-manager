@@ -1,8 +1,8 @@
-import { app } from "electron";
-import setupIpcHandlers from "./ipcHandlers";
-import MainMenu from "./mainMenu";
-import MainWindow from "./mainWindow";
-import PasswordManagerTray from "./passwordManagerTray";
+import { app } from 'electron';
+import setupIpcHandlers from './ipcHandlers';
+import MainMenu from './mainMenu';
+import MainWindow from './mainWindow';
+import PasswordManagerTray from './passwordManagerTray';
 
 const createWindow = () => {
   const mainWindow = new MainWindow();
@@ -15,4 +15,4 @@ app.whenReady().then(() => {
   setupIpcHandlers();
 });
 
-app.once("window-all-closed", () => app.quit());
+app.once('window-all-closed', () => app.quit());

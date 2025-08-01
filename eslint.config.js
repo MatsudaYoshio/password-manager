@@ -19,6 +19,19 @@ module.exports = [
         sourceType: 'module',
         ecmaVersion: 2021,
       },
+      globals: {
+        api: true,
+        window: true,
+        document: true,
+        __dirname: true,
+        structuredClone: true,
+        React: 'readonly',
+        navigator: true,
+        process: true,
+        console: true,
+        BufferEncoding: true,
+        Electron: true,
+      },
     },
     plugins: {
       '@typescript-eslint': tsPlugin,
@@ -30,7 +43,7 @@ module.exports = [
       ...tsPlugin.configs.recommended.rules,
       'prettier/prettier': 'error',
       'react/react-in-jsx-scope': 'off',
-'@typescript-eslint/no-unused-vars': ['warn', { argsIgnorePattern: '^_' }], // Ignore unused arguments starting with _
+      '@typescript-eslint/no-unused-vars': ['warn', { argsIgnorePattern: '^_' }], // Ignore unused arguments starting with _
     },
     settings: {
       react: { version: 'detect' },

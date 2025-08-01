@@ -1,6 +1,6 @@
-import { uuidv7 } from "uuidv7";
+import { uuidv7 } from 'uuidv7';
 
-import TreeNodeData from "./treeNodeData";
+import TreeNodeData from './treeNodeData';
 
 class TreeNode {
   public readonly id: string = uuidv7();
