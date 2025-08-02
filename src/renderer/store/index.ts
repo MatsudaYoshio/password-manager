@@ -1,14 +1,14 @@
-import { configureStore } from "@reduxjs/toolkit";
-import itemSlice from "./item-slice";
+import { configureStore } from '@reduxjs/toolkit';
+import itemSlice from './item-slice';
 
 const store = configureStore({
   reducer: {
-    item: itemSlice.reducer,
+    item: itemSlice.reducer
   },
-  middleware: (getDefaultMiddleware) =>
+  middleware: getDefaultMiddleware =>
     getDefaultMiddleware({
-      serializableCheck: false,
-    }),
+      serializableCheck: false
+    })
 });
 export type RootState = ReturnType<typeof store.getState>;
 

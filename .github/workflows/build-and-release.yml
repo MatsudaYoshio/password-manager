@@ -14,7 +14,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: "20"
+          node-version: '20'
 
       - name: Install dependencies
         run: npm install
@@ -26,7 +26,7 @@ jobs:
         shell: bash
         run: |
           IGNORES=$(node -p "Object.keys(require('./package.json').devDependencies).join(',')")
-          depcheck --ignores="$IGNORES,electron,webpack,webpack-cli" || (echo "Unused dependencies found" && exit 1)
+          depcheck --ignores="$IGNORES,electron,webpack,webpack-cli,@eslint/js" || (echo "Unused dependencies found" && exit 1)
 
       - name: Run release (build & package)
         run: npm run release

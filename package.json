@@ -12,6 +12,11 @@
   },
   "main": "dist/main.js",
   "scripts": {
+    "prepare": "husky",
+    "lint": "eslint \"src/**/*.{ts,tsx}\"",
+    "lint:fix": "eslint \"src/**/*.{ts,tsx}\" --fix",
+    "format": "prettier --write \"src/**/*.{ts,tsx,js,json,css,md}\"",
+    "lint-and-format": "npm run format && npm run lint:fix",
     "dev": "rimraf dist && run-p dev:webpack dev:electron copy-assets copy-credentials",
     "build": "rimraf dist && cross-env NODE_ENV=\"production\" webpack --progress && npm run copy-assets && npm run copy-credentials && npm run update-package-json",
     "copy-assets": "copyfiles -u 3 src/electron/assets/Aegis.ico dist/assets/",
@@ -21,6 +26,15 @@
     "dev:electron": "wait-on dist/main.js dist/index.html && electronmon .",
     "package": "electron-packager ./dist PasswordManager --icon=./dist/assets/Aegis.ico --overwrite --out=release",
     "release": "npm run build && npm run package"
+  },
+  "lint-staged": {
+    "src/**/*.{ts,tsx}": [
+      "eslint --fix",
+      "prettier --write"
+    ],
+    "src/**/*.{js,json,css,md}": [
+      "prettier --write"
+    ]
   },
   "electronmon": {
     "patterns": [
@@ -54,14 +68,25 @@
     "@types/react": "^18.2.20",
     "@types/react-dom": "^18.2.7",
     "@types/uuid": "^10.0.0",
+    "@typescript-eslint/eslint-plugin": "^8.38.0",
+    "@typescript-eslint/parser": "^8.38.0",
     "copyfiles": "^2.4.1",
     "cross-env": "^10.0.0",
     "css-loader": "^6.8.1",
     "electron": "^35.0.0",
     "electronmon": "^2.0.2",
+    "eslint": "^9.32.0",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-jsx-a11y": "^6.10.2",
+    "eslint-plugin-prettier": "^5.5.3",
+    "eslint-plugin-react": "^7.37.5",
+    "eslint-plugin-react-hooks": "^5.2.0",
     "html-webpack-plugin": "^5.5.3",
+    "husky": "^9.1.7",
+    "lint-staged": "^16.1.2",
     "mini-css-extract-plugin": "^2.7.6",
     "npm-run-all": "^4.1.5",
+    "prettier": "^3.6.2",
     "rimraf": "^6.0.1",
     "ts-loader": "^9.4.4",
     "ts-node": "^10.9.2",

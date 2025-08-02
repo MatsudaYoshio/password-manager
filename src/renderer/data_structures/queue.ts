@@ -1,5 +1,9 @@
 export class Queue<T> {
-  public constructor(private elements: Record<number, T> = {}, private head: number = 0, private tail: number = 0) {}
+  public constructor(
+    private elements: Record<number, T> = {},
+    private head: number = 0,
+    private tail: number = 0
+  ) {}
 
   /**
    * Adds an element to the queue.

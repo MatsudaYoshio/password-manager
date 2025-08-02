@@ -1,6 +1,6 @@
-import { useSelector } from "react-redux";
+import { useSelector } from 'react-redux';
 
-import { stagingItemData } from "../store/item-slice";
+import { stagingItemData } from '../store/item-slice';
 
 const useExportItems = () => {
   const itemData = useSelector(stagingItemData);

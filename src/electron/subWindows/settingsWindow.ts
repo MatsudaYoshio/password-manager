@@ -1,28 +1,28 @@
-import { BrowserWindow } from "electron";
-import path from "path";
-import { ICON_PATH } from "../../shared/constants";
+import { BrowserWindow } from 'electron';
+import path from 'path';
+import { ICON_PATH } from '../../shared/constants';
 
 class SettingsWindow extends BrowserWindow {
   constructor(parentWindow: BrowserWindow) {
     super({
       width: 800,
       height: 600,
-      title: "設定",
+      title: '設定',
       parent: parentWindow,
       modal: true,
       webPreferences: {
         nodeIntegration: false,
         contextIsolation: true,
-        preload: path.resolve(__dirname, "preload.js"),
+        preload: path.resolve(__dirname, 'preload.js')
       },
-      icon: ICON_PATH,
+      icon: ICON_PATH
     });
 
-    this.loadFile(path.resolve(__dirname, "settings.html"));
+    this.loadFile(path.resolve(__dirname, 'settings.html'));
 
-    this.setMenuBarVisibility(process.env.NODE_ENV === "development");
+    this.setMenuBarVisibility(process.env.NODE_ENV === 'development');
 
-    this.on("closed", () => {
+    this.on('closed', () => {
       this.destroy();
     });
   }
