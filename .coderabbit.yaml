@@ -1,0 +1,14 @@
+early_access: true
+
+knowledge_base:
+  code_guidelines:
+    enabled: true
+    filePatterns:
+      - STYLEGUIDE.md
+
+reviews:
+  path_instructions:
+    - path: "**/*"
+      instructions: |
+        ### Code Review Guidelines
+        - Follow STYLEGUIDE.md

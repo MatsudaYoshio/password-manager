@@ -14,18 +14,18 @@ const useEventListeners = () => {
   const exportItemHandler = useExportItems();
   const importItems = useImportItems();
 
-  const setupEventListener = (eventName: string, handler: () => void) =>
+  const useSetupEventListener = (eventName: string, handler: () => void) =>
     useEffect(() => {
       const eventHandler = () => handler();
       (window as any).api[`on${eventName}`](eventHandler);
       return () => (window as any).api[`off${eventName}`](eventHandler);
     }, [handler]);
 
-  setupEventListener('SaveData', saveHandler);
-  setupEventListener('AddTopItem', addTopItemHandler);
-  setupEventListener('AddSubItem', addSubItemHandler);
-  setupEventListener('RemoveSubtree', removeSubtreeHandler);
-  setupEventListener('ExportData', exportItemHandler);
+  useSetupEventListener('SaveData', saveHandler);
+  useSetupEventListener('AddTopItem', addTopItemHandler);
+  useSetupEventListener('AddSubItem', addSubItemHandler);
+  useSetupEventListener('RemoveSubtree', removeSubtreeHandler);
+  useSetupEventListener('ExportData', exportItemHandler);
 };
 
 export default useEventListeners;

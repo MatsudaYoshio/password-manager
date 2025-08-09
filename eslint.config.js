@@ -43,7 +43,12 @@ module.exports = [
       ...tsPlugin.configs.recommended.rules,
       'prettier/prettier': 'error',
       'react/react-in-jsx-scope': 'off',
-      '@typescript-eslint/no-unused-vars': ['warn', { argsIgnorePattern: '^_' }], // Ignore unused arguments starting with _
+      '@typescript-eslint/no-unused-vars': [
+        'warn',
+        { argsIgnorePattern: '^_' }, // Ignore unused arguments starting with _
+      ],
+      'react-hooks/rules-of-hooks': 'error',
+      'react-hooks/exhaustive-deps': 'warn',
       '@typescript-eslint/no-explicit-any': 'warn',
       '@typescript-eslint/no-unused-expressions': ['error', { allowTernary: true }]
     },
