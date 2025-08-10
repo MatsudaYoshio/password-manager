@@ -85,11 +85,17 @@ const handleReadNodes = async () => {
   }
 };
 
-const handleSaveNodes = async (event: Electron.IpcMainInvokeEvent, data: TreeNodePlain[]) => {
-  questionDialog.showMessageBox('現在の内容で保存してもよろしいですか？', () =>
-    saveEncryptedData(CREDENTIALS_PATH, data)
-  );
-};
+const handleSaveNodes = async (_: Electron.IpcMainInvokeEvent, data: TreeNodePlain[]) =>
+  new Promise<boolean>(resolve => {
+    questionDialog.showMessageBox(
+      '現在の内容で保存してもよろしいですか？',
+      () => {
+        saveEncryptedData(CREDENTIALS_PATH, data);
+        resolve(true);
+      },
+      () => resolve(false)
+    );
+  });
 
 const handleExportNodes = async (event: Electron.IpcMainInvokeEvent, data: TreeNodePlain[]) => {
   questionDialog.showMessageBox(
