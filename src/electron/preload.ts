@@ -1,6 +1,7 @@
 import { contextBridge, ipcRenderer } from 'electron';
 import { TreeNodePlain } from '../renderer/models/treeNode';
 import { ElectronAPI } from '../shared/types/ElectronAPI';
+import { BackupSettings } from '../shared/types/BackupSettings';
 
 const api: ElectronAPI = {
   readNodes: () => ipcRenderer.invoke('read-nodes'),

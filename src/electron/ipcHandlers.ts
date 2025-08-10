@@ -137,7 +137,7 @@ const handleGetSetting = (key: string) => store.get(key);
 
 const handleUpdateSetting = (
   _: Electron.IpcMainInvokeEvent,
-  key: string,
+  key: keyof BackupSettings,
   value: string | boolean
 ) => store.set(key, value);
 
