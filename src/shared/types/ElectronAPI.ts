@@ -4,7 +4,7 @@ import { TreeNodePlain } from '../../renderer/models/treeNode';
 export interface ElectronAPI {
   // Backup settings
   getBackupSettings(): Promise<BackupSettings>;
-  updateSetting(key: keyof BackupSettings, value: string | boolean): void;
+  updateSetting(key: keyof BackupSettings, value: string | boolean): Promise<void>;
   selectBackupPath(): Promise<string | null>;
 
   // Tree view operations
