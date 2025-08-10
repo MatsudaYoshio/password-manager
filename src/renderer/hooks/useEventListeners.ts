@@ -16,35 +16,31 @@ const useEventListeners = () => {
   // Import items hook is called for its side effects (sets up onImportData listener)
   useImportItems();
 
+  // イベントリスナーの設定をまとめて管理
   useEffect(() => {
-    const eventHandler = () => saveHandler();
-    window.api.onSaveData(eventHandler);
-    return () => window.api.offSaveData(eventHandler);
-  }, [saveHandler]);
+    // コールバック関数の参照を保持
+    const saveCallback = () => saveHandler();
+    const addTopCallback = () => addTopItemHandler();
+    const addSubCallback = () => addSubItemHandler();
+    const removeSubtreeCallback = () => removeSubtreeHandler();
+    const exportCallback = () => exportItemHandler();
 
-  useEffect(() => {
-    const eventHandler = () => addTopItemHandler();
-    window.api.onAddTopItem(eventHandler);
-    return () => window.api.offAddTopItem(eventHandler);
-  }, [addTopItemHandler]);
+    // イベントリスナーを設定
+    window.api.onSaveData(saveCallback);
+    window.api.onAddTopItem(addTopCallback);
+    window.api.onAddSubItem(addSubCallback);
+    window.api.onRemoveSubtree(removeSubtreeCallback);
+    window.api.onExportData(exportCallback);
 
-  useEffect(() => {
-    const eventHandler = () => addSubItemHandler();
-    window.api.onAddSubItem(eventHandler);
-    return () => window.api.offAddSubItem(eventHandler);
-  }, [addSubItemHandler]);
-
-  useEffect(() => {
-    const eventHandler = () => removeSubtreeHandler();
-    window.api.onRemoveSubtree(eventHandler);
-    return () => window.api.offRemoveSubtree(eventHandler);
-  }, [removeSubtreeHandler]);
-
-  useEffect(() => {
-    const eventHandler = () => exportItemHandler();
-    window.api.onExportData(eventHandler);
-    return () => window.api.offExportData(eventHandler);
-  }, [exportItemHandler]);
+    // クリーンアップ関数
+    return () => {
+      window.api.offSaveData(saveCallback);
+      window.api.offAddTopItem(addTopCallback);
+      window.api.offAddSubItem(addSubCallback);
+      window.api.offRemoveSubtree(removeSubtreeCallback);
+      window.api.offExportData(exportCallback);
+    };
+  }, [saveHandler, addTopItemHandler, addSubItemHandler, removeSubtreeHandler, exportItemHandler]);
 };
 
 export default useEventListeners;
