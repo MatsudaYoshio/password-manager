@@ -1,40 +1,42 @@
 import { contextBridge, ipcRenderer } from 'electron';
-import TreeNode from '../renderer/models/treeNode';
+import { TreeNodePlain } from '../renderer/models/treeNode';
+import { ElectronAPI } from '../shared/types/ElectronAPI';
 
-contextBridge.exposeInMainWorld('api', {
+const api: ElectronAPI = {
   readNodes: () => ipcRenderer.invoke('read-nodes'),
-  saveNodes: (nodes: TreeNode[]) => ipcRenderer.invoke('save-nodes', nodes),
-  exportNodes: (nodes: TreeNode[]) => ipcRenderer.invoke('export-nodes', nodes),
-  importData: (parsedObject: any) => ipcRenderer.invoke('import-data', parsedObject),
-  exportData: () => ipcRenderer.invoke('export-data'),
-
-  onSaveData: (callback: any) => ipcRenderer.once('save-data', () => callback()),
-  offSaveData: () => ipcRenderer.removeAllListeners('save-data'),
-
-  onAddTopItem: (callback: any) => ipcRenderer.once('add-top-item', () => callback()),
-  offAddTopItem: () => ipcRenderer.removeAllListeners('add-top-item'),
-
-  onAddSubItem: (callback: any) => ipcRenderer.once('add-sub-item', () => callback()),
-  offAddSubItem: () => ipcRenderer.removeAllListeners('add-sub-item'),
-
-  onRemoveSubtree: (callback: any) => ipcRenderer.once('remove-subtree', () => callback()),
-  offRemoveSubtree: () => ipcRenderer.removeAllListeners('remove-subtree'),
-
-  onImportData: (callback: any) =>
+  saveNodes: (nodes: TreeNodePlain[]) => ipcRenderer.invoke('save-nodes', nodes),
+  exportNodes: (nodes: TreeNodePlain[]) => ipcRenderer.invoke('export-nodes', nodes),
+  onImportData: (callback: (data: TreeNodePlain[]) => void) =>
     ipcRenderer.on('import-data', (_event, parsedObject) => callback(parsedObject)),
 
-  onExportData: (callback: any) => ipcRenderer.on('export-data', () => callback()),
-  offExportData: () => ipcRenderer.removeAllListeners('export-data'),
+  onSaveData: (callback: () => void) => ipcRenderer.once('save-data', () => callback()),
+  offSaveData: (callback: () => void) => ipcRenderer.removeListener('save-data', callback),
+
+  onAddTopItem: (callback: () => void) => ipcRenderer.once('add-top-item', () => callback()),
+  offAddTopItem: (callback: () => void) => ipcRenderer.removeListener('add-top-item', callback),
+
+  onAddSubItem: (callback: () => void) => ipcRenderer.once('add-sub-item', () => callback()),
+  offAddSubItem: (callback: () => void) => ipcRenderer.removeListener('add-sub-item', callback),
+
+  onRemoveSubtree: (callback: () => void) => ipcRenderer.once('remove-subtree', () => callback()),
+  offRemoveSubtree: (callback: () => void) =>
+    ipcRenderer.removeListener('remove-subtree', callback),
+
+  onExportData: (callback: () => void) => ipcRenderer.on('export-data', () => callback()),
+  offExportData: (callback: () => void) => ipcRenderer.removeListener('export-data', callback),
 
   getBackupSettings: () => ipcRenderer.invoke('get-backup-settings'),
-  updateSetting: (key: string, value: any) => ipcRenderer.invoke('update-setting', key, value),
+  updateSetting: (key: string, value: string | boolean) =>
+    ipcRenderer.invoke('update-setting', key, value),
   selectBackupPath: () => ipcRenderer.invoke('select-backup-path'),
 
   // TreeView state
   saveTreeViewExpandedItems: (expandedItemIds: string[]) =>
     ipcRenderer.invoke('save-tree-view-expanded-items', expandedItemIds),
   getTreeViewExpandedItems: () => ipcRenderer.invoke('get-tree-view-expanded-items'),
-  saveTreeViewSelectedItemId: (selectedItemId: string | null | undefined) =>
+  saveTreeViewSelectedItemId: (selectedItemId: string | null) =>
     ipcRenderer.invoke('save-tree-view-selected-item-id', selectedItemId),
   getTreeViewSelectedItemId: () => ipcRenderer.invoke('get-tree-view-selected-item-id')
-});
+};
+
+contextBridge.exposeInMainWorld('api', api);

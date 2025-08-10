@@ -12,20 +12,39 @@ const useEventListeners = () => {
   const addSubItemHandler = useAddNewSubItem();
   const removeSubtreeHandler = useRemoveSubtree();
   const exportItemHandler = useExportItems();
-  const importItems = useImportItems();
 
-  const useSetupEventListener = (eventName: string, handler: () => void) =>
-    useEffect(() => {
-      const eventHandler = () => handler();
-      (window as any).api[`on${eventName}`](eventHandler);
-      return () => (window as any).api[`off${eventName}`](eventHandler);
-    }, [handler]);
+  // Import items hook is called for its side effects (sets up onImportData listener)
+  useImportItems();
 
-  useSetupEventListener('SaveData', saveHandler);
-  useSetupEventListener('AddTopItem', addTopItemHandler);
-  useSetupEventListener('AddSubItem', addSubItemHandler);
-  useSetupEventListener('RemoveSubtree', removeSubtreeHandler);
-  useSetupEventListener('ExportData', exportItemHandler);
+  useEffect(() => {
+    const eventHandler = () => saveHandler();
+    window.api.onSaveData(eventHandler);
+    return () => window.api.offSaveData(eventHandler);
+  }, [saveHandler]);
+
+  useEffect(() => {
+    const eventHandler = () => addTopItemHandler();
+    window.api.onAddTopItem(eventHandler);
+    return () => window.api.offAddTopItem(eventHandler);
+  }, [addTopItemHandler]);
+
+  useEffect(() => {
+    const eventHandler = () => addSubItemHandler();
+    window.api.onAddSubItem(eventHandler);
+    return () => window.api.offAddSubItem(eventHandler);
+  }, [addSubItemHandler]);
+
+  useEffect(() => {
+    const eventHandler = () => removeSubtreeHandler();
+    window.api.onRemoveSubtree(eventHandler);
+    return () => window.api.offRemoveSubtree(eventHandler);
+  }, [removeSubtreeHandler]);
+
+  useEffect(() => {
+    const eventHandler = () => exportItemHandler();
+    window.api.onExportData(eventHandler);
+    return () => window.api.offExportData(eventHandler);
+  }, [exportItemHandler]);
 };
 
 export default useEventListeners;

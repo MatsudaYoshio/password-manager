@@ -1,6 +1,13 @@
 import { uuidv7 } from 'uuidv7';
 
-import TreeNodeData from './treeNodeData';
+import TreeNodeData, { TreeNodeDataPlain } from './treeNodeData';
+
+// TreeNodeのプレーンオブジェクト型
+export interface TreeNodePlain {
+  id: string;
+  data: TreeNodeDataPlain;
+  children?: TreeNodePlain[];
+}
 
 class TreeNode {
   public readonly id: string = uuidv7();

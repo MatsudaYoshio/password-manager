@@ -13,7 +13,7 @@ const useSaveItems = () => {
 
   return async () => {
     if (hasDifference) {
-      const hasSaved = await (window as any).api.saveNodes(itemData);
+      const hasSaved = await window.api.saveNodes(itemData);
       if (hasSaved) {
         dispatch(itemActions.updateMainState());
       }

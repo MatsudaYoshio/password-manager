@@ -5,14 +5,12 @@ import TreeNode from '../models/treeNode';
 
 import { plainToInstance } from 'class-transformer';
 
-const { api } = window as any;
-
 const getInitialNodes = async (): Promise<TreeNode[]> =>
-  plainToInstance(TreeNode, await api.readNodes());
+  plainToInstance(TreeNode, await window.api.readNodes());
 const getInitialExpandedItemIds = async (): Promise<string[]> =>
-  await api.getTreeViewExpandedItems();
+  await window.api.getTreeViewExpandedItems();
 const getInitialSelectedItemId = async (): Promise<string | undefined> =>
-  await api.getTreeViewSelectedItemId();
+  await window.api.getTreeViewSelectedItemId();
 
 const initialNodes = await getInitialNodes();
 const initialExpandedItemIds = await getInitialExpandedItemIds();
@@ -118,11 +116,11 @@ const itemSlice = createSlice({
         }
       }
       state.activeNode = foundNode;
-      api.saveTreeViewSelectedItemId(state.activeNode ? state.activeNode.id : null);
+      window.api.saveTreeViewSelectedItemId(state.activeNode ? state.activeNode.id : null);
     },
     updateActiveNode: (state, action: PayloadAction<TreeNode | null>) => {
       state.activeNode = action.payload;
-      api.saveTreeViewSelectedItemId(state.activeNode ? state.activeNode.id : null);
+      window.api.saveTreeViewSelectedItemId(state.activeNode ? state.activeNode.id : null);
     },
     updateItem: (state, action: PayloadAction<TreeNode>) => {
       const queue = new Queue<TreeNode>();
@@ -204,7 +202,7 @@ const itemSlice = createSlice({
         } else {
           state.activeNode = state.itemData.staging.length > 0 ? state.itemData.staging[0] : null;
         }
-        api.saveTreeViewSelectedItemId(state.activeNode ? state.activeNode.id : null);
+        window.api.saveTreeViewSelectedItemId(state.activeNode ? state.activeNode.id : null);
       }
     },
     updateMainState: state => {
@@ -215,7 +213,7 @@ const itemSlice = createSlice({
     },
     setExpandedItemIds: (state, action: PayloadAction<string[]>) => {
       state.expandedItemIds = action.payload;
-      api.saveTreeViewExpandedItems(state.expandedItemIds);
+      window.api.saveTreeViewExpandedItems(state.expandedItemIds);
     }
   }
 });

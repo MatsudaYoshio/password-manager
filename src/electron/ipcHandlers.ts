@@ -2,7 +2,7 @@ import { app, dialog, ipcMain, safeStorage } from 'electron';
 import * as fs from 'fs';
 import path from 'path';
 
-import TreeNode from '../renderer/models/treeNode';
+import { TreeNodePlain } from '../renderer/models/treeNode';
 import {
   STORE_KEY_TREE_VIEW_EXPANDED_ITEMS,
   STORE_KEY_TREE_VIEW_SELECTED_ITEM_ID
@@ -35,7 +35,7 @@ const getSampleJsonData = () => JSON.parse(readFile2String(SAMPLE_CREDENTIALS_PA
 
 const questionDialog = new QuestionDialog();
 
-const saveEncryptedData = (path: string, data: TreeNode[]) => {
+const saveEncryptedData = (path: string, data: TreeNodePlain[]) => {
   const encrypted = safeStorage.encryptString(JSON.stringify(data));
   fs.writeFileSync(path, new Uint8Array(encrypted));
 };
@@ -51,7 +51,7 @@ const generateExportFilePath = (extension: string) => {
   return path.join(app.getPath('desktop'), fileName);
 };
 
-const exportErrorlog = (err: any) => {
+const exportErrorlog = (err: Error) => {
   console.log('[Error Log]', err);
   dialog.showMessageBox({
     type: 'warning',
@@ -85,13 +85,13 @@ const handleReadNodes = async () => {
   }
 };
 
-const handleSaveNodes = async (event: Electron.IpcMainInvokeEvent, data: TreeNode[]) => {
+const handleSaveNodes = async (event: Electron.IpcMainInvokeEvent, data: TreeNodePlain[]) => {
   questionDialog.showMessageBox('現在の内容で保存してもよろしいですか？', () =>
     saveEncryptedData(CREDENTIALS_PATH, data)
   );
 };
 
-const handleExportNodes = async (event: Electron.IpcMainInvokeEvent, data: TreeNode[]) => {
+const handleExportNodes = async (event: Electron.IpcMainInvokeEvent, data: TreeNodePlain[]) => {
   questionDialog.showMessageBox(
     '機密情報を暗号化した状態で保存しますか？',
     () => {
@@ -135,8 +135,11 @@ const handleExportNodes = async (event: Electron.IpcMainInvokeEvent, data: TreeN
 
 const handleGetSetting = (key: string) => store.get(key);
 
-const handleUpdateSetting = (_: Electron.IpcMainInvokeEvent, key: string, value: any) =>
-  store.set(key, value);
+const handleUpdateSetting = (
+  _: Electron.IpcMainInvokeEvent,
+  key: string,
+  value: string | boolean
+) => store.set(key, value);
 
 const handleGetBackupSettings = () => {
   return {
