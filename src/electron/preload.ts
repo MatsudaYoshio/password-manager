@@ -26,7 +26,7 @@ const api: ElectronAPI = {
   offExportData: (callback: () => void) => ipcRenderer.removeListener('export-data', callback),
 
   getBackupSettings: () => ipcRenderer.invoke('get-backup-settings'),
-  updateSetting: (key: string, value: string | boolean) =>
+  updateSetting: (key: keyof BackupSettings, value: string | boolean) =>
     ipcRenderer.invoke('update-setting', key, value),
   selectBackupPath: () => ipcRenderer.invoke('select-backup-path'),
 
