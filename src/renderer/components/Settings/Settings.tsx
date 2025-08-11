@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { BackupSettings } from '../../../shared/types/BackupSettings';
 import { Box, Checkbox, FormControlLabel, TextField, Button } from '@mui/material';
 
-const { api } = window as any;
+const { api } = window;
 
 const Settings: React.FC = () => {
   const [backupEnabled, setBackupEnabled] = useState(false);

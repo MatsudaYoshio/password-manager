@@ -1,4 +1,5 @@
 import { dialog } from 'electron';
+import { VoidCallback } from '../../shared/types/Callback';
 
 class QuestionDialog {
   static readonly dialogResponses = Object.freeze({
@@ -14,8 +15,8 @@ class QuestionDialog {
 
   async showMessageBox(
     questionMessage: string,
-    yesCallback: () => void = () => {},
-    noCallback: () => void = () => {}
+    yesCallback: VoidCallback = () => {},
+    noCallback: VoidCallback = () => {}
   ) {
     try {
       const result = await dialog.showMessageBox({

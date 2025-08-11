@@ -12,20 +12,35 @@ const useEventListeners = () => {
   const addSubItemHandler = useAddNewSubItem();
   const removeSubtreeHandler = useRemoveSubtree();
   const exportItemHandler = useExportItems();
-  const importItems = useImportItems();
 
-  const useSetupEventListener = (eventName: string, handler: () => void) =>
-    useEffect(() => {
-      const eventHandler = () => handler();
-      (window as any).api[`on${eventName}`](eventHandler);
-      return () => (window as any).api[`off${eventName}`](eventHandler);
-    }, [handler]);
+  // Import items hook is called for its side effects (sets up onImportData listener)
+  useImportItems();
 
-  useSetupEventListener('SaveData', saveHandler);
-  useSetupEventListener('AddTopItem', addTopItemHandler);
-  useSetupEventListener('AddSubItem', addSubItemHandler);
-  useSetupEventListener('RemoveSubtree', removeSubtreeHandler);
-  useSetupEventListener('ExportData', exportItemHandler);
+  // イベントリスナーの設定をまとめて管理
+  useEffect(() => {
+    // コールバック関数の参照を保持
+    const saveCallback = () => saveHandler();
+    const addTopCallback = () => addTopItemHandler();
+    const addSubCallback = () => addSubItemHandler();
+    const removeSubtreeCallback = () => removeSubtreeHandler();
+    const exportCallback = () => exportItemHandler();
+
+    // イベントリスナーを設定
+    window.api.onSaveData(saveCallback);
+    window.api.onAddTopItem(addTopCallback);
+    window.api.onAddSubItem(addSubCallback);
+    window.api.onRemoveSubtree(removeSubtreeCallback);
+    window.api.onExportData(exportCallback);
+
+    // クリーンアップ関数
+    return () => {
+      window.api.offSaveData(saveCallback);
+      window.api.offAddTopItem(addTopCallback);
+      window.api.offAddSubItem(addSubCallback);
+      window.api.offRemoveSubtree(removeSubtreeCallback);
+      window.api.offExportData(exportCallback);
+    };
+  }, [saveHandler, addTopItemHandler, addSubItemHandler, removeSubtreeHandler, exportItemHandler]);
 };
 
 export default useEventListeners;

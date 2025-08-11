@@ -12,4 +12,9 @@ class Credential {
   }
 }
 
+// Credentialクラスのプレーンオブジェクト型
+export type CredentialPlain = {
+  [K in keyof Credential]: Credential[K];
+};
+
 export default Credential;
