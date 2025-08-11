@@ -55,7 +55,7 @@ export default function ItemTreeView() {
    * This function maps each TreeNode to a TreeViewBaseItem by assigning the id and title.
    * If a TreeNode has children, it recursively converts them and assigns them to the children property.
    */
-  const getTreeItemsFromData = (treeItems: TreeNode[]): TreeViewBaseItem[] => {
+  const getTreeItemsFromData = useCallback((treeItems: TreeNode[]): TreeViewBaseItem[] => {
     return treeItems.map(treeItemData => {
       const item: TreeViewBaseItem = {
         id: treeItemData.id,
@@ -67,12 +67,12 @@ export default function ItemTreeView() {
       }
       return item;
     });
-  };
+  }, []);
 
   return (
     <RichTreeView
       aria-label='customized'
-      items={useMemo(() => getTreeItemsFromData(items), [items])}
+      items={useMemo(() => getTreeItemsFromData(items), [getTreeItemsFromData, items])}
       expandedItems={expandedItemIds}
       selectedItems={activeNode ? activeNode.id : null}
       onItemClick={handleItemClick}
