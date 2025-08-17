@@ -57,15 +57,13 @@ const getSampleJsonData = () => JSON.parse(readFile2String(SAMPLE_CREDENTIALS_PA
 
 const questionDialog = new QuestionDialog();
 
-const saveEncryptedData = (filePath: string, data: TreeNodePlain[]) => {
+const saveEncryptedData = async (filePath: string, data: TreeNodePlain[]) => {
   // ディレクトリが存在しない場合は作成
   const dir = path.dirname(filePath);
-  if (!fs.existsSync(dir)) {
-    fs.mkdirSync(dir, { recursive: true });
-  }
+  await fs.promises.mkdir(dir, { recursive: true });
 
   const encrypted = safeStorage.encryptString(JSON.stringify(data));
-  fs.writeFileSync(filePath, new Uint8Array(encrypted));
+  await fs.promises.writeFile(filePath, new Uint8Array(encrypted));
 };
 
 const generateExportFilePath = (extension: string) => {
@@ -117,8 +115,8 @@ const handleSaveNodes = async (_: Electron.IpcMainInvokeEvent, data: TreeNodePla
   new Promise<boolean>(resolve => {
     questionDialog.showMessageBox(
       '現在の内容で保存してもよろしいですか？',
-      () => {
-        saveEncryptedData(CREDENTIALS_PATH, data);
+      async () => {
+        await saveEncryptedData(CREDENTIALS_PATH, data);
         resolve(true);
       },
       () => resolve(false)
@@ -140,9 +138,9 @@ const handleExportNodes = async (event: Electron.IpcMainInvokeEvent, data: TreeN
             }
           ]
         })
-        .then(result => {
+        .then(async result => {
           if (result.canceled) return;
-          if (result.filePath) saveEncryptedData(result.filePath, data);
+          if (result.filePath) await saveEncryptedData(result.filePath, data);
         })
         .catch(err => exportErrorlog(err));
     },
@@ -158,9 +156,9 @@ const handleExportNodes = async (event: Electron.IpcMainInvokeEvent, data: TreeN
             }
           ]
         })
-        .then(result => {
+        .then(async result => {
           if (result.canceled) return;
-          if (result.filePath) fs.writeFileSync(result.filePath, JSON.stringify(data));
+          if (result.filePath) await fs.promises.writeFile(result.filePath, JSON.stringify(data));
         })
         .catch(err => exportErrorlog(err));
     }
