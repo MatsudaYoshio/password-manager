@@ -8,11 +8,22 @@ import {
   STORE_KEY_TREE_VIEW_SELECTED_ITEM_ID
 } from '../shared/constants';
 import { BackupSettings } from '../shared/types/BackupSettings';
+import { isDevelopment } from './utils/environment';
 import QuestionDialog from './dialogs/questionDialog';
 import store from './store';
 
-const CREDENTIALS_PATH = path.join(__dirname, 'credentials', 'credentials.bin');
-const SAMPLE_CREDENTIALS_PATH = path.join(__dirname, 'credentials', 'sample_credentials.json');
+// 開発時はsrc/credentials/、本番時はdist/credentials/を使用
+const getCredentialsFilePath = (filename: string) => {
+  if (isDevelopment()) {
+    // 開発時: src/credentials/
+    return path.join(process.cwd(), 'src', 'credentials', filename);
+  }
+  // 本番時: dist/credentials/
+  return path.join(__dirname, 'credentials', filename);
+};
+
+const CREDENTIALS_PATH = getCredentialsFilePath('credentials.bin');
+const SAMPLE_CREDENTIALS_PATH = getCredentialsFilePath('sample_credentials.json');
 
 const setupIpcHandlers = () => {
   ipcMain.handle('read-nodes', handleReadNodes);
@@ -35,9 +46,29 @@ const getSampleJsonData = () => JSON.parse(readFile2String(SAMPLE_CREDENTIALS_PA
 
 const questionDialog = new QuestionDialog();
 
-const saveEncryptedData = (path: string, data: TreeNodePlain[]) => {
-  const encrypted = safeStorage.encryptString(JSON.stringify(data));
-  fs.writeFileSync(path, new Uint8Array(encrypted));
+const saveEncryptedData = async (filePath: string, data: TreeNodePlain[]) => {
+  // ディレクトリが存在しない場合は作成
+  const dir = path.dirname(filePath);
+  await fs.promises.mkdir(dir, { recursive: true });
+
+  if (!safeStorage.isEncryptionAvailable()) {
+    dialog.showMessageBox({
+      type: 'warning',
+      message: '暗号化機能が利用できないため、保存に失敗しました。'
+    });
+    return;
+  }
+
+  try {
+    const encrypted = safeStorage.encryptString(JSON.stringify(data));
+    await fs.promises.writeFile(filePath, new Uint8Array(encrypted));
+  } catch (err) {
+    console.log('[Error Log]', err);
+    dialog.showMessageBox({
+      type: 'warning',
+      message: '保存に失敗しました。'
+    });
+  }
 };
 
 const generateExportFilePath = (extension: string) => {
@@ -89,8 +120,8 @@ const handleSaveNodes = async (_: Electron.IpcMainInvokeEvent, data: TreeNodePla
   new Promise<boolean>(resolve => {
     questionDialog.showMessageBox(
       '現在の内容で保存してもよろしいですか？',
-      () => {
-        saveEncryptedData(CREDENTIALS_PATH, data);
+      async () => {
+        await saveEncryptedData(CREDENTIALS_PATH, data);
         resolve(true);
       },
       () => resolve(false)
@@ -112,9 +143,9 @@ const handleExportNodes = async (event: Electron.IpcMainInvokeEvent, data: TreeN
             }
           ]
         })
-        .then(result => {
+        .then(async result => {
           if (result.canceled) return;
-          if (result.filePath) saveEncryptedData(result.filePath, data);
+          if (result.filePath) await saveEncryptedData(result.filePath, data);
         })
         .catch(err => exportErrorlog(err));
     },
@@ -130,9 +161,9 @@ const handleExportNodes = async (event: Electron.IpcMainInvokeEvent, data: TreeN
             }
           ]
         })
-        .then(result => {
+        .then(async result => {
           if (result.canceled) return;
-          if (result.filePath) fs.writeFileSync(result.filePath, JSON.stringify(data));
+          if (result.filePath) await fs.promises.writeFile(result.filePath, JSON.stringify(data));
         })
         .catch(err => exportErrorlog(err));
     }

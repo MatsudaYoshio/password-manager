@@ -1,6 +1,7 @@
 import { app, BrowserWindow, dialog, Menu, MenuItemConstructorOptions } from 'electron';
 import * as fs from 'fs';
 
+import { isDevelopment } from './utils/environment';
 import QuestionDialog from './dialogs/questionDialog';
 import SettingsWindow from './subWindows/settingsWindow';
 
@@ -88,7 +89,7 @@ class MainMenu {
             label: '項目の削除',
             click: () => mainWindow.webContents.send('remove-subtree')
           },
-          ...(process.env.NODE_ENV === 'development'
+          ...(isDevelopment()
             ? [
                 {
                   role: 'toggledevtools'
