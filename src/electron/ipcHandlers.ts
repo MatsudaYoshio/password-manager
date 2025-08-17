@@ -51,8 +51,24 @@ const saveEncryptedData = async (filePath: string, data: TreeNodePlain[]) => {
   const dir = path.dirname(filePath);
   await fs.promises.mkdir(dir, { recursive: true });
 
-  const encrypted = safeStorage.encryptString(JSON.stringify(data));
-  await fs.promises.writeFile(filePath, new Uint8Array(encrypted));
+  if (!safeStorage.isEncryptionAvailable()) {
+    dialog.showMessageBox({
+      type: 'warning',
+      message: '暗号化機能が利用できないため、保存に失敗しました。'
+    });
+    return;
+  }
+
+  try {
+    const encrypted = safeStorage.encryptString(JSON.stringify(data));
+    await fs.promises.writeFile(filePath, new Uint8Array(encrypted));
+  } catch (err) {
+    console.log('[Error Log]', err);
+    dialog.showMessageBox({
+      type: 'warning',
+      message: '保存に失敗しました。'
+    });
+  }
 };
 
 const generateExportFilePath = (extension: string) => {
