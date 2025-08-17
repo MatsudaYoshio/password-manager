@@ -8,7 +8,7 @@ import {
   STORE_KEY_TREE_VIEW_SELECTED_ITEM_ID
 } from '../shared/constants';
 import { BackupSettings } from '../shared/types/BackupSettings';
-import { isDevelopment } from '../shared/utils/environment';
+import { isDevelopment } from './utils/environment';
 import QuestionDialog from './dialogs/questionDialog';
 import store from './store';
 

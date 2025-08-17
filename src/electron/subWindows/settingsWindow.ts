@@ -1,7 +1,7 @@
 import { BrowserWindow } from 'electron';
 import path from 'path';
 import { ICON_PATH } from '../../shared/constants';
-import { isDevelopment } from '../../shared/utils/environment';
+import { isDevelopment } from '../utils/environment';
 
 class SettingsWindow extends BrowserWindow {
   constructor(parentWindow: BrowserWindow) {

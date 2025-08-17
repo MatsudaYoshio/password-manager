@@ -1,7 +1,7 @@
 import { app, BrowserWindow, dialog, Menu, MenuItemConstructorOptions } from 'electron';
 import * as fs from 'fs';
 
-import { isDevelopment } from '../shared/utils/environment';
+import { isDevelopment } from './utils/environment';
 import QuestionDialog from './dialogs/questionDialog';
 import SettingsWindow from './subWindows/settingsWindow';
 
