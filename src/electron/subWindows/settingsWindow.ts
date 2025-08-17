@@ -1,6 +1,7 @@
 import { BrowserWindow } from 'electron';
 import path from 'path';
 import { ICON_PATH } from '../../shared/constants';
+import { isDevelopment } from '../../shared/utils/environment';
 
 class SettingsWindow extends BrowserWindow {
   constructor(parentWindow: BrowserWindow) {
@@ -20,7 +21,7 @@ class SettingsWindow extends BrowserWindow {
 
     this.loadFile(path.resolve(__dirname, 'settings.html'));
 
-    this.setMenuBarVisibility(process.env.NODE_ENV === 'development');
+    this.setMenuBarVisibility(isDevelopment());
 
     this.on('closed', () => {
       this.destroy();

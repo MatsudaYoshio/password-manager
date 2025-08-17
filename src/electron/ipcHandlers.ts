@@ -8,11 +8,33 @@ import {
   STORE_KEY_TREE_VIEW_SELECTED_ITEM_ID
 } from '../shared/constants';
 import { BackupSettings } from '../shared/types/BackupSettings';
+import { isDevelopment } from '../shared/utils/environment';
 import QuestionDialog from './dialogs/questionDialog';
 import store from './store';
 
-const CREDENTIALS_PATH = path.join(__dirname, 'credentials', 'credentials.bin');
-const SAMPLE_CREDENTIALS_PATH = path.join(__dirname, 'credentials', 'sample_credentials.json');
+// 開発時はsrc/credentials/、本番時はdist/credentials/を使用
+const getCredentialsPath = () => {
+  if (isDevelopment()) {
+    // 開発時: src/credentials/
+    return path.join(process.cwd(), 'src', 'credentials', 'credentials.bin');
+  } else {
+    // 本番時: dist/credentials/
+    return path.join(__dirname, 'credentials', 'credentials.bin');
+  }
+};
+
+const getSampleCredentialsPath = () => {
+  if (isDevelopment()) {
+    // 開発時: src/credentials/
+    return path.join(process.cwd(), 'src', 'credentials', 'sample_credentials.json');
+  } else {
+    // 本番時: dist/credentials/
+    return path.join(__dirname, 'credentials', 'sample_credentials.json');
+  }
+};
+
+const CREDENTIALS_PATH = getCredentialsPath();
+const SAMPLE_CREDENTIALS_PATH = getSampleCredentialsPath();
 
 const setupIpcHandlers = () => {
   ipcMain.handle('read-nodes', handleReadNodes);
@@ -35,9 +57,15 @@ const getSampleJsonData = () => JSON.parse(readFile2String(SAMPLE_CREDENTIALS_PA
 
 const questionDialog = new QuestionDialog();
 
-const saveEncryptedData = (path: string, data: TreeNodePlain[]) => {
+const saveEncryptedData = (filePath: string, data: TreeNodePlain[]) => {
+  // ディレクトリが存在しない場合は作成
+  const dir = path.dirname(filePath);
+  if (!fs.existsSync(dir)) {
+    fs.mkdirSync(dir, { recursive: true });
+  }
+
   const encrypted = safeStorage.encryptString(JSON.stringify(data));
-  fs.writeFileSync(path, new Uint8Array(encrypted));
+  fs.writeFileSync(filePath, new Uint8Array(encrypted));
 };
 
 const generateExportFilePath = (extension: string) => {
