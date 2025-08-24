@@ -3,22 +3,6 @@ import { Queue } from '../renderer/data_structures/queue';
 import TreeNode from '../renderer/models/treeNode';
 
 // テスト用のitem-slice（top-level awaitを使わない版）
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-const _findNodeById = (itemId: string, nodes: TreeNode[]): TreeNode | null => {
-  const queue = new Queue<TreeNode>();
-  nodes.forEach(node => queue.enqueue(node));
-
-  while (!queue.isEmpty) {
-    const node = queue.dequeue();
-    if (node.id === itemId) {
-      return node;
-    }
-    if (node.children) {
-      node.children.forEach(child => queue.enqueue(child));
-    }
-  }
-  return null;
-};
 
 const findParentNode = (itemId: string, nodes: TreeNode[]): TreeNode | null => {
   for (const node of nodes) {
