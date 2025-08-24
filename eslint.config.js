@@ -11,8 +11,8 @@ const commonLanguageOptions = {
   parserOptions: {
     project: './tsconfig.json',
     sourceType: 'module',
-    ecmaVersion: 2021,
-  },
+    ecmaVersion: 2021
+  }
 };
 
 const commonGlobals = {
@@ -26,47 +26,44 @@ const commonGlobals = {
   process: true,
   console: true,
   BufferEncoding: true,
-  Electron: true,
+  Electron: true
 };
 
 const commonPlugins = {
   '@typescript-eslint': tsPlugin,
   react: reactPlugin,
   'react-hooks': reactHooks,
-  prettier: prettierPlugin,
+  prettier: prettierPlugin
 };
 
 const commonRules = {
   ...tsPlugin.configs.recommended.rules,
   'prettier/prettier': 'error',
   'react/react-in-jsx-scope': 'off',
-  '@typescript-eslint/no-unused-vars': [
-    'warn',
-    { argsIgnorePattern: '^_' },
-  ],
+  '@typescript-eslint/no-unused-vars': ['warn', { argsIgnorePattern: '^_' }],
   'react-hooks/rules-of-hooks': 'error',
   'react-hooks/exhaustive-deps': 'warn',
   '@typescript-eslint/no-unused-expressions': ['error', { allowTernary: true }]
 };
 
 const commonSettings = {
-  react: { version: 'detect' },
+  react: { version: 'detect' }
 };
 
 module.exports = [
   {
-    ignores: ['node_modules', 'dist', 'release'],
+    ignores: ['node_modules', 'dist', 'release']
   },
   js.configs.recommended,
   {
     files: ['**/*.ts', '**/*.tsx'],
     languageOptions: {
       ...commonLanguageOptions,
-      globals: commonGlobals,
+      globals: commonGlobals
     },
     plugins: commonPlugins,
     rules: commonRules,
-    settings: commonSettings,
+    settings: commonSettings
   },
   // Jest/テストファイル用の設定
   {
@@ -91,12 +88,12 @@ module.exports = [
         afterAll: 'readonly',
         afterEach: 'readonly',
         // 共通のグローバル変数を継承
-        ...commonGlobals,
-      },
+        ...commonGlobals
+      }
     },
     plugins: commonPlugins,
     rules: commonRules,
-    settings: commonSettings,
+    settings: commonSettings
   },
   // Node.js設定ファイル用の設定
   {
@@ -113,11 +110,14 @@ module.exports = [
         process: 'readonly',
         console: 'readonly',
         Buffer: 'readonly',
-        global: 'readonly',
-      },
+        global: 'readonly'
+      }
+    },
+    plugins: {
+      prettier: prettierPlugin
     },
     rules: {
-      'prettier/prettier': 'error',
-    },
-  },
+      'prettier/prettier': 'error'
+    }
+  }
 ];
