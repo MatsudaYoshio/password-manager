@@ -8,7 +8,11 @@ jest.mock('../../../store/item-slice', () => ({
     reducer: (state = {}, _action: unknown) => state,
     actions: {}
   },
-  itemActions: {}
+  itemActions: {},
+  createItemSlice: jest.fn(() => ({
+    reducer: (state = {}, _action: unknown) => state,
+    actions: {}
+  }))
 }));
 
 // フックのモック

@@ -1,5 +1,5 @@
 import { configureStore } from '@reduxjs/toolkit';
-import itemSlice, { itemActions } from '../../../test/item-slice-mock-helper';
+import { createItemSlice, ItemSliceState } from '../item-slice';
 import TreeNode from '../../models/treeNode';
 
 // window.apiのモック
@@ -24,10 +24,11 @@ type RootState = {
 
 describe('item-slice', () => {
   let store: ReturnType<typeof configureStore>;
+  let itemSlice: ReturnType<typeof createItemSlice>;
 
   beforeEach(() => {
-    // 各テスト前にストアを初期化
-    const initialState = {
+    // 各テスト前にテスト用の初期状態を作成
+    const testInitialState: ItemSliceState = {
       activeNode: null,
       itemCount: 1,
       itemData: {
@@ -37,12 +38,12 @@ describe('item-slice', () => {
       expandedItemIds: []
     };
 
+    // テスト用のスライスを作成
+    itemSlice = createItemSlice(testInitialState);
+
     store = configureStore({
       reducer: {
         item: itemSlice.reducer
-      },
-      preloadedState: {
-        item: initialState
       },
       middleware: getDefaultMiddleware =>
         getDefaultMiddleware({
@@ -58,7 +59,7 @@ describe('item-slice', () => {
     const initialState = (store.getState() as RootState).item;
     expect(initialState.itemData.staging).toHaveLength(0);
 
-    store.dispatch(itemActions.addNewTopItem());
+    store.dispatch(itemSlice.actions.addNewTopItem());
 
     const newState = (store.getState() as RootState).item;
     expect(newState.itemData.staging).toHaveLength(1);
@@ -68,13 +69,13 @@ describe('item-slice', () => {
 
   test('should handle switchActiveNodeById', () => {
     // まずアイテムを追加
-    store.dispatch(itemActions.addNewTopItem());
+    store.dispatch(itemSlice.actions.addNewTopItem());
 
     const state = (store.getState() as RootState).item;
     const nodeId = state.itemData.staging[0].id;
 
     // アクティブノードを切り替え
-    store.dispatch(itemActions.switchActiveNodeById(nodeId));
+    store.dispatch(itemSlice.actions.switchActiveNodeById(nodeId));
 
     const newState = (store.getState() as RootState).item;
     expect(newState.activeNode?.id).toBe(nodeId);
@@ -87,7 +88,7 @@ describe('item-slice', () => {
       credentials: []
     });
 
-    store.dispatch(itemActions.updateActiveNode(testNode));
+    store.dispatch(itemSlice.actions.updateActiveNode(testNode));
 
     const state = (store.getState() as RootState).item;
     expect(state.activeNode).toBe(testNode);
@@ -97,7 +98,7 @@ describe('item-slice', () => {
   test('should handle setExpandedItemIds', () => {
     const expandedIds = ['id1', 'id2', 'id3'];
 
-    store.dispatch(itemActions.setExpandedItemIds(expandedIds));
+    store.dispatch(itemSlice.actions.setExpandedItemIds(expandedIds));
 
     const state = (store.getState() as RootState).item;
     expect(state.expandedItemIds).toEqual(expandedIds);
@@ -106,13 +107,13 @@ describe('item-slice', () => {
 
   test('should handle addNewSubItemById', () => {
     // 親アイテムを追加
-    store.dispatch(itemActions.addNewTopItem());
+    store.dispatch(itemSlice.actions.addNewTopItem());
 
     const state = (store.getState() as RootState).item;
     const parentId = state.itemData.staging[0].id;
 
     // 子アイテムを追加
-    store.dispatch(itemActions.addNewSubItemById(parentId));
+    store.dispatch(itemSlice.actions.addNewSubItemById(parentId));
 
     const newState = (store.getState() as RootState).item;
     const parentNode = newState.itemData.staging[0];
@@ -124,13 +125,13 @@ describe('item-slice', () => {
 
   test('should handle RemoveItemAndChildById', () => {
     // アイテムを追加
-    store.dispatch(itemActions.addNewTopItem());
+    store.dispatch(itemSlice.actions.addNewTopItem());
 
     const state = (store.getState() as RootState).item;
     const nodeId = state.itemData.staging[0].id;
 
     // アイテムを削除
-    store.dispatch(itemActions.RemoveItemAndChildById(nodeId));
+    store.dispatch(itemSlice.actions.RemoveItemAndChildById(nodeId));
 
     const newState = (store.getState() as RootState).item;
     expect(newState.itemData.staging).toHaveLength(0);
