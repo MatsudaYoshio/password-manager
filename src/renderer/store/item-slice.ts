@@ -234,19 +234,15 @@ const createProductionInitialState = async (): Promise<ItemSliceState> => {
   };
 };
 
-// デフォルトの初期状態（本番では後で上書きされる）
-const defaultInitialState: ItemSliceState = {
+// デフォルトスライス（テスト用）
+const defaultSlice = createItemSlice({
   activeNode: null,
   itemCount: 1,
   itemData: { main: [], staging: [] },
   expandedItemIds: []
-};
+});
 
-// デフォルトスライス（テスト用および初期化用）
-const itemSlice = createItemSlice(defaultInitialState);
-
-// 本番用の初期化関数をエクスポート
+// 初期化関数をエクスポート
 export { createProductionInitialState };
-
-export const itemActions = itemSlice.actions;
-export default itemSlice;
+export const itemActions = defaultSlice.actions;
+export default defaultSlice;
