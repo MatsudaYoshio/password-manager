@@ -60,7 +60,7 @@ export const createItemSlice = (initialState: ItemSliceState) => {
 
   return createSlice({
     name: 'item',
-    initialState: JSON.parse(JSON.stringify(initialState)),
+    initialState,
     reducers: {
       switchActiveNodeById: (state, action: PayloadAction<string>) => {
         const queue = new Queue<TreeNode>();
