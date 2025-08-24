@@ -120,7 +120,7 @@ module.exports = [
   },
   // Node.js設定ファイル用の設定
   {
-    files: ['*.config.js', 'eslint.config.js', 'jest.config.js', 'webpack.config.js'],
+    files: ['*.config.js'],
     languageOptions: {
       ecmaVersion: 2021,
       sourceType: 'commonjs',
