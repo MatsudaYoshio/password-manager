@@ -5,16 +5,30 @@ Object.defineProperty(window, 'api', {
   value: {
     // TreeNode関連のAPI
     readNodes: jest.fn().mockResolvedValue([]),
-    saveNodes: jest.fn().mockResolvedValue(undefined),
+    saveNodes: jest.fn().mockResolvedValue(true),
     getTreeViewExpandedItems: jest.fn().mockResolvedValue([]),
-    saveTreeViewExpandedItems: jest.fn().mockResolvedValue(undefined),
+    saveTreeViewExpandedItems: jest.fn(),
     getTreeViewSelectedItemId: jest.fn().mockResolvedValue(undefined),
-    saveTreeViewSelectedItemId: jest.fn().mockResolvedValue(undefined),
+    saveTreeViewSelectedItemId: jest.fn(),
 
     // その他のAPI
-    openDialog: jest.fn(),
-    saveFile: jest.fn(),
-    loadFile: jest.fn()
+    exportNodes: jest.fn().mockResolvedValue(undefined),
+    onImportData: jest.fn(),
+    getBackupSettings: jest.fn().mockResolvedValue({}),
+    updateSetting: jest.fn().mockResolvedValue(undefined),
+    selectBackupPath: jest.fn().mockResolvedValue(null),
+
+    // Event listeners
+    onSaveData: jest.fn(),
+    offSaveData: jest.fn(),
+    onAddTopItem: jest.fn(),
+    offAddTopItem: jest.fn(),
+    onAddSubItem: jest.fn(),
+    offAddSubItem: jest.fn(),
+    onRemoveSubtree: jest.fn(),
+    offRemoveSubtree: jest.fn(),
+    onExportData: jest.fn(),
+    offExportData: jest.fn()
   },
   writable: true
 });
