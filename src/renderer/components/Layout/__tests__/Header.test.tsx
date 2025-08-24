@@ -26,11 +26,13 @@ describe('Header', () => {
     expect(appBar).toBeInTheDocument();
   });
 
-  test('renders action buttons', () => {
+  test('renders specific action buttons', () => {
     render(<Header />);
 
-    // ボタンが4つ存在することを確認
-    const buttons = screen.getAllByRole('button');
-    expect(buttons).toHaveLength(4);
+    // 特定のボタンが存在することを確認（aria-labelで識別）
+    expect(screen.getByLabelText('Save items')).toBeInTheDocument();
+    expect(screen.getByLabelText('Add new top item')).toBeInTheDocument();
+    expect(screen.getByLabelText('Add new sub item')).toBeInTheDocument();
+    expect(screen.getByLabelText('Delete item')).toBeInTheDocument();
   });
 });
