@@ -29,6 +29,9 @@ jobs:
           IGNORES=$(node -p "Object.keys(require('./package.json').devDependencies).join(',')")
           depcheck --ignores="$IGNORES,electron,webpack,webpack-cli,@eslint/js" || (echo "Unused dependencies found" && exit 1)
 
+      - name: Run tests
+        run: npm run test:ci
+
       - name: Run release (build & package)
         run: npm run release
 
