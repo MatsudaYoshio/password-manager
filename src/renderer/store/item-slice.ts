@@ -49,11 +49,8 @@ export interface ItemSliceState {
 
 // アイテムスライスファクトリー関数
 export const createItemSlice = (initialState: ItemSliceState) => {
-  const addNewItem = (itemData: TreeNode[], title: string, itemCount: number): TreeNode => {
+  const addNewItem = (itemData: TreeNode[], title: string): TreeNode => {
     const newTreeNode = new TreeNode({ title, credentials: [] });
-    if (!Object.isExtensible(itemData)) {
-      itemData = [...itemData];
-    }
     itemData.push(newTreeNode);
     return newTreeNode;
   };
@@ -104,11 +101,7 @@ export const createItemSlice = (initialState: ItemSliceState) => {
         }
       },
       addNewTopItem: state => {
-        const newNode = addNewItem(
-          state.itemData.staging,
-          `item${state.itemCount}`,
-          state.itemCount
-        );
+        const newNode = addNewItem(state.itemData.staging, `item${state.itemCount}`);
         state.itemCount++;
         state.activeNode = newNode;
       },
@@ -123,7 +116,7 @@ export const createItemSlice = (initialState: ItemSliceState) => {
             if (!node.children) {
               node.children = [];
             }
-            const newNode = addNewItem(node.children, `item${state.itemCount}`, state.itemCount);
+            const newNode = addNewItem(node.children, `item${state.itemCount}`);
             state.itemCount++;
             state.itemData.staging = stagingCopy;
             state.activeNode = newNode;
