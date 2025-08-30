@@ -1,5 +1,6 @@
 import { configureStore } from '@reduxjs/toolkit';
 import { createItemSlice, ItemSliceState } from '../item-slice';
+import { itemListeners } from '../item-listeners';
 import TreeNode from '../../models/treeNode';
 
 // window.apiのモック
@@ -48,7 +49,7 @@ describe('item-slice', () => {
       middleware: getDefaultMiddleware =>
         getDefaultMiddleware({
           serializableCheck: false
-        })
+        }).prepend(itemListeners.middleware)
     });
 
     // モックをリセット
@@ -67,7 +68,7 @@ describe('item-slice', () => {
     expect(newState.itemCount).toBe(2);
   });
 
-  test('should handle switchActiveNodeById', () => {
+  test('should handle switchActiveNodeById', async () => {
     // まずアイテムを追加
     store.dispatch(itemSlice.actions.addNewTopItem());
 
@@ -79,10 +80,13 @@ describe('item-slice', () => {
 
     const newState = (store.getState() as RootState).item;
     expect(newState.activeNode?.id).toBe(nodeId);
+
+    // リスナーミドルウェアの非同期処理を待つ
+    await Promise.resolve();
     expect(mockApi.saveTreeViewSelectedItemId).toHaveBeenCalledWith(nodeId);
   });
 
-  test('should handle updateActiveNode', () => {
+  test('should handle updateActiveNode', async () => {
     const testNode = new TreeNode({
       title: 'Test Node',
       credentials: []
@@ -92,16 +96,22 @@ describe('item-slice', () => {
 
     const state = (store.getState() as RootState).item;
     expect(state.activeNode).toBe(testNode);
+
+    // リスナーミドルウェアの非同期処理を待つ
+    await Promise.resolve();
     expect(mockApi.saveTreeViewSelectedItemId).toHaveBeenCalledWith(testNode.id);
   });
 
-  test('should handle setExpandedItemIds', () => {
+  test('should handle setExpandedItemIds', async () => {
     const expandedIds = ['id1', 'id2', 'id3'];
 
     store.dispatch(itemSlice.actions.setExpandedItemIds(expandedIds));
 
     const state = (store.getState() as RootState).item;
     expect(state.expandedItemIds).toEqual(expandedIds);
+
+    // リスナーミドルウェアの非同期処理を待つ
+    await Promise.resolve();
     expect(mockApi.saveTreeViewExpandedItems).toHaveBeenCalledWith(expandedIds);
   });
 

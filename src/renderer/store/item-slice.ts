@@ -82,15 +82,9 @@ export const createItemSlice = (initialState: ItemSliceState) => {
           }
         }
         state.activeNode = foundNode;
-        if (window.api) {
-          window.api.saveTreeViewSelectedItemId(state.activeNode ? state.activeNode.id : null);
-        }
       },
       updateActiveNode: (state, action: PayloadAction<TreeNode | null>) => {
         state.activeNode = action.payload;
-        if (window.api) {
-          window.api.saveTreeViewSelectedItemId(state.activeNode ? state.activeNode.id : null);
-        }
       },
       updateItem: (state, action: PayloadAction<TreeNode>) => {
         const queue = new Queue<TreeNode>();
@@ -174,9 +168,6 @@ export const createItemSlice = (initialState: ItemSliceState) => {
           } else {
             state.activeNode = state.itemData.staging.length > 0 ? state.itemData.staging[0] : null;
           }
-          if (window.api) {
-            window.api.saveTreeViewSelectedItemId(state.activeNode ? state.activeNode.id : null);
-          }
         }
       },
       updateMainState: state => {
@@ -187,9 +178,6 @@ export const createItemSlice = (initialState: ItemSliceState) => {
       },
       setExpandedItemIds: (state, action: PayloadAction<string[]>) => {
         state.expandedItemIds = action.payload;
-        if (window.api) {
-          window.api.saveTreeViewExpandedItems(state.expandedItemIds);
-        }
       }
     }
   });

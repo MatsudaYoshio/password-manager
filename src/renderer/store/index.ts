@@ -1,5 +1,6 @@
 import { configureStore } from '@reduxjs/toolkit';
 import { createItemSlice, createProductionInitialState } from './item-slice';
+import { itemListeners } from './item-listeners';
 
 // ストア管理
 let currentStore: ReturnType<typeof configureStore> | null = null;
@@ -20,7 +21,7 @@ const createDefaultStore = () => {
     middleware: getDefaultMiddleware =>
       getDefaultMiddleware({
         serializableCheck: false
-      })
+      }).prepend(itemListeners.middleware)
   });
 };
 
@@ -41,7 +42,7 @@ const initializeProductionStore = async () => {
       middleware: getDefaultMiddleware =>
         getDefaultMiddleware({
           serializableCheck: false
-        })
+        }).prepend(itemListeners.middleware)
     });
 
     return currentStore;
