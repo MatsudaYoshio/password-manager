@@ -15,8 +15,10 @@ itemListeners.startListening({
   ),
   effect: async (_action, api) => {
     const state = api.getState() as RootState;
-    if (window.api) {
-      window.api.saveTreeViewSelectedItemId(state.item.activeNode?.id ?? null);
+    try {
+      await window.api?.saveTreeViewSelectedItemId(state.item.activeNode?.id ?? null);
+    } catch (e) {
+      console.warn('Failed to persist selected item id', e);
     }
   }
 });
@@ -25,8 +27,10 @@ itemListeners.startListening({
 itemListeners.startListening({
   actionCreator: itemActions.setExpandedItemIds,
   effect: async action => {
-    if (window.api) {
-      window.api.saveTreeViewExpandedItems(action.payload);
+    try {
+      await window.api?.saveTreeViewExpandedItems(action.payload);
+    } catch (e) {
+      console.warn('Failed to persist expanded items', e);
     }
   }
 });

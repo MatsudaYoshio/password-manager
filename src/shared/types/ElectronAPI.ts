@@ -15,8 +15,8 @@ export interface ElectronAPI {
   onImportData(callback: DataCallback<TreeNodePlain[]>): void;
   getTreeViewExpandedItems(): Promise<string[]>;
   getTreeViewSelectedItemId(): Promise<string | undefined>;
-  saveTreeViewSelectedItemId(itemId: string | null): void;
-  saveTreeViewExpandedItems(expandedItemIds: string[]): void;
+  saveTreeViewSelectedItemId(itemId: string | null): Promise<void>;
+  saveTreeViewExpandedItems(expandedItemIds: string[]): Promise<void>;
 
   // Event listeners
   onSaveData(callback: VoidCallback): void;
