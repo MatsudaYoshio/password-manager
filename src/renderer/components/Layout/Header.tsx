@@ -22,7 +22,7 @@ const Header = () => {
 
   return (
     <Box sx={{ flexGrow: 1 }}>
-      <AppBar position='static' elevation={0} style={{ backgroundColor: '#e0e0e0' }}>
+      <AppBar position='static' elevation={0} sx={{ backgroundColor: '#e0e0e0' }}>
         <Toolbar>
           <Typography variant='h6' component='div' sx={{ flexGrow: 1 }}>
             <Stack direction='row' spacing={1}>
@@ -30,21 +30,21 @@ const Header = () => {
                 <SaveIcon />
               </IconButton>
               <IconButton
-                style={{ color: '#ff9800' }}
+                sx={{ color: '#ff9800' }}
                 onClick={addNewTopItemHandler}
                 aria-label='add-folder'
               >
                 <CreateNewFolderIcon />
               </IconButton>
               <IconButton
-                style={{ color: '#ffffff' }}
+                sx={{ color: 'text.primary' }}
                 onClick={addNewSubItemHandler}
                 aria-label='add-item'
               >
                 <NoteAddIcon />
               </IconButton>
               <IconButton
-                style={{ color: '#d50000' }}
+                sx={{ color: '#d50000' }}
                 onClick={RemoveSubTreeHandler}
                 aria-label='delete'
               >
