@@ -26,27 +26,27 @@ const Header = () => {
         <Toolbar>
           <Typography variant='h6' component='div' sx={{ flexGrow: 1 }}>
             <Stack direction='row' spacing={1}>
-              <IconButton color='primary' onClick={saveHandler} aria-label='Save items'>
+              <IconButton color='primary' onClick={saveHandler} aria-label='save'>
                 <SaveIcon />
               </IconButton>
               <IconButton
                 style={{ color: '#ff9800' }}
                 onClick={addNewTopItemHandler}
-                aria-label='Add new top item'
+                aria-label='add-folder'
               >
                 <CreateNewFolderIcon />
               </IconButton>
               <IconButton
                 style={{ color: '#ffffff' }}
                 onClick={addNewSubItemHandler}
-                aria-label='Add new sub item'
+                aria-label='add-item'
               >
                 <NoteAddIcon />
               </IconButton>
               <IconButton
                 style={{ color: '#d50000' }}
                 onClick={RemoveSubTreeHandler}
-                aria-label='Delete item'
+                aria-label='delete'
               >
                 <DeleteForeverIcon />
               </IconButton>
