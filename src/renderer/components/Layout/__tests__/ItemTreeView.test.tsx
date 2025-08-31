@@ -1,4 +1,4 @@
-import { screen, act } from '@testing-library/react';
+import { screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import ItemTreeView from '../ItemTreeView';
 import TreeNode from '../../../models/treeNode';
@@ -145,7 +145,7 @@ describe('ItemTreeView', () => {
       expect(getActiveNodeId(store)).toBe(testNode.id);
     });
 
-    it('updates expanded state when item is expanded', async () => {
+    it('updates expanded state when item is expanded by user click', async () => {
       const { parentNode } = createParentChildNodes();
       const { store } = renderItemTreeView([parentNode]);
 
@@ -153,32 +153,49 @@ describe('ItemTreeView', () => {
       expect(getExpandedItemIds(store)).toEqual([]);
       expect(screen.queryByText('child-item')).not.toBeInTheDocument();
 
-      // ストアを直接更新して展開状態をテスト
-      act(() => {
-        store.dispatch({ type: 'item/setExpandedItemIds', payload: [parentNode.id] });
-      });
+      // 親アイテムのツリーアイテムを取得
+      const parentTreeItem = screen.getByRole('treeitem', { name: 'parent-item' });
+
+      // 展開アイコン（アイコンコンテナ）をクリック
+      const iconContainer = parentTreeItem.querySelector('.MuiTreeItem-iconContainer');
+      expect(iconContainer).toBeInTheDocument();
+
+      await user.click(iconContainer!);
 
       // 展開状態がストアに保存されることを確認
       expect(getExpandedItemIds(store)).toContain(parentNode.id);
+
+      // 子アイテムが表示されることを確認
+      expect(screen.getByText('child-item')).toBeInTheDocument();
     });
 
-    it('updates expanded state when item is collapsed', async () => {
+    it('updates expanded state when item is collapsed by user click', async () => {
       const { parentNode } = createParentChildNodes();
       const { store } = renderItemTreeView([parentNode], null, [parentNode.id]);
 
       // 初期状態では展開されていることを確認
       expect(getExpandedItemIds(store)).toContain(parentNode.id);
+      expect(screen.getByText('child-item')).toBeInTheDocument();
 
-      // ストアを直接更新して折りたたみ状態をテスト
-      act(() => {
-        store.dispatch({ type: 'item/setExpandedItemIds', payload: [] });
-      });
+      // 親アイテムのツリーアイテムを取得（展開状態では子アイテムも含まれる）
+      const parentTreeItem = screen.getByRole('treeitem', { name: /parent-item/ });
+
+      // 折りたたみアイコン（アイコンコンテナ）をクリック
+      const iconContainer = parentTreeItem.querySelector('.MuiTreeItem-iconContainer');
+      expect(iconContainer).toBeInTheDocument();
+
+      await user.click(iconContainer!);
 
       // 折りたたみ状態がストアに保存されることを確認
       expect(getExpandedItemIds(store)).not.toContain(parentNode.id);
+
+      // 子アイテムが非表示になることを確認（アニメーション待ち）
+      await waitFor(() => {
+        expect(screen.queryByText('child-item')).not.toBeInTheDocument();
+      });
     });
 
-    it('maintains expanded state for multiple items', async () => {
+    it('maintains expanded state for multiple items through user clicks', async () => {
       const { parentNode: parent1 } = createParentChildNodes('parent-1', 'child-1');
       const { parentNode: parent2 } = createParentChildNodes('parent-2', 'child-2');
       const { store } = renderItemTreeView([parent1, parent2]);
@@ -186,15 +203,26 @@ describe('ItemTreeView', () => {
       // 初期状態では何も展開されていないことを確認
       expect(getExpandedItemIds(store)).toEqual([]);
 
-      // 複数のアイテムを展開状態に設定
-      act(() => {
-        store.dispatch({ type: 'item/setExpandedItemIds', payload: [parent1.id, parent2.id] });
-      });
+      // 最初の親アイテムを展開
+      const parent1TreeItem = screen.getByRole('treeitem', { name: 'parent-1' });
+      const iconContainer1 = parent1TreeItem.querySelector('.MuiTreeItem-iconContainer');
+      await user.click(iconContainer1!);
+
+      // 最初の親が展開されることを確認
+      expect(getExpandedItemIds(store)).toContain(parent1.id);
+      expect(screen.getByText('child-1')).toBeInTheDocument();
+
+      // 2番目の親アイテムを展開
+      const parent2TreeItem = screen.getByRole('treeitem', { name: 'parent-2' });
+      const iconContainer2 = parent2TreeItem.querySelector('.MuiTreeItem-iconContainer');
+      await user.click(iconContainer2!);
 
       // 両方の親が展開されることを確認
       const expandedIds = getExpandedItemIds(store);
       expect(expandedIds).toContain(parent1.id);
       expect(expandedIds).toContain(parent2.id);
+      expect(screen.getByText('child-1')).toBeInTheDocument();
+      expect(screen.getByText('child-2')).toBeInTheDocument();
     });
   });
 });
