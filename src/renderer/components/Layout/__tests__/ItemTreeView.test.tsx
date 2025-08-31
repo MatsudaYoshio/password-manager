@@ -1,9 +1,13 @@
-import { screen } from '@testing-library/react';
+import { screen, act } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import ItemTreeView from '../ItemTreeView';
 import TreeNode from '../../../models/treeNode';
-import { createTestNode, renderWithStore, createParentChildNodes } from './utils/helpers';
-import { createStoreWithItems } from './utils/helpers';
+import {
+  createTestNode,
+  renderWithStore,
+  createParentChildNodes,
+  createStoreWithItems
+} from './utils/helpers';
 
 describe('ItemTreeView', () => {
   // ストアの状態からアクティブノードIDを取得するヘルパー関数
@@ -150,7 +154,9 @@ describe('ItemTreeView', () => {
       expect(screen.queryByText('child-item')).not.toBeInTheDocument();
 
       // ストアを直接更新して展開状態をテスト
-      store.dispatch({ type: 'item/setExpandedItemIds', payload: [parentNode.id] });
+      act(() => {
+        store.dispatch({ type: 'item/setExpandedItemIds', payload: [parentNode.id] });
+      });
 
       // 展開状態がストアに保存されることを確認
       expect(getExpandedItemIds(store)).toContain(parentNode.id);
@@ -164,7 +170,9 @@ describe('ItemTreeView', () => {
       expect(getExpandedItemIds(store)).toContain(parentNode.id);
 
       // ストアを直接更新して折りたたみ状態をテスト
-      store.dispatch({ type: 'item/setExpandedItemIds', payload: [] });
+      act(() => {
+        store.dispatch({ type: 'item/setExpandedItemIds', payload: [] });
+      });
 
       // 折りたたみ状態がストアに保存されることを確認
       expect(getExpandedItemIds(store)).not.toContain(parentNode.id);
@@ -179,7 +187,9 @@ describe('ItemTreeView', () => {
       expect(getExpandedItemIds(store)).toEqual([]);
 
       // 複数のアイテムを展開状態に設定
-      store.dispatch({ type: 'item/setExpandedItemIds', payload: [parent1.id, parent2.id] });
+      act(() => {
+        store.dispatch({ type: 'item/setExpandedItemIds', payload: [parent1.id, parent2.id] });
+      });
 
       // 両方の親が展開されることを確認
       const expandedIds = getExpandedItemIds(store);
