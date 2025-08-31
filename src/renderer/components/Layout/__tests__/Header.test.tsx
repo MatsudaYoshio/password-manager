@@ -79,7 +79,7 @@ describe('Header', () => {
       // ストアの状態を確認 - 親ノードに子が追加されているはず
       const state = store.getState();
       const updatedParent = state.item.itemData.staging.find(
-        (item: TreeNode) => item.data.title === 'parent-item'
+        (item: TreeNode) => item.id === parentNode.id
       );
       expect(updatedParent?.children?.length).toBeGreaterThan(0);
     });
