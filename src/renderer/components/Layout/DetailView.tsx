@@ -160,7 +160,11 @@ const DetailView = () => {
                 label='value'
               />
             </FormControl>
-            <IconButton color='error' onClick={() => removeCredentialHandler(credential.id)}>
+            <IconButton
+              color='error'
+              onClick={() => removeCredentialHandler(credential.id)}
+              aria-label='remove-credential'
+            >
               <IndeterminateCheckBoxIcon />
             </IconButton>
           </Box>
@@ -187,7 +191,7 @@ const DetailView = () => {
         </Typography>
       </Box>
       <Box display='flex' alignItems='left' justifyContent='left' sx={{ flexGrow: 1, ml: 40 }}>
-        <IconButton color='primary' onClick={addNewCredentialHandler}>
+        <IconButton color='primary' onClick={addNewCredentialHandler} aria-label='add-credential'>
           <AddBoxIcon />
         </IconButton>
       </Box>
