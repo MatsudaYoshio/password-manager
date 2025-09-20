@@ -291,9 +291,8 @@ describe('DetailView', () => {
       });
       renderDetailView([testNode], testNode);
 
-      // 名前フィールドの隣にあるコピーボタンをクリック
-      const copyButtons = screen.getAllByRole('button');
-      const nameCopyButton = copyButtons[0]; // 最初のコピーボタンは名前用
+      // aria-labelを使って名前用のコピーボタンを特定
+      const nameCopyButton = screen.getByLabelText('copy-name');
 
       await user.click(nameCopyButton);
 
@@ -309,9 +308,8 @@ describe('DetailView', () => {
       });
       renderDetailView([testNode], testNode);
 
-      // 値フィールドの隣にあるコピーボタンをクリック
-      const copyButtons = screen.getAllByRole('button');
-      const valueCopyButton = copyButtons[1]; // 2番目のコピーボタンは値用
+      // aria-labelを使って値用のコピーボタンを特定
+      const valueCopyButton = screen.getByLabelText('copy-value');
 
       await user.click(valueCopyButton);
 

@@ -122,7 +122,10 @@ const DetailView = () => {
       return (
         <div key={credential.id}>
           <Box display='flex' alignItems='center' sx={{ flexGrow: 1 }}>
-            <IconButton onClick={() => navigator.clipboard.writeText(credential.name)}>
+            <IconButton
+              onClick={() => navigator.clipboard.writeText(credential.name)}
+              aria-label='copy-name'
+            >
               <ContentCopyIcon />
             </IconButton>
             <FormControl sx={{ m: 1, width: '25ch' }} variant='outlined'>
@@ -134,7 +137,10 @@ const DetailView = () => {
                 onChange={updateNameHandler}
               />
             </FormControl>
-            <IconButton onClick={() => navigator.clipboard.writeText(credential.value)}>
+            <IconButton
+              onClick={() => navigator.clipboard.writeText(credential.value)}
+              aria-label='copy-value'
+            >
               <ContentCopyIcon />
             </IconButton>
             <FormControl sx={{ m: 1, width: '25ch' }} variant='outlined'>
