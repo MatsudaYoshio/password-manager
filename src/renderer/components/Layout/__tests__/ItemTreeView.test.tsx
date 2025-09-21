@@ -6,15 +6,11 @@ import {
   createTestNode,
   renderWithStore,
   createParentChildNodes,
-  createStoreWithItems
+  createStoreWithItems,
+  getActiveNode
 } from './utils/helpers';
 
 describe('ItemTreeView', () => {
-  // ストアの状態からアクティブノードIDを取得するヘルパー関数
-  const getActiveNodeId = (store: ReturnType<typeof createStoreWithItems>) => {
-    return store.getState().item.activeNode?.id || null;
-  };
-
   // ストアの状態から展開されたアイテムIDsを取得するヘルパー関数
   const getExpandedItemIds = (store: ReturnType<typeof createStoreWithItems>) => {
     return store.getState().item.expandedItemIds;
@@ -91,21 +87,21 @@ describe('ItemTreeView', () => {
       const { store } = renderItemTreeView([testNode1, testNode2]);
 
       // 初期状態ではアクティブノードがないことを確認
-      expect(getActiveNodeId(store)).toBeNull();
+      expect(getActiveNode(store)?.id || null).toBeNull();
 
       // 最初のアイテムをクリック
       const firstItem = screen.getByText('first-item');
       await user.click(firstItem);
 
       // アクティブノードが変更されることを確認
-      expect(getActiveNodeId(store)).toBe(testNode1.id);
+      expect(getActiveNode(store)?.id).toBe(testNode1.id);
 
       // 2番目のアイテムをクリック
       const secondItem = screen.getByText('second-item');
       await user.click(secondItem);
 
       // アクティブノードが2番目のアイテムに変更されることを確認
-      expect(getActiveNodeId(store)).toBe(testNode2.id);
+      expect(getActiveNode(store)?.id).toBe(testNode2.id);
     });
 
     it('changes active node when nested item is clicked', async () => {
@@ -113,21 +109,21 @@ describe('ItemTreeView', () => {
       const { store } = renderItemTreeView([parentNode], null, [parentNode.id]);
 
       // 初期状態ではアクティブノードがないことを確認
-      expect(getActiveNodeId(store)).toBeNull();
+      expect(getActiveNode(store)?.id || null).toBeNull();
 
       // 子アイテムをクリック
       const childItem = screen.getByText('child-item');
       await user.click(childItem);
 
       // アクティブノードが子ノードに変更されることを確認
-      expect(getActiveNodeId(store)).toBe(childNode.id);
+      expect(getActiveNode(store)?.id).toBe(childNode.id);
 
       // 親アイテムをクリック
       const parentItem = screen.getByText('parent-item');
       await user.click(parentItem);
 
       // アクティブノードが親ノードに変更されることを確認
-      expect(getActiveNodeId(store)).toBe(parentNode.id);
+      expect(getActiveNode(store)?.id).toBe(parentNode.id);
     });
 
     it('maintains active node selection when same item is clicked multiple times', async () => {
@@ -138,11 +134,11 @@ describe('ItemTreeView', () => {
 
       // 最初のクリック
       await user.click(testItem);
-      expect(getActiveNodeId(store)).toBe(testNode.id);
+      expect(getActiveNode(store)?.id).toBe(testNode.id);
 
       // 同じアイテムを再度クリック
       await user.click(testItem);
-      expect(getActiveNodeId(store)).toBe(testNode.id);
+      expect(getActiveNode(store)?.id).toBe(testNode.id);
     });
 
     it('updates expanded state when item is expanded by user click', async () => {

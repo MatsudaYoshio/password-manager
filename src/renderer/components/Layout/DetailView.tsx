@@ -122,7 +122,10 @@ const DetailView = () => {
       return (
         <div key={credential.id}>
           <Box display='flex' alignItems='center' sx={{ flexGrow: 1 }}>
-            <IconButton onClick={() => navigator.clipboard.writeText(credential.name)}>
+            <IconButton
+              onClick={() => navigator.clipboard.writeText(credential.name)}
+              aria-label='copy-name'
+            >
               <ContentCopyIcon />
             </IconButton>
             <FormControl sx={{ m: 1, width: '25ch' }} variant='outlined'>
@@ -134,7 +137,10 @@ const DetailView = () => {
                 onChange={updateNameHandler}
               />
             </FormControl>
-            <IconButton onClick={() => navigator.clipboard.writeText(credential.value)}>
+            <IconButton
+              onClick={() => navigator.clipboard.writeText(credential.value)}
+              aria-label='copy-value'
+            >
               <ContentCopyIcon />
             </IconButton>
             <FormControl sx={{ m: 1, width: '25ch' }} variant='outlined'>
@@ -160,7 +166,11 @@ const DetailView = () => {
                 label='value'
               />
             </FormControl>
-            <IconButton color='error' onClick={() => removeCredentialHandler(credential.id)}>
+            <IconButton
+              color='error'
+              onClick={() => removeCredentialHandler(credential.id)}
+              aria-label='remove-credential'
+            >
               <IndeterminateCheckBoxIcon />
             </IconButton>
           </Box>
@@ -187,7 +197,7 @@ const DetailView = () => {
         </Typography>
       </Box>
       <Box display='flex' alignItems='left' justifyContent='left' sx={{ flexGrow: 1, ml: 40 }}>
-        <IconButton color='primary' onClick={addNewCredentialHandler}>
+        <IconButton color='primary' onClick={addNewCredentialHandler} aria-label='add-credential'>
           <AddBoxIcon />
         </IconButton>
       </Box>

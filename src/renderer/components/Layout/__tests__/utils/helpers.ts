@@ -68,3 +68,7 @@ export const createParentChildNodes = (parentTitle = 'parent-item', childTitle =
 
   return { parentNode, childNode };
 };
+
+// ストアの状態からアクティブノードを取得するヘルパー関数
+export const getActiveNode = (store: ReturnType<typeof createStoreWithItems>) =>
+  store.getState().item.activeNode;
