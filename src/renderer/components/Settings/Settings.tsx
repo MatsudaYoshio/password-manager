@@ -3,21 +3,13 @@ import { Box, Checkbox, FormControlLabel, TextField, Button } from '@mui/materia
 import { useBackupSettings } from './hooks/useBackupSettings';
 
 const Settings: React.FC = () => {
-  const { backupEnabled, backupPath, toggleBackupEnabled, updateBackupPath, selectBackupPath } =
-    useBackupSettings();
+  const { backupEnabled, backupPath, toggleBackupEnabled, selectBackupPath } = useBackupSettings();
 
   const handleCheckboxChange = useCallback(
     (event: React.ChangeEvent<HTMLInputElement>) => {
       toggleBackupEnabled(event.target.checked);
     },
     [toggleBackupEnabled]
-  );
-
-  const handlePathChange = useCallback(
-    (event: React.ChangeEvent<HTMLInputElement>) => {
-      updateBackupPath(event.target.value);
-    },
-    [updateBackupPath]
   );
 
   const handleBrowseClick = useCallback(async () => {
@@ -34,11 +26,15 @@ const Settings: React.FC = () => {
       />
       <TextField
         value={backupPath}
-        onChange={handlePathChange}
         label='バックアップ先パス'
         variant='outlined'
         size='small'
         fullWidth
+        slotProps={{
+          input: {
+            readOnly: true
+          }
+        }}
         sx={{ minWidth: 250 }}
       />
       <Button variant='contained' onClick={handleBrowseClick} aria-label='browse-backup-path'>
