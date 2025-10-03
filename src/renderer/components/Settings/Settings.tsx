@@ -1,39 +1,20 @@
-import React, { useEffect, useState } from 'react';
-import { BackupSettings } from '../../../shared/types/BackupSettings';
+import React, { useCallback } from 'react';
 import { Box, Checkbox, FormControlLabel, TextField, Button } from '@mui/material';
-
-const { api } = window;
+import { useBackupSettings } from './hooks/useBackupSettings';
 
 const Settings: React.FC = () => {
-  const [backupEnabled, setBackupEnabled] = useState(false);
-  const [backupPath, setBackupPath] = useState('');
+  const { backupEnabled, backupPath, toggleBackupEnabled, selectBackupPath } = useBackupSettings();
 
-  useEffect(() => {
-    api.getBackupSettings().then((settings: BackupSettings) => {
-      setBackupEnabled(settings.backupEnabled);
-      setBackupPath(settings.backupPath);
-    });
-  }, []);
+  const handleCheckboxChange = useCallback(
+    (event: React.ChangeEvent<HTMLInputElement>) => {
+      toggleBackupEnabled(event.target.checked);
+    },
+    [toggleBackupEnabled]
+  );
 
-  const handleCheckboxChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const isChecked = event.target.checked;
-    setBackupEnabled(isChecked);
-    api.updateSetting('backupEnabled', isChecked);
-  };
-
-  const handlePathChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const path = event.target.value;
-    setBackupPath(path);
-    api.updateSetting('backupPath', path);
-  };
-
-  const handleBrowseClick = async () => {
-    const selectedPath = await api.selectBackupPath();
-    if (selectedPath) {
-      setBackupPath(selectedPath);
-      api.updateSetting('backupPath', selectedPath);
-    }
-  };
+  const handleBrowseClick = useCallback(async () => {
+    await selectBackupPath();
+  }, [selectBackupPath]);
 
   return (
     <Box display='flex' alignItems='center' gap={2}>
@@ -45,14 +26,18 @@ const Settings: React.FC = () => {
       />
       <TextField
         value={backupPath}
-        onChange={handlePathChange}
         label='バックアップ先パス'
         variant='outlined'
         size='small'
         fullWidth
+        slotProps={{
+          input: {
+            readOnly: true
+          }
+        }}
         sx={{ minWidth: 250 }}
       />
-      <Button variant='contained' onClick={handleBrowseClick}>
+      <Button variant='contained' onClick={handleBrowseClick} aria-label='browse-backup-path'>
         参照
       </Button>
     </Box>
