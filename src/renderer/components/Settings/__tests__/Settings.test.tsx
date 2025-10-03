@@ -154,7 +154,7 @@ describe('Settings', () => {
       user = userEvent.setup();
     });
 
-    it('updates path when text field is changed', async () => {
+    it('prevents direct text input in path field', async () => {
       render(<Settings />);
 
       await waitFor(() => {
@@ -163,36 +163,18 @@ describe('Settings', () => {
 
       const pathField = getPathField();
 
+      // テキストフィールドがreadOnlyであることを確認
+      expect(pathField).toHaveAttribute('readonly');
+
+      // キーボード入力を試行
       await act(async () => {
-        await user.type(pathField, '/new/backup/path');
+        await user.type(pathField, '/attempted/input');
       });
 
-      expect(pathField).toHaveValue('/new/backup/path');
-      expect(mockApi.updateSetting).toHaveBeenCalledWith('backupPath', '/new/backup/path');
-    });
-
-    it('clears path when text field is cleared', async () => {
-      const settingsWithPath = createBackupSettings({ backupPath: '/existing/path' });
-      mockApi.getBackupSettings.mockResolvedValue(settingsWithPath);
-
-      render(<Settings />);
-
-      await waitFor(() => {
-        expect(mockApi.getBackupSettings).toHaveBeenCalledTimes(1);
-      });
-
-      await waitFor(() => {
-        expect(getPathField()).toHaveValue('/existing/path');
-      });
-
-      const pathField = getPathField();
-
-      await act(async () => {
-        await user.clear(pathField);
-      });
-
+      // 値が変更されないことを確認
       expect(pathField).toHaveValue('');
-      expect(mockApi.updateSetting).toHaveBeenCalledWith('backupPath', '');
+      // updateSettingが呼ばれないことを確認
+      expect(mockApi.updateSetting).not.toHaveBeenCalledWith('backupPath', expect.any(String));
     });
   });
 
