@@ -12,6 +12,8 @@ const mockApi = {
 };
 
 describe('Settings', () => {
+  let consoleErrorSpy: jest.SpyInstance;
+
   // テスト用のデフォルト設定
   const defaultBackupSettings: BackupSettings = {
     backupEnabled: false,
@@ -35,6 +37,16 @@ describe('Settings', () => {
     expect(getPathField()).toBeInTheDocument();
     expect(getBrowseButton()).toBeInTheDocument();
   };
+
+  beforeAll(() => {
+    // 全テストでconsole.errorをモック
+    consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+  });
+
+  afterAll(() => {
+    // テスト終了後にリストア
+    consoleErrorSpy.mockRestore();
+  });
 
   beforeEach(() => {
     jest.clearAllMocks();
