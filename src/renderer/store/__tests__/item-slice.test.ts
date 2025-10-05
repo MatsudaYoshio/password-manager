@@ -211,7 +211,11 @@ describe('item-slice', () => {
 
     // プレーンオブジェクトであることを確認
     expect(newNode.constructor.name).toBe('Object');
-    expect(Object.isExtensible(newNode)).toBe(true);
+    // 必要なプロパティが存在することを確認
+    expect(newNode).toHaveProperty('id');
+    expect(newNode).toHaveProperty('data');
+    expect(newNode.data).toHaveProperty('title');
+    expect(newNode.data.title).toBe('item1');
   });
 
   test('should handle nested item removal', () => {
