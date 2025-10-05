@@ -147,4 +147,92 @@ describe('item-slice', () => {
     expect(newState.itemData.staging).toHaveLength(0);
     expect(newState.activeNode).toBeNull();
   });
+
+  test('should handle updateItem', () => {
+    // アイテムを追加
+    store.dispatch(itemSlice.actions.addNewTopItem());
+
+    const state = (store.getState() as RootState).item;
+    const nodeToUpdate = state.itemData.staging[0];
+
+    // アイテムを更新
+    const updatedNode = {
+      ...nodeToUpdate,
+      data: {
+        ...nodeToUpdate.data,
+        title: 'Updated Title'
+      }
+    };
+
+    store.dispatch(itemSlice.actions.updateItem(updatedNode));
+
+    const newState = (store.getState() as RootState).item;
+    expect(newState.itemData.staging[0].data.title).toBe('Updated Title');
+  });
+
+  test('should handle updateMainState', () => {
+    // アイテムを追加
+    store.dispatch(itemSlice.actions.addNewTopItem());
+
+    const state = (store.getState() as RootState).item;
+    expect(state.itemData.main).toHaveLength(0);
+    expect(state.itemData.staging).toHaveLength(1);
+
+    // mainをstagingで更新
+    store.dispatch(itemSlice.actions.updateMainState());
+
+    const newState = (store.getState() as RootState).item;
+    expect(newState.itemData.main).toHaveLength(1);
+    expect(newState.itemData.main[0].data.title).toBe('item1');
+    // mainとstagingは別のオブジェクトであることを確認
+    expect(newState.itemData.main).not.toBe(newState.itemData.staging);
+  });
+
+  test('should handle updateStagingData', () => {
+    const newData = [
+      new TreeNode({ title: 'Test Item 1', credentials: [] }),
+      new TreeNode({ title: 'Test Item 2', credentials: [] })
+    ];
+
+    store.dispatch(itemSlice.actions.updateStagingData(newData));
+
+    const state = (store.getState() as RootState).item;
+    expect(state.itemData.staging).toHaveLength(2);
+    expect(state.itemData.staging[0].data.title).toBe('Test Item 1');
+    expect(state.itemData.staging[1].data.title).toBe('Test Item 2');
+  });
+
+  test('should create plain objects for new items', () => {
+    // アイテムを追加
+    store.dispatch(itemSlice.actions.addNewTopItem());
+
+    const state = (store.getState() as RootState).item;
+    const newNode = state.itemData.staging[0];
+
+    // プレーンオブジェクトであることを確認
+    expect(newNode.constructor.name).toBe('Object');
+    expect(Object.isExtensible(newNode)).toBe(true);
+  });
+
+  test('should handle nested item removal', () => {
+    // 親アイテムを追加
+    store.dispatch(itemSlice.actions.addNewTopItem());
+
+    const state = (store.getState() as RootState).item;
+    const parentId = state.itemData.staging[0].id;
+
+    // 子アイテムを追加
+    store.dispatch(itemSlice.actions.addNewSubItemById(parentId));
+
+    const stateWithChild = (store.getState() as RootState).item;
+    const childId = stateWithChild.itemData.staging[0].children![0].id;
+
+    // 子アイテムを削除
+    store.dispatch(itemSlice.actions.RemoveItemAndChildById(childId));
+
+    const newState = (store.getState() as RootState).item;
+    expect(newState.itemData.staging[0].children).toHaveLength(0);
+    // 親がアクティブノードになることを確認
+    expect(newState.activeNode?.id).toBe(parentId);
+  });
 });

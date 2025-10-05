@@ -5,6 +5,11 @@ import TreeNode from '../models/treeNode';
 
 import { plainToInstance } from 'class-transformer';
 
+// ノードをディープコピーする関数
+const deepCloneNodes = (nodes: TreeNode[]): TreeNode[] => {
+  return JSON.parse(JSON.stringify(nodes));
+};
+
 // 共通のヘルパー関数
 const findNodeById = (itemId: string, nodes: TreeNode[]): TreeNode | null => {
   const queue = new Queue<TreeNode>();
@@ -49,10 +54,10 @@ export interface ItemSliceState {
 
 // アイテムスライスファクトリー関数
 export const createItemSlice = (initialState: ItemSliceState) => {
-  const addNewItem = (itemData: TreeNode[], title: string): TreeNode => {
+  const createNewNode = (title: string) => {
     const newTreeNode = new TreeNode({ title, credentials: [] });
-    itemData.push(newTreeNode);
-    return newTreeNode;
+    // プレーンオブジェクトに変換
+    return JSON.parse(JSON.stringify(newTreeNode));
   };
 
   return createSlice({
@@ -84,87 +89,52 @@ export const createItemSlice = (initialState: ItemSliceState) => {
         state.activeNode = action.payload;
       },
       updateItem: (state, action: PayloadAction<TreeNode>) => {
-        const queue = new Queue<TreeNode>();
-        const stagingCopy = state.itemData.staging.map((node: TreeNode) => ({ ...node }));
-        stagingCopy.forEach((node: TreeNode) => queue.enqueue(node));
-
-        while (!queue.isEmpty) {
-          const node = queue.dequeue();
-          if (node.id === action.payload.id) {
-            node.data = action.payload.data;
-            state.itemData.staging = stagingCopy;
-            return;
-          }
-          if (node.children) {
-            node.children.forEach(child => queue.enqueue(child));
-          }
+        const targetNode = findNodeById(action.payload.id, state.itemData.staging);
+        if (targetNode) {
+          targetNode.data = action.payload.data;
         }
       },
       addNewTopItem: state => {
-        const newNode = addNewItem(state.itemData.staging, `item${state.itemCount}`);
+        const newNode = createNewNode(`item${state.itemCount}`);
+        state.itemData.staging.push(newNode);
         state.itemCount++;
         state.activeNode = newNode;
       },
       addNewSubItemById: (state, action: PayloadAction<string>) => {
-        const queue = new Queue<TreeNode>();
-        const stagingCopy = state.itemData.staging.map((node: TreeNode) => ({ ...node }));
-        stagingCopy.forEach((node: TreeNode) => queue.enqueue(node));
-
-        while (!queue.isEmpty) {
-          const node = queue.dequeue();
-          if (node.id === action.payload) {
-            if (!node.children) {
-              node.children = [];
-            }
-            const newNode = addNewItem(node.children, `item${state.itemCount}`);
-            state.itemCount++;
-            state.itemData.staging = stagingCopy;
-            state.activeNode = newNode;
-            return;
+        const targetNode = findNodeById(action.payload, state.itemData.staging);
+        if (targetNode) {
+          if (!targetNode.children) {
+            targetNode.children = [];
           }
-          if (node.children) {
-            node.children.forEach(child => queue.enqueue(child));
-          }
+          const newNode = createNewNode(`item${state.itemCount}`);
+          targetNode.children.push(newNode);
+          state.itemCount++;
+          state.activeNode = newNode;
         }
       },
       RemoveItemAndChildById: (state, action: PayloadAction<string>) => {
         const itemIdToDelete = action.payload;
         const parentNode = findParentNode(itemIdToDelete, state.itemData.staging);
 
-        const queue = new Queue<{ nodes: TreeNode[]; index: number }>();
-        const stagingCopy = state.itemData.staging.map((node: TreeNode) => ({ ...node }));
-        for (let i = 0; i < stagingCopy.length; i++) {
-          queue.enqueue({ nodes: stagingCopy, index: i });
+        // ルートレベルから削除を試みる
+        const rootIndex = state.itemData.staging.findIndex(node => node.id === itemIdToDelete);
+        if (rootIndex !== -1) {
+          state.itemData.staging.splice(rootIndex, 1);
+          state.activeNode = state.itemData.staging.length > 0 ? state.itemData.staging[0] : null;
+          return;
         }
 
-        let itemRemoved = false;
-        while (!queue.isEmpty) {
-          const { nodes, index } = queue.dequeue();
-          if (nodes[index].id === itemIdToDelete) {
-            nodes.splice(index, 1);
-            state.itemData.staging = stagingCopy;
-            itemRemoved = true;
-            break;
-          } else {
-            const children = nodes[index].children;
-            if (children) {
-              for (let i = 0; i < children.length; i++) {
-                queue.enqueue({ nodes: children, index: i });
-              }
-            }
-          }
-        }
-
-        if (itemRemoved) {
-          if (parentNode) {
+        // 親ノードの子から削除
+        if (parentNode && parentNode.children) {
+          const childIndex = parentNode.children.findIndex(child => child.id === itemIdToDelete);
+          if (childIndex !== -1) {
+            parentNode.children.splice(childIndex, 1);
             state.activeNode = parentNode;
-          } else {
-            state.activeNode = state.itemData.staging.length > 0 ? state.itemData.staging[0] : null;
           }
         }
       },
       updateMainState: state => {
-        state.itemData.main = state.itemData.staging;
+        state.itemData.main = deepCloneNodes(state.itemData.staging);
       },
       updateStagingData: (state, action: PayloadAction<TreeNode[]>) => {
         state.itemData.staging = action.payload;
@@ -185,8 +155,13 @@ export const hasDifferenceBetweenMainAndStaging = createSelector([itemData], ite
 export const stagingItemData = createSelector([itemData], itemData => itemData.staging);
 
 // 本番用の初期化関数
-const getInitialNodes = async (): Promise<TreeNode[]> =>
-  plainToInstance(TreeNode, await window.api.readNodes());
+const getInitialNodes = async (): Promise<TreeNode[]> => {
+  const rawNodes = await window.api.readNodes();
+  const nodes = plainToInstance(TreeNode, rawNodes);
+  // プレーンなオブジェクトに変換してImmerが正しく動作するようにする
+  return deepCloneNodes(nodes);
+};
+
 const getInitialExpandedItemIds = async (): Promise<string[]> =>
   await window.api.getTreeViewExpandedItems();
 const getInitialSelectedItemId = async (): Promise<string | undefined> =>
@@ -204,11 +179,12 @@ const createProductionInitialState = async (): Promise<ItemSliceState> => {
       ? initialNodes[0]
       : null;
 
+  // mainとstagingは別々のコピーを持つ
   return {
     activeNode: initialActiveNode,
     itemCount: 1,
     itemData: {
-      main: initialNodes,
+      main: deepCloneNodes(initialNodes),
       staging: initialNodes
     },
     expandedItemIds: initialExpandedItemIds
