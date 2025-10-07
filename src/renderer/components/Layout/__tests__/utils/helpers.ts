@@ -18,7 +18,7 @@ export const createTestNode = (data: TreeNodeData | null = null): TreeNode => {
   }
   const treeNode = new TreeNode(data);
   // プレーンオブジェクトに変換してImmerが正しく動作するようにする
-  return JSON.parse(JSON.stringify(treeNode));
+  return structuredClone(treeNode);
 };
 
 /**

@@ -1,4 +1,4 @@
-import { PayloadAction, createSelector, createSlice } from '@reduxjs/toolkit';
+import { PayloadAction, createSelector, createSlice, current } from '@reduxjs/toolkit';
 
 import { Queue } from '../data_structures/queue';
 import TreeNode from '../models/treeNode';
@@ -6,9 +6,7 @@ import TreeNode from '../models/treeNode';
 import { plainToInstance } from 'class-transformer';
 
 // ノードをディープコピーする関数
-const deepCloneNodes = (nodes: TreeNode[]): TreeNode[] => {
-  return JSON.parse(JSON.stringify(nodes));
-};
+const deepCloneNodes = (nodes: TreeNode[]): TreeNode[] => structuredClone(nodes);
 
 // 共通のヘルパー関数
 const findNodeById = (itemId: string, nodes: TreeNode[]): TreeNode | null => {
@@ -57,7 +55,7 @@ export const createItemSlice = (initialState: ItemSliceState) => {
   const createNewNode = (title: string) => {
     const newTreeNode = new TreeNode({ title, credentials: [] });
     // プレーンオブジェクトに変換
-    return JSON.parse(JSON.stringify(newTreeNode));
+    return structuredClone(newTreeNode);
   };
 
   return createSlice({
@@ -134,7 +132,7 @@ export const createItemSlice = (initialState: ItemSliceState) => {
         }
       },
       updateMainState: state => {
-        state.itemData.main = deepCloneNodes(state.itemData.staging);
+        state.itemData.main = deepCloneNodes(current(state.itemData.staging));
       },
       updateStagingData: (state, action: PayloadAction<TreeNode[]>) => {
         state.itemData.staging = deepCloneNodes(action.payload);
