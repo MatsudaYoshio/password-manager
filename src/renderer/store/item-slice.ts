@@ -137,7 +137,7 @@ export const createItemSlice = (initialState: ItemSliceState) => {
         state.itemData.main = deepCloneNodes(state.itemData.staging);
       },
       updateStagingData: (state, action: PayloadAction<TreeNode[]>) => {
-        state.itemData.staging = action.payload;
+        state.itemData.staging = deepCloneNodes(action.payload);
       },
       setExpandedItemIds: (state, action: PayloadAction<string[]>) => {
         state.expandedItemIds = action.payload;

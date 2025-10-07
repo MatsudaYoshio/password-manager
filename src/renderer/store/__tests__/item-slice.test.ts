@@ -189,6 +189,7 @@ describe('item-slice', () => {
   });
 
   test('should handle updateStagingData', () => {
+    // クラスインスタンスを作成
     const newData = [
       new TreeNode({ title: 'Test Item 1', credentials: [] }),
       new TreeNode({ title: 'Test Item 2', credentials: [] })
@@ -200,6 +201,13 @@ describe('item-slice', () => {
     expect(state.itemData.staging).toHaveLength(2);
     expect(state.itemData.staging[0].data.title).toBe('Test Item 1');
     expect(state.itemData.staging[1].data.title).toBe('Test Item 2');
+
+    // プレーンオブジェクトに変換されていることを確認
+    expect(state.itemData.staging[0].constructor.name).toBe('Object');
+    expect(state.itemData.staging[1].constructor.name).toBe('Object');
+    // 元のクラスインスタンスとは別のオブジェクトであることを確認
+    expect(state.itemData.staging[0]).not.toBe(newData[0]);
+    expect(state.itemData.staging[1]).not.toBe(newData[1]);
   });
 
   test('should create plain objects for new items', () => {
