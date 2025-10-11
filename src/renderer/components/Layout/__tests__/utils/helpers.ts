@@ -6,7 +6,7 @@ import TreeNodeData from '../../../../models/treeNodeData';
 /**
  * テスト用のTreeNodeを作成するヘルパー関数
  * @param data TreeNodeDataオブジェクト、nullの場合はランダムなデータを生成
- * @returns 作成されたTreeNode
+ * @returns 作成されたTreeNode（プレーンオブジェクト）
  */
 export const createTestNode = (data: TreeNodeData | null = null): TreeNode => {
   if (data === null) {
@@ -16,7 +16,9 @@ export const createTestNode = (data: TreeNodeData | null = null): TreeNode => {
       credentials: []
     };
   }
-  return new TreeNode(data);
+  const treeNode = new TreeNode(data);
+  // プレーンオブジェクトに変換してImmerが正しく動作するようにする
+  return structuredClone(treeNode);
 };
 
 /**
