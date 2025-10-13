@@ -82,7 +82,7 @@
     "copyfiles": "^2.4.1",
     "cross-env": "^10.0.0",
     "css-loader": "^7.1.2",
-    "electron": "^35.0.0",
+    "electron": "^38.2.2",
     "electronmon": "^2.0.2",
     "eslint": "^9.32.0",
     "eslint-config-prettier": "^10.1.8",
