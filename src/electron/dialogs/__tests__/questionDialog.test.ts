@@ -39,16 +39,18 @@ describe('QuestionDialog', () => {
 
   describe('showMessageBox', () => {
     test('should call dialog.showMessageBox with correct parameters', async () => {
-      (dialog.showMessageBox as jest.Mock).mockResolvedValue({ response: 1 });
+      (dialog.showMessageBox as jest.Mock).mockResolvedValue({
+        response: QuestionDialog.dialogResponses.YES.id
+      });
 
       await questionDialog.showMessageBox('Test question?', mockYesCallback, mockNoCallback);
 
       expect(dialog.showMessageBox).toHaveBeenCalledWith({
         type: 'question',
         message: 'Test question?',
-        buttons: ['No', 'Yes'],
-        defaultId: 1,
-        cancelId: 0
+        buttons: [QuestionDialog.dialogResponses.NO.text, QuestionDialog.dialogResponses.YES.text],
+        defaultId: QuestionDialog.dialogResponses.YES.id,
+        cancelId: QuestionDialog.dialogResponses.NO.id
       });
     });
 
