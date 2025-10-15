@@ -31,17 +31,25 @@ jest.mock('../../../shared/constants', () => ({
 
 describe('SettingsWindow', () => {
   let parentWindow: BrowserWindow;
-  let settingsWindow: SettingsWindow;
+
+  // privateなinstanceプロパティにアクセスするためのヘルパー
+  const getInstance = () =>
+    (SettingsWindow as unknown as { instance: SettingsWindow | null }).instance;
+  const setInstance = (value: SettingsWindow | null) => {
+    (SettingsWindow as unknown as { instance: SettingsWindow | null }).instance = value;
+  };
 
   beforeEach(() => {
     jest.clearAllMocks();
+    // シングルトンインスタンスをリセット
+    setInstance(null);
     parentWindow = new BrowserWindow();
     (isDevelopment as jest.Mock).mockReturnValue(false);
   });
 
-  describe('constructor', () => {
-    test('should create window with correct options', () => {
-      settingsWindow = new SettingsWindow(parentWindow);
+  describe('focusOrCreate', () => {
+    test('should create window with correct options on first call', () => {
+      SettingsWindow.focusOrCreate(parentWindow);
 
       const calls = (BrowserWindow as unknown as jest.Mock).mock.calls;
       const lastCall = calls[calls.length - 1][0];
@@ -58,62 +66,80 @@ describe('SettingsWindow', () => {
     });
 
     test('should load settings.html file', () => {
-      settingsWindow = new SettingsWindow(parentWindow);
+      SettingsWindow.focusOrCreate(parentWindow);
 
-      const loadFileCall = (settingsWindow.loadFile as jest.Mock).mock.calls[0][0];
+      const instance = getInstance();
+      const loadFileCall = (instance?.loadFile as jest.Mock).mock.calls[0][0];
       expect(loadFileCall).toContain('settings.html');
     });
 
     test('should set menu bar visibility based on isDevelopment', () => {
       (isDevelopment as jest.Mock).mockReturnValue(true);
-      settingsWindow = new SettingsWindow(parentWindow);
+      SettingsWindow.focusOrCreate(parentWindow);
 
-      expect(settingsWindow.setMenuBarVisibility).toHaveBeenCalledWith(true);
+      const instance = getInstance();
+      expect(instance?.setMenuBarVisibility).toHaveBeenCalledWith(true);
     });
 
     test('should hide menu bar in production', () => {
       (isDevelopment as jest.Mock).mockReturnValue(false);
-      settingsWindow = new SettingsWindow(parentWindow);
+      SettingsWindow.focusOrCreate(parentWindow);
 
-      expect(settingsWindow.setMenuBarVisibility).toHaveBeenCalledWith(false);
+      const instance = getInstance();
+      expect(instance?.setMenuBarVisibility).toHaveBeenCalledWith(false);
     });
 
     test('should register closed event handler', () => {
-      settingsWindow = new SettingsWindow(parentWindow);
+      SettingsWindow.focusOrCreate(parentWindow);
 
-      expect(settingsWindow.on).toHaveBeenCalledWith('closed', expect.any(Function));
+      const instance = getInstance();
+      expect(instance?.on).toHaveBeenCalledWith('closed', expect.any(Function));
     });
 
-    test('should destroy window on closed event', () => {
-      settingsWindow = new SettingsWindow(parentWindow);
+    test('should set instance to null on closed event', () => {
+      SettingsWindow.focusOrCreate(parentWindow);
 
-      const closedHandler = (settingsWindow.on as jest.Mock).mock.calls.find(
+      const instance = getInstance();
+      const closedHandler = (instance?.on as jest.Mock).mock.calls.find(
         call => call[0] === 'closed'
       )?.[1];
 
       expect(closedHandler).toBeDefined();
       closedHandler();
 
-      expect(settingsWindow.destroy).toHaveBeenCalled();
+      expect(getInstance()).toBeNull();
     });
-  });
 
-  describe('focusOrCreate', () => {
     test('should focus existing window if not destroyed', () => {
-      settingsWindow = new SettingsWindow(parentWindow);
-      (settingsWindow.isDestroyed as jest.Mock).mockReturnValue(false);
-
-      settingsWindow.focusOrCreate(parentWindow);
-
-      expect(settingsWindow.focus).toHaveBeenCalled();
-    });
-
-    test('should create new window if destroyed', () => {
-      settingsWindow = new SettingsWindow(parentWindow);
-      (settingsWindow.isDestroyed as jest.Mock).mockReturnValue(true);
+      SettingsWindow.focusOrCreate(parentWindow);
+      const instance = getInstance();
+      (instance?.isDestroyed as jest.Mock).mockReturnValue(false);
 
       const initialCallCount = (BrowserWindow as unknown as jest.Mock).mock.calls.length;
-      settingsWindow.focusOrCreate(parentWindow);
+      SettingsWindow.focusOrCreate(parentWindow);
+
+      expect(BrowserWindow).toHaveBeenCalledTimes(initialCallCount);
+      expect(instance?.focus).toHaveBeenCalled();
+    });
+
+    test('should create new window if instance is destroyed', () => {
+      SettingsWindow.focusOrCreate(parentWindow);
+      const firstInstance = getInstance();
+      (firstInstance?.isDestroyed as jest.Mock).mockReturnValue(true);
+
+      const initialCallCount = (BrowserWindow as unknown as jest.Mock).mock.calls.length;
+      SettingsWindow.focusOrCreate(parentWindow);
+
+      expect(BrowserWindow).toHaveBeenCalledTimes(initialCallCount + 1);
+      expect(getInstance()).not.toBe(firstInstance);
+    });
+
+    test('should create new window if instance is null', () => {
+      SettingsWindow.focusOrCreate(parentWindow);
+      setInstance(null);
+
+      const initialCallCount = (BrowserWindow as unknown as jest.Mock).mock.calls.length;
+      SettingsWindow.focusOrCreate(parentWindow);
 
       expect(BrowserWindow).toHaveBeenCalledTimes(initialCallCount + 1);
     });

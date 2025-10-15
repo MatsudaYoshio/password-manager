@@ -4,7 +4,9 @@ import { ICON_PATH } from '../../shared/constants';
 import { isDevelopment } from '../utils/environment';
 
 class SettingsWindow extends BrowserWindow {
-  constructor(parentWindow: BrowserWindow) {
+  private static instance: SettingsWindow | null = null;
+
+  private constructor(parentWindow: BrowserWindow) {
     super({
       width: 800,
       height: 600,
@@ -24,12 +26,16 @@ class SettingsWindow extends BrowserWindow {
     this.setMenuBarVisibility(isDevelopment());
 
     this.on('closed', () => {
-      this.destroy();
+      SettingsWindow.instance = null;
     });
   }
 
-  public focusOrCreate(parentWindow: BrowserWindow) {
-    this.isDestroyed() ? new SettingsWindow(parentWindow) : this.focus();
+  public static focusOrCreate(parentWindow: BrowserWindow): void {
+    if (this.instance === null || this.instance.isDestroyed()) {
+      this.instance = new SettingsWindow(parentWindow);
+    } else {
+      this.instance.focus();
+    }
   }
 }
 
