@@ -51,8 +51,7 @@ describe('SettingsWindow', () => {
     test('should create window with correct options on first call', () => {
       SettingsWindow.focusOrCreate(parentWindow);
 
-      const calls = (BrowserWindow as unknown as jest.Mock).mock.calls;
-      const lastCall = calls[calls.length - 1][0];
+      const lastCall = (BrowserWindow as unknown as jest.Mock).mock.lastCall[0];
 
       expect(lastCall.width).toBe(800);
       expect(lastCall.height).toBe(600);
