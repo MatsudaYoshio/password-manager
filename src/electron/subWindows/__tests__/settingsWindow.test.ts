@@ -58,7 +58,6 @@ describe('SettingsWindow', () => {
       expect(lastCall.height).toBe(600);
       expect(lastCall.title).toBe('設定');
       expect(lastCall.parent).toBe(parentWindow);
-      expect(lastCall.modal).toBe(true);
       expect(lastCall.webPreferences.nodeIntegration).toBe(false);
       expect(lastCall.webPreferences.contextIsolation).toBe(true);
       expect(lastCall.webPreferences.preload).toContain('preload.js');

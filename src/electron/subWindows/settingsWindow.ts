@@ -12,7 +12,6 @@ class SettingsWindow extends BrowserWindow {
       height: 600,
       title: '設定',
       parent: parentWindow,
-      modal: true,
       webPreferences: {
         nodeIntegration: false,
         contextIsolation: true,
