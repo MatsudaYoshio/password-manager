@@ -98,9 +98,7 @@ describe('SettingsWindow', () => {
       SettingsWindow.focusOrCreate(parentWindow);
 
       const instance = getInstance();
-      const closedHandler = (instance?.on as jest.Mock).mock.calls.find(
-        call => call[0] === 'closed'
-      )?.[1];
+      const closedHandler = (instance?.on as jest.Mock).mock.calls[0][1];
 
       expect(closedHandler).toBeDefined();
       closedHandler();
