@@ -29,6 +29,11 @@ class SettingsWindow extends BrowserWindow {
     });
   }
 
+  /**
+   * Gets or creates the settings window singleton.
+   * If an instance exists and is not destroyed, focuses it; otherwise creates a new instance.
+   * @param parentWindow - The parent browser window
+   */
   public static focusOrCreate(parentWindow: BrowserWindow): void {
     if (this.instance === null || this.instance.isDestroyed()) {
       this.instance = new SettingsWindow(parentWindow);
