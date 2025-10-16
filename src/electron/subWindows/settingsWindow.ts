@@ -4,13 +4,14 @@ import { ICON_PATH } from '../../shared/constants';
 import { isDevelopment } from '../utils/environment';
 
 class SettingsWindow extends BrowserWindow {
-  constructor(parentWindow: BrowserWindow) {
+  private static instance: SettingsWindow | null = null;
+
+  private constructor(parentWindow: BrowserWindow) {
     super({
       width: 800,
       height: 600,
       title: '設定',
       parent: parentWindow,
-      modal: true,
       webPreferences: {
         nodeIntegration: false,
         contextIsolation: true,
@@ -24,12 +25,21 @@ class SettingsWindow extends BrowserWindow {
     this.setMenuBarVisibility(isDevelopment());
 
     this.on('closed', () => {
-      this.destroy();
+      SettingsWindow.instance = null;
     });
   }
 
-  public focusOrCreate(parentWindow: BrowserWindow) {
-    this.isDestroyed() ? new SettingsWindow(parentWindow) : this.focus();
+  /**
+   * Gets or creates the settings window singleton.
+   * If an instance exists and is not destroyed, focuses it; otherwise creates a new instance.
+   * @param parentWindow - The parent browser window
+   */
+  public static focusOrCreate(parentWindow: BrowserWindow): void {
+    if (this.instance === null || this.instance.isDestroyed()) {
+      this.instance = new SettingsWindow(parentWindow);
+    } else {
+      this.instance.focus();
+    }
   }
 }
 

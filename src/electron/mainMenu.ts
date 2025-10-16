@@ -9,8 +9,6 @@ const readFile2String = (path: fs.PathOrFileDescriptor, encoding: BufferEncoding
   fs.readFileSync(path, encoding);
 
 class MainMenu {
-  private settingsWindow: SettingsWindow | null = null;
-
   constructor(mainWindow: BrowserWindow) {
     const questionDialog = new QuestionDialog();
 
@@ -104,11 +102,7 @@ class MainMenu {
           {
             label: '設定',
             click: () => {
-              if (!this.settingsWindow || this.settingsWindow.isDestroyed()) {
-                this.settingsWindow = new SettingsWindow(mainWindow);
-              } else {
-                this.settingsWindow.focus();
-              }
+              SettingsWindow.focusOrCreate(mainWindow);
             }
           }
         ]
