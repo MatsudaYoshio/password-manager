@@ -19,19 +19,19 @@ const useEventListeners = () => {
   // イベントリスナーの設定をまとめて管理
   useEffect(() => {
     // イベントリスナーを設定し、ハンドラーの参照を保持
-    const saveHandler_ref = window.api.onSaveData(() => saveHandler());
-    const addTopHandler_ref = window.api.onAddTopItem(() => addTopItemHandler());
-    const addSubHandler_ref = window.api.onAddSubItem(() => addSubItemHandler());
-    const removeSubtreeHandler_ref = window.api.onRemoveSubtree(() => removeSubtreeHandler());
-    const exportHandler_ref = window.api.onExportData(() => exportItemHandler());
+    const saveHandlerRef = window.api.onSaveData(() => saveHandler());
+    const addTopHandlerRef = window.api.onAddTopItem(() => addTopItemHandler());
+    const addSubHandlerRef = window.api.onAddSubItem(() => addSubItemHandler());
+    const removeSubtreeHandlerRef = window.api.onRemoveSubtree(() => removeSubtreeHandler());
+    const exportHandlerRef = window.api.onExportData(() => exportItemHandler());
 
     // クリーンアップ関数
     return () => {
-      window.api.offSaveData(saveHandler_ref);
-      window.api.offAddTopItem(addTopHandler_ref);
-      window.api.offAddSubItem(addSubHandler_ref);
-      window.api.offRemoveSubtree(removeSubtreeHandler_ref);
-      window.api.offExportData(exportHandler_ref);
+      window.api.offSaveData(saveHandlerRef);
+      window.api.offAddTopItem(addTopHandlerRef);
+      window.api.offAddSubItem(addSubHandlerRef);
+      window.api.offRemoveSubtree(removeSubtreeHandlerRef);
+      window.api.offExportData(exportHandlerRef);
     };
   }, [saveHandler, addTopItemHandler, addSubItemHandler, removeSubtreeHandler, exportItemHandler]);
 };
