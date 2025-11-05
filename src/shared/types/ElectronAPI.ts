@@ -19,14 +19,14 @@ export interface ElectronAPI {
   saveTreeViewExpandedItems(expandedItemIds: string[]): Promise<void>;
 
   // Event listeners
-  onSaveData(callback: VoidCallback): void;
-  offSaveData(callback: VoidCallback): void;
-  onAddTopItem(callback: VoidCallback): void;
-  offAddTopItem(callback: VoidCallback): void;
-  onAddSubItem(callback: VoidCallback): void;
-  offAddSubItem(callback: VoidCallback): void;
-  onRemoveSubtree(callback: VoidCallback): void;
-  offRemoveSubtree(callback: VoidCallback): void;
-  onExportData(callback: VoidCallback): void;
-  offExportData(callback: VoidCallback): void;
+  onSaveData(callback: VoidCallback): VoidCallback;
+  offSaveData(handler: VoidCallback): void;
+  onAddTopItem(callback: VoidCallback): VoidCallback;
+  offAddTopItem(handler: VoidCallback): void;
+  onAddSubItem(callback: VoidCallback): VoidCallback;
+  offAddSubItem(handler: VoidCallback): void;
+  onRemoveSubtree(callback: VoidCallback): VoidCallback;
+  offRemoveSubtree(handler: VoidCallback): void;
+  onExportData(callback: VoidCallback): VoidCallback;
+  offExportData(handler: VoidCallback): void;
 }

@@ -11,21 +11,41 @@ const api: ElectronAPI = {
   onImportData: (callback: DataCallback<TreeNodePlain[]>) =>
     ipcRenderer.on('import-data', (_event, parsedObject) => callback(parsedObject)),
 
-  onSaveData: (callback: VoidCallback) => ipcRenderer.once('save-data', () => callback()),
-  offSaveData: (callback: VoidCallback) => ipcRenderer.removeListener('save-data', callback),
+  onSaveData: (callback: VoidCallback) => {
+    const handler = () => callback();
+    ipcRenderer.on('save-data', handler);
+    return handler;
+  },
+  offSaveData: (handler: VoidCallback) => ipcRenderer.removeListener('save-data', handler),
 
-  onAddTopItem: (callback: VoidCallback) => ipcRenderer.once('add-top-item', () => callback()),
-  offAddTopItem: (callback: VoidCallback) => ipcRenderer.removeListener('add-top-item', callback),
+  onAddTopItem: (callback: VoidCallback) => {
+    const handler = () => callback();
+    ipcRenderer.on('add-top-item', handler);
+    return handler;
+  },
+  offAddTopItem: (handler: VoidCallback) => ipcRenderer.removeListener('add-top-item', handler),
 
-  onAddSubItem: (callback: VoidCallback) => ipcRenderer.once('add-sub-item', () => callback()),
-  offAddSubItem: (callback: VoidCallback) => ipcRenderer.removeListener('add-sub-item', callback),
+  onAddSubItem: (callback: VoidCallback) => {
+    const handler = () => callback();
+    ipcRenderer.on('add-sub-item', handler);
+    return handler;
+  },
+  offAddSubItem: (handler: VoidCallback) => ipcRenderer.removeListener('add-sub-item', handler),
 
-  onRemoveSubtree: (callback: VoidCallback) => ipcRenderer.once('remove-subtree', () => callback()),
-  offRemoveSubtree: (callback: VoidCallback) =>
-    ipcRenderer.removeListener('remove-subtree', callback),
+  onRemoveSubtree: (callback: VoidCallback) => {
+    const handler = () => callback();
+    ipcRenderer.on('remove-subtree', handler);
+    return handler;
+  },
+  offRemoveSubtree: (handler: VoidCallback) =>
+    ipcRenderer.removeListener('remove-subtree', handler),
 
-  onExportData: (callback: VoidCallback) => ipcRenderer.on('export-data', () => callback()),
-  offExportData: (callback: VoidCallback) => ipcRenderer.removeListener('export-data', callback),
+  onExportData: (callback: VoidCallback) => {
+    const handler = () => callback();
+    ipcRenderer.on('export-data', handler);
+    return handler;
+  },
+  offExportData: (handler: VoidCallback) => ipcRenderer.removeListener('export-data', handler),
 
   getBackupSettings: () => ipcRenderer.invoke('get-backup-settings'),
   updateSetting: (key: keyof BackupSettings, value: string | boolean) =>
