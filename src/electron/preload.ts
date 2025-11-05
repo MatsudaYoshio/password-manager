@@ -62,3 +62,6 @@ const api: ElectronAPI = {
 };
 
 contextBridge.exposeInMainWorld('api', api);
+
+// テスト用にエクスポート
+export { api };

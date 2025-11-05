@@ -1,74 +1,59 @@
 /**
  * preload.tsのイベントリスナー機能のテスト
  *
- * 注: preloadスクリプトは実際のElectron環境でのみ動作するため、
- * このテストではipcRendererの動作をモック化して検証する
+ * 実際のpreload.tsからエクスポートされたapiオブジェクトをテストする
  */
 
-describe('preload event listeners', () => {
-  let mockIpcRenderer: {
-    on: jest.Mock;
-    once: jest.Mock;
-    removeListener: jest.Mock;
-    invoke: jest.Mock;
-  };
+// electronモジュールをモック化（requireより前に実行される必要がある）
+const mockExposeInMainWorld = jest.fn();
+const mockOn = jest.fn();
+const mockRemoveListener = jest.fn();
+const mockInvoke = jest.fn().mockResolvedValue(undefined);
 
+jest.mock('electron', () => ({
+  contextBridge: {
+    exposeInMainWorld: mockExposeInMainWorld
+  },
+  ipcRenderer: {
+    on: mockOn,
+    removeListener: mockRemoveListener,
+    invoke: mockInvoke
+  }
+}));
+
+// モックが適用された後に動的にpreload.tsをインポート
+// eslint-disable-next-line @typescript-eslint/no-require-imports, no-undef
+const preloadModule = require('../preload');
+
+describe('preload event listeners', () => {
   beforeEach(() => {
-    // Given: ipcRendererのモック
-    mockIpcRenderer = {
-      on: jest.fn(),
-      once: jest.fn(),
-      removeListener: jest.fn(),
-      invoke: jest.fn()
-    };
+    // 各テスト前にモックをクリア
+    mockOn.mockClear();
+    mockRemoveListener.mockClear();
+    mockInvoke.mockClear();
   });
 
   describe('onSaveData', () => {
     it('should_register_listener_and_return_handler_reference', () => {
       // Given: コールバック関数
       const callback = jest.fn();
-      let capturedHandler: (() => void) | undefined;
 
-      mockIpcRenderer.on.mockImplementation((channel, handler) => {
-        if (channel === 'save-data') {
-          capturedHandler = handler as () => void;
-        }
-      });
+      // When: 実際のapi.onSaveDataを呼ぶ
+      const handler = preloadModule.api.onSaveData(callback);
 
-      // When: onSaveDataを実行（実際のpreload実装をシミュレート）
-      const handler = (() => {
-        const h = () => callback();
-        mockIpcRenderer.on('save-data', h);
-        return h;
-      })();
-
-      // Then: ipcRenderer.onが呼ばれ、ハンドラー参照が返される
-      expect(mockIpcRenderer.on).toHaveBeenCalledWith('save-data', handler);
+      // Then: ipcRenderer.onが正しく呼ばれる
+      expect(mockOn).toHaveBeenCalledWith('save-data', handler);
       expect(handler).toBeDefined();
       expect(typeof handler).toBe('function');
     });
 
-    it('should_invoke_callback_when_event_is_triggered', () => {
-      // Given: コールバック関数とイベントハンドラー
+    it('should_invoke_callback_when_handler_is_called', () => {
+      // Given: コールバック関数
       const callback = jest.fn();
-      let capturedHandler: (() => void) | undefined;
 
-      mockIpcRenderer.on.mockImplementation((channel, handler) => {
-        if (channel === 'save-data') {
-          capturedHandler = handler as () => void;
-        }
-      });
-
-      const handler = (() => {
-        const h = () => callback();
-        mockIpcRenderer.on('save-data', h);
-        return h;
-      })();
-
-      // When: イベントが発火
-      if (capturedHandler) {
-        capturedHandler();
-      }
+      // When: ハンドラーを取得して実行
+      const handler = preloadModule.api.onSaveData(callback);
+      handler();
 
       // Then: コールバックが実行される
       expect(callback).toHaveBeenCalledTimes(1);
@@ -79,33 +64,28 @@ describe('preload event listeners', () => {
     it('should_remove_listener_with_correct_handler_reference', () => {
       // Given: 登録されたハンドラー
       const callback = jest.fn();
-      const handler = () => callback();
-
-      mockIpcRenderer.on('save-data', handler);
+      const handler = preloadModule.api.onSaveData(callback);
 
       // When: offSaveDataを実行
-      mockIpcRenderer.removeListener('save-data', handler);
+      preloadModule.api.offSaveData(handler);
 
       // Then: 正しいハンドラー参照でremoveListenerが呼ばれる
-      expect(mockIpcRenderer.removeListener).toHaveBeenCalledWith('save-data', handler);
+      expect(mockRemoveListener).toHaveBeenCalledWith('save-data', handler);
     });
 
     it('should_prevent_memory_leak_by_removing_correct_handler', () => {
       // Given: 複数のハンドラーを登録
       const callback1 = jest.fn();
       const callback2 = jest.fn();
-      const handler1 = () => callback1();
-      const handler2 = () => callback2();
-
-      mockIpcRenderer.on('save-data', handler1);
-      mockIpcRenderer.on('save-data', handler2);
+      const handler1 = preloadModule.api.onSaveData(callback1);
+      const handler2 = preloadModule.api.onSaveData(callback2);
 
       // When: 特定のハンドラーのみ削除
-      mockIpcRenderer.removeListener('save-data', handler1);
+      preloadModule.api.offSaveData(handler1);
 
       // Then: 指定したハンドラーのみが削除される
-      expect(mockIpcRenderer.removeListener).toHaveBeenCalledWith('save-data', handler1);
-      expect(mockIpcRenderer.removeListener).not.toHaveBeenCalledWith('save-data', handler2);
+      expect(mockRemoveListener).toHaveBeenCalledWith('save-data', handler1);
+      expect(mockRemoveListener).not.toHaveBeenCalledWith('save-data', handler2);
     });
   });
 
@@ -115,57 +95,61 @@ describe('preload event listeners', () => {
       const callback = jest.fn();
 
       // When: 登録→削除→再登録のサイクル
-      const handler1 = (() => {
-        const h = () => callback();
-        mockIpcRenderer.on('save-data', h);
-        return h;
-      })();
+      const handler1 = preloadModule.api.onSaveData(callback);
+      preloadModule.api.offSaveData(handler1);
 
-      mockIpcRenderer.removeListener('save-data', handler1);
-
-      const handler2 = (() => {
-        const h = () => callback();
-        mockIpcRenderer.on('save-data', h);
-        return h;
-      })();
+      const handler2 = preloadModule.api.onSaveData(callback);
 
       // Then: 各操作が正しく実行される
-      expect(mockIpcRenderer.on).toHaveBeenCalledTimes(2);
-      expect(mockIpcRenderer.removeListener).toHaveBeenCalledTimes(1);
+      expect(mockOn).toHaveBeenCalledTimes(2);
+      expect(mockRemoveListener).toHaveBeenCalledTimes(1);
       expect(handler1).not.toBe(handler2); // 異なるハンドラー参照
     });
   });
 
   describe('all event types', () => {
-    const eventTypes = [
-      'save-data',
-      'add-top-item',
-      'add-sub-item',
-      'remove-subtree',
-      'export-data'
+    const eventConfigs = [
+      { event: 'save-data', onMethod: 'onSaveData', offMethod: 'offSaveData' },
+      { event: 'add-top-item', onMethod: 'onAddTopItem', offMethod: 'offAddTopItem' },
+      { event: 'add-sub-item', onMethod: 'onAddSubItem', offMethod: 'offAddSubItem' },
+      { event: 'remove-subtree', onMethod: 'onRemoveSubtree', offMethod: 'offRemoveSubtree' },
+      { event: 'export-data', onMethod: 'onExportData', offMethod: 'offExportData' }
     ];
 
-    eventTypes.forEach(eventType => {
-      it(`should_handle_${eventType}_event_correctly`, () => {
+    eventConfigs.forEach(({ event, onMethod, offMethod }) => {
+      it(`should_handle_${event}_event_correctly`, () => {
         // Given: コールバック関数
         const callback = jest.fn();
 
         // When: イベントリスナーを登録
-        const handler = (() => {
-          const h = () => callback();
-          mockIpcRenderer.on(eventType, h);
-          return h;
-        })();
+        const handler = preloadModule.api[onMethod](callback);
 
         // Then: 正しいイベントタイプで登録される
-        expect(mockIpcRenderer.on).toHaveBeenCalledWith(eventType, handler);
+        expect(mockOn).toHaveBeenCalledWith(event, handler);
+
+        // When: ハンドラーを実行
+        handler();
+
+        // Then: コールバックが呼ばれる
+        expect(callback).toHaveBeenCalledTimes(1);
 
         // When: クリーンアップ
-        mockIpcRenderer.removeListener(eventType, handler);
+        preloadModule.api[offMethod](handler);
 
         // Then: 正しいイベントタイプとハンドラーで削除される
-        expect(mockIpcRenderer.removeListener).toHaveBeenCalledWith(eventType, handler);
+        expect(mockRemoveListener).toHaveBeenCalledWith(event, handler);
       });
+    });
+  });
+
+  describe('contextBridge integration', () => {
+    it('should_expose_api_to_main_world', () => {
+      // Then: contextBridge.exposeInMainWorldがモジュールロード時に呼ばれている
+      expect(mockExposeInMainWorld).toHaveBeenCalledWith('api', expect.any(Object));
+
+      // モジュールが正しくエクスポートされていることを確認
+      expect(preloadModule.api).toBeDefined();
+      expect(typeof preloadModule.api.onSaveData).toBe('function');
     });
   });
 });
