@@ -1,6 +1,6 @@
 import { BackupSettings } from './BackupSettings';
 import { TreeNodePlain } from '../../renderer/models/treeNode';
-import { VoidCallback, DataCallback } from './Callback';
+import { VoidCallback, DataCallback, IpcEventHandler } from './Callback';
 
 export interface ElectronAPI {
   // Backup settings
@@ -19,14 +19,14 @@ export interface ElectronAPI {
   saveTreeViewExpandedItems(expandedItemIds: string[]): Promise<void>;
 
   // Event listeners
-  onSaveData(callback: VoidCallback): VoidCallback;
-  offSaveData(handler: VoidCallback): void;
-  onAddTopItem(callback: VoidCallback): VoidCallback;
-  offAddTopItem(handler: VoidCallback): void;
-  onAddSubItem(callback: VoidCallback): VoidCallback;
-  offAddSubItem(handler: VoidCallback): void;
-  onRemoveSubtree(callback: VoidCallback): VoidCallback;
-  offRemoveSubtree(handler: VoidCallback): void;
-  onExportData(callback: VoidCallback): VoidCallback;
-  offExportData(handler: VoidCallback): void;
+  onSaveData(callback: VoidCallback): IpcEventHandler;
+  offSaveData(handler: IpcEventHandler): void;
+  onAddTopItem(callback: VoidCallback): IpcEventHandler;
+  offAddTopItem(handler: IpcEventHandler): void;
+  onAddSubItem(callback: VoidCallback): IpcEventHandler;
+  offAddSubItem(handler: IpcEventHandler): void;
+  onRemoveSubtree(callback: VoidCallback): IpcEventHandler;
+  offRemoveSubtree(handler: IpcEventHandler): void;
+  onExportData(callback: VoidCallback): IpcEventHandler;
+  offExportData(handler: IpcEventHandler): void;
 }
