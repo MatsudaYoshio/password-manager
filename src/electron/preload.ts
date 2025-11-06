@@ -2,7 +2,7 @@ import { contextBridge, ipcRenderer } from 'electron';
 import { TreeNodePlain } from '../renderer/models/treeNode';
 import { ElectronAPI } from '../shared/types/ElectronAPI';
 import { BackupSettings } from '../shared/types/BackupSettings';
-import { VoidCallback, DataCallback } from '../shared/types/Callback';
+import { VoidCallback, DataCallback, IpcEventHandler } from '../shared/types/Callback';
 
 const api: ElectronAPI = {
   readNodes: () => ipcRenderer.invoke('read-nodes'),
@@ -11,21 +11,41 @@ const api: ElectronAPI = {
   onImportData: (callback: DataCallback<TreeNodePlain[]>) =>
     ipcRenderer.on('import-data', (_event, parsedObject) => callback(parsedObject)),
 
-  onSaveData: (callback: VoidCallback) => ipcRenderer.once('save-data', () => callback()),
-  offSaveData: (callback: VoidCallback) => ipcRenderer.removeListener('save-data', callback),
+  onSaveData: (callback: VoidCallback) => {
+    const handler = (_event: Electron.IpcRendererEvent) => callback();
+    ipcRenderer.on('save-data', handler);
+    return handler;
+  },
+  offSaveData: (handler: IpcEventHandler) => ipcRenderer.removeListener('save-data', handler),
 
-  onAddTopItem: (callback: VoidCallback) => ipcRenderer.once('add-top-item', () => callback()),
-  offAddTopItem: (callback: VoidCallback) => ipcRenderer.removeListener('add-top-item', callback),
+  onAddTopItem: (callback: VoidCallback) => {
+    const handler = (_event: Electron.IpcRendererEvent) => callback();
+    ipcRenderer.on('add-top-item', handler);
+    return handler;
+  },
+  offAddTopItem: (handler: IpcEventHandler) => ipcRenderer.removeListener('add-top-item', handler),
 
-  onAddSubItem: (callback: VoidCallback) => ipcRenderer.once('add-sub-item', () => callback()),
-  offAddSubItem: (callback: VoidCallback) => ipcRenderer.removeListener('add-sub-item', callback),
+  onAddSubItem: (callback: VoidCallback) => {
+    const handler = (_event: Electron.IpcRendererEvent) => callback();
+    ipcRenderer.on('add-sub-item', handler);
+    return handler;
+  },
+  offAddSubItem: (handler: IpcEventHandler) => ipcRenderer.removeListener('add-sub-item', handler),
 
-  onRemoveSubtree: (callback: VoidCallback) => ipcRenderer.once('remove-subtree', () => callback()),
-  offRemoveSubtree: (callback: VoidCallback) =>
-    ipcRenderer.removeListener('remove-subtree', callback),
+  onRemoveSubtree: (callback: VoidCallback) => {
+    const handler = (_event: Electron.IpcRendererEvent) => callback();
+    ipcRenderer.on('remove-subtree', handler);
+    return handler;
+  },
+  offRemoveSubtree: (handler: IpcEventHandler) =>
+    ipcRenderer.removeListener('remove-subtree', handler),
 
-  onExportData: (callback: VoidCallback) => ipcRenderer.on('export-data', () => callback()),
-  offExportData: (callback: VoidCallback) => ipcRenderer.removeListener('export-data', callback),
+  onExportData: (callback: VoidCallback) => {
+    const handler = (_event: Electron.IpcRendererEvent) => callback();
+    ipcRenderer.on('export-data', handler);
+    return handler;
+  },
+  offExportData: (handler: IpcEventHandler) => ipcRenderer.removeListener('export-data', handler),
 
   getBackupSettings: () => ipcRenderer.invoke('get-backup-settings'),
   updateSetting: (key: keyof BackupSettings, value: string | boolean) =>
@@ -42,3 +62,6 @@ const api: ElectronAPI = {
 };
 
 contextBridge.exposeInMainWorld('api', api);
+
+// テスト用にエクスポート
+export { api };
