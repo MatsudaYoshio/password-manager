@@ -23,7 +23,10 @@ const useEventListeners = () => {
     const addTopHandlerRef = window.api.onAddTopItem(() => addTopItemHandler());
     const addSubHandlerRef = window.api.onAddSubItem(() => addSubItemHandler());
     const removeSubtreeHandlerRef = window.api.onRemoveSubtree(() => removeSubtreeHandler());
-    const exportHandlerRef = window.api.onExportData(() => exportItemHandler());
+    const exportHandlerRef = window.api.onExportData(async () => await exportItemHandler());
+
+    // レンダラーの準備完了をメインプロセスに通知
+    window.api.sendRendererReady();
 
     // クリーンアップ関数
     return () => {

@@ -1,7 +1,7 @@
 import { BrowserWindow, app } from 'electron';
 import path from 'path';
 import { ICON_PATH } from '../shared/constants';
-import store from './store';
+import { setupAutoBackup } from './autoBackup';
 
 class MainWindow extends BrowserWindow {
   constructor() {
@@ -17,15 +17,12 @@ class MainWindow extends BrowserWindow {
       icon: ICON_PATH
     });
 
+    // 自動バックアップ機能を初期化
+    setupAutoBackup(this);
+
     this.loadFile(path.join(__dirname, 'index.html'));
 
     this.on('closed', () => app.quit());
-
-    if (store.get('backupEnabled')) {
-      this.webContents.once('did-finish-load', () => {
-        this.webContents.send('export-data');
-      });
-    }
   }
 }
 

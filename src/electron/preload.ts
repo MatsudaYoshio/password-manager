@@ -11,6 +11,9 @@ const api: ElectronAPI = {
   onImportData: (callback: DataCallback<TreeNodePlain[]>) =>
     ipcRenderer.on('import-data', (_event, parsedObject) => callback(parsedObject)),
 
+  // レンダラーの準備完了を通知
+  sendRendererReady: () => ipcRenderer.send('renderer-ready'),
+
   onSaveData: (callback: VoidCallback) => {
     const handler = (_event: Electron.IpcRendererEvent) => callback();
     ipcRenderer.on('save-data', handler);

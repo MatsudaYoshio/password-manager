@@ -9,6 +9,7 @@ import {
 } from '../shared/constants';
 import { BackupSettings } from '../shared/types/BackupSettings';
 import { isDevelopment } from './utils/environment';
+import { getBackupSettings } from './utils/backupSettings';
 import QuestionDialog from './dialogs/questionDialog';
 import store from './store';
 
@@ -75,7 +76,7 @@ const generateExportFilePath = (extension: string) => {
   const now = new Date();
   const pad = (n: number) => n.toString().padStart(2, '0');
   const fileName = `credentials_${now.getFullYear()}${pad(now.getMonth() + 1)}${pad(now.getDate())}${pad(now.getHours())}${pad(now.getMinutes())}${pad(now.getSeconds())}.${extension}`;
-  const backupPath = store.get('backupPath') as string;
+  const { backupPath } = getBackupSettings();
   if (backupPath) {
     return path.join(backupPath, fileName);
   }
@@ -170,20 +171,13 @@ const handleExportNodes = async (event: Electron.IpcMainInvokeEvent, data: TreeN
   );
 };
 
-const handleGetSetting = (key: string) => store.get(key);
-
 const handleUpdateSetting = (
   _: Electron.IpcMainInvokeEvent,
   key: keyof BackupSettings,
   value: string | boolean
 ) => store.set(key, value);
 
-const handleGetBackupSettings = () => {
-  return {
-    backupEnabled: handleGetSetting('backupEnabled'),
-    backupPath: handleGetSetting('backupPath')
-  } as BackupSettings;
-};
+const handleGetBackupSettings = () => getBackupSettings();
 
 const handleSelectBackupPath = async () => {
   const result = await dialog.showOpenDialog({
