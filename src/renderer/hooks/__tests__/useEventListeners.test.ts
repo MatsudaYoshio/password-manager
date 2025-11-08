@@ -92,6 +92,7 @@ describe('useEventListeners', () => {
     expect(mockOnAddSubItem).toHaveBeenCalledTimes(1);
     expect(mockOnRemoveSubtree).toHaveBeenCalledTimes(1);
     expect(mockOnExportData).toHaveBeenCalledTimes(1);
+    expect(mockSendRendererReady).toHaveBeenCalledTimes(1);
   });
 
   it('should_cleanup_all_event_listeners_on_unmount', () => {
@@ -144,5 +145,13 @@ describe('useEventListeners', () => {
 
     // Then: リスナーが再登録される
     expect(mockOnSaveData.mock.calls.length).toBeGreaterThan(initialCallCount);
+  });
+
+  it('should_notify_main_process_when_renderer_is_ready', () => {
+    // When: フックをマウント
+    renderHook(() => useEventListeners());
+
+    // Then: sendRendererReadyが呼ばれてメインプロセスに通知される
+    expect(mockSendRendererReady).toHaveBeenCalledTimes(1);
   });
 });
