@@ -32,6 +32,7 @@ describe('useEventListeners', () => {
   let mockOffRemoveSubtree: jest.Mock;
   let mockOnExportData: jest.Mock;
   let mockOffExportData: jest.Mock;
+  let mockSendRendererReady: jest.Mock;
 
   beforeEach(() => {
     // Given: ハンドラー関数のモック
@@ -59,6 +60,7 @@ describe('useEventListeners', () => {
     mockOffRemoveSubtree = jest.fn();
     mockOnExportData = jest.fn().mockReturnValue(jest.fn());
     mockOffExportData = jest.fn();
+    mockSendRendererReady = jest.fn();
 
     window.api = {
       ...window.api,
@@ -71,7 +73,8 @@ describe('useEventListeners', () => {
       onRemoveSubtree: mockOnRemoveSubtree,
       offRemoveSubtree: mockOffRemoveSubtree,
       onExportData: mockOnExportData,
-      offExportData: mockOffExportData
+      offExportData: mockOffExportData,
+      sendRendererReady: mockSendRendererReady
     };
   });
 
