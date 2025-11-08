@@ -13,6 +13,7 @@ export interface ElectronAPI {
   saveNodes(nodes: TreeNodePlain[]): Promise<boolean>;
   exportNodes(nodes: TreeNodePlain[]): Promise<void>;
   onImportData(callback: DataCallback<TreeNodePlain[]>): void;
+  sendRendererReady(): void;
   getTreeViewExpandedItems(): Promise<string[]>;
   getTreeViewSelectedItemId(): Promise<string | undefined>;
   saveTreeViewSelectedItemId(itemId: string | null): Promise<void>;

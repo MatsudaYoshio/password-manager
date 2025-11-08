@@ -39,7 +39,7 @@ export const useBackupSettings = () => {
         try {
           const settings: BackupSettings = await api.getBackupSettings();
           setBackupEnabled(settings.backupEnabled);
-          setBackupPath(settings.backupPath);
+          setBackupPath(settings.backupPath ?? '');
         } catch (error) {
           handleError('get backup settings', error);
         }

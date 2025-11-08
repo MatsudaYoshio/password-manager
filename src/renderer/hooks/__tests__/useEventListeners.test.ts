@@ -32,6 +32,7 @@ describe('useEventListeners', () => {
   let mockOffRemoveSubtree: jest.Mock;
   let mockOnExportData: jest.Mock;
   let mockOffExportData: jest.Mock;
+  let mockSendRendererReady: jest.Mock;
 
   beforeEach(() => {
     // Given: ハンドラー関数のモック
@@ -59,6 +60,7 @@ describe('useEventListeners', () => {
     mockOffRemoveSubtree = jest.fn();
     mockOnExportData = jest.fn().mockReturnValue(jest.fn());
     mockOffExportData = jest.fn();
+    mockSendRendererReady = jest.fn();
 
     window.api = {
       ...window.api,
@@ -71,7 +73,8 @@ describe('useEventListeners', () => {
       onRemoveSubtree: mockOnRemoveSubtree,
       offRemoveSubtree: mockOffRemoveSubtree,
       onExportData: mockOnExportData,
-      offExportData: mockOffExportData
+      offExportData: mockOffExportData,
+      sendRendererReady: mockSendRendererReady
     };
   });
 
@@ -89,6 +92,7 @@ describe('useEventListeners', () => {
     expect(mockOnAddSubItem).toHaveBeenCalledTimes(1);
     expect(mockOnRemoveSubtree).toHaveBeenCalledTimes(1);
     expect(mockOnExportData).toHaveBeenCalledTimes(1);
+    expect(mockSendRendererReady).toHaveBeenCalledTimes(1);
   });
 
   it('should_cleanup_all_event_listeners_on_unmount', () => {
@@ -141,5 +145,13 @@ describe('useEventListeners', () => {
 
     // Then: リスナーが再登録される
     expect(mockOnSaveData.mock.calls.length).toBeGreaterThan(initialCallCount);
+  });
+
+  it('should_notify_main_process_when_renderer_is_ready', () => {
+    // When: フックをマウント
+    renderHook(() => useEventListeners());
+
+    // Then: sendRendererReadyが呼ばれてメインプロセスに通知される
+    expect(mockSendRendererReady).toHaveBeenCalledTimes(1);
   });
 });
