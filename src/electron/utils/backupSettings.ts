@@ -7,6 +7,6 @@ import { BackupSettings } from '../../shared/types/BackupSettings';
 export const getBackupSettings = (): BackupSettings => {
   return {
     backupEnabled: store.get('backupEnabled', false) as boolean,
-    backupPath: store.get('backupPath') as string
+    backupPath: store.get('backupPath') as string | undefined
   };
 };

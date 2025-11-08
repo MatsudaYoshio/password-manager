@@ -1,4 +1,4 @@
 export type BackupSettings = {
   backupEnabled: boolean;
-  backupPath: string;
+  backupPath: string | undefined;
 };
