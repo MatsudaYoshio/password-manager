@@ -7,6 +7,7 @@
 // モック関数の定義（jest.mockより前に定義）
 const mockGetBackupSettings = jest.fn();
 const mockIpcMainOnce = jest.fn();
+const mockIpcMainRemoveAllListeners = jest.fn();
 const mockWebContentsSend = jest.fn();
 
 // モジュールをモック化
@@ -17,21 +18,27 @@ jest.mock('../utils/backupSettings', () => ({
 jest.mock('electron', () => ({
   BrowserWindow: jest.fn(),
   ipcMain: {
-    once: (...args: unknown[]) => mockIpcMainOnce(...args)
+    once: (...args: unknown[]) => mockIpcMainOnce(...args),
+    removeAllListeners: (...args: unknown[]) => mockIpcMainRemoveAllListeners(...args)
   }
 }));
 
 import { BrowserWindow } from 'electron';
 
-// モック適用後にautoBackupをインポート
-import { setupAutoBackup } from '../autoBackup';
-
 describe('setupAutoBackup', () => {
   let mockMainWindow: BrowserWindow;
+  let setupAutoBackup: (mainWindow: BrowserWindow) => void;
 
-  beforeEach(() => {
+  beforeEach(async () => {
+    // モジュールレベルの状態をリセット
+    jest.resetModules();
+
     // モックをクリア
     jest.clearAllMocks();
+
+    // モジュールを再インポート
+    const autoBackupModule = await import('../autoBackup');
+    setupAutoBackup = autoBackupModule.setupAutoBackup;
 
     // BrowserWindowのモックを作成
     mockMainWindow = {
@@ -137,20 +144,46 @@ describe('setupAutoBackup', () => {
     });
   });
 
-  describe('multiple initialization', () => {
-    it('should_allow_multiple_calls_without_side_effects', () => {
+  describe('idempotency', () => {
+    beforeEach(() => {
       // Given: 自動バックアップが有効
       mockGetBackupSettings.mockReturnValue({
         backupEnabled: true,
         backupPath: '/test/backup/path'
       });
+    });
 
+    it('should_remove_existing_listeners_before_registering', () => {
+      // When: setupAutoBackupを実行
+      setupAutoBackup(mockMainWindow);
+
+      // Then: 既存のリスナーが削除される
+      expect(mockIpcMainRemoveAllListeners).toHaveBeenCalledWith('renderer-ready');
+    });
+
+    it('should_be_idempotent_by_removing_listeners_on_each_call', () => {
       // When: setupAutoBackupを複数回実行
       setupAutoBackup(mockMainWindow);
       setupAutoBackup(mockMainWindow);
+      setupAutoBackup(mockMainWindow);
 
-      // Then: 各呼び出しでリスナーが登録される
-      expect(mockIpcMainOnce).toHaveBeenCalledTimes(2);
+      // Then: 各呼び出しでリスナーが削除され、再登録される
+      expect(mockIpcMainRemoveAllListeners).toHaveBeenCalledTimes(3);
+      expect(mockIpcMainOnce).toHaveBeenCalledTimes(3);
+    });
+
+    it('should_prevent_multiple_auto_backups_by_using_once', () => {
+      // Given: setupAutoBackupを複数回実行
+      setupAutoBackup(mockMainWindow);
+      setupAutoBackup(mockMainWindow);
+
+      // When: 最後に登録されたコールバックを実行
+      const lastCallIndex = mockIpcMainOnce.mock.calls.length - 1;
+      const registeredCallback = mockIpcMainOnce.mock.calls[lastCallIndex][1];
+      registeredCallback();
+
+      // Then: export-dataイベントが送信される
+      expect(mockWebContentsSend).toHaveBeenCalledWith('export-data');
     });
   });
 });
