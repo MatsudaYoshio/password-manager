@@ -1,7 +1,6 @@
 import { BrowserWindow } from 'electron';
 import SettingsWindow from '../settingsWindow';
 import { ICON_PATH } from '../../../shared/constants';
-import { isDevelopment } from '../../utils/environment';
 
 // Electronのモジュールをモック
 jest.mock('electron', () => ({
@@ -10,7 +9,7 @@ jest.mock('electron', () => ({
     self.options = options;
     self.destroyed = false;
     self.loadFile = jest.fn();
-    self.setMenuBarVisibility = jest.fn();
+    self.setMenu = jest.fn();
     self.on = jest.fn();
     self.destroy = jest.fn(() => {
       self.destroyed = true;
@@ -19,10 +18,6 @@ jest.mock('electron', () => ({
     self.isDestroyed = jest.fn(() => self.destroyed);
     return this;
   })
-}));
-
-jest.mock('../../utils/environment', () => ({
-  isDevelopment: jest.fn()
 }));
 
 jest.mock('../../../shared/constants', () => ({
@@ -44,7 +39,6 @@ describe('SettingsWindow', () => {
     // シングルトンインスタンスをリセット
     setInstance(null);
     parentWindow = new BrowserWindow();
-    (isDevelopment as jest.Mock).mockReturnValue(false);
   });
 
   describe('focusOrCreate', () => {
@@ -63,28 +57,19 @@ describe('SettingsWindow', () => {
       expect(lastCall.icon).toBe(ICON_PATH);
     });
 
+    test('should remove menu bar completely', () => {
+      SettingsWindow.focusOrCreate(parentWindow);
+
+      const instance = getInstance();
+      expect(instance?.setMenu).toHaveBeenCalledWith(null);
+    });
+
     test('should load settings.html file', () => {
       SettingsWindow.focusOrCreate(parentWindow);
 
       const instance = getInstance();
       const loadFileCall = (instance?.loadFile as jest.Mock).mock.calls[0][0];
       expect(loadFileCall).toContain('settings.html');
-    });
-
-    test('should set menu bar visibility based on isDevelopment', () => {
-      (isDevelopment as jest.Mock).mockReturnValue(true);
-      SettingsWindow.focusOrCreate(parentWindow);
-
-      const instance = getInstance();
-      expect(instance?.setMenuBarVisibility).toHaveBeenCalledWith(true);
-    });
-
-    test('should hide menu bar in production', () => {
-      (isDevelopment as jest.Mock).mockReturnValue(false);
-      SettingsWindow.focusOrCreate(parentWindow);
-
-      const instance = getInstance();
-      expect(instance?.setMenuBarVisibility).toHaveBeenCalledWith(false);
     });
 
     test('should register closed event handler', () => {
