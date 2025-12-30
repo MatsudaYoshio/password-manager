@@ -2,7 +2,7 @@
   "name": "password-manager",
   "productName": "PasswordManager",
   "description": "password-manager",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "license": "MIT",
   "author": {
     "name": "MatsudaYoshio"
