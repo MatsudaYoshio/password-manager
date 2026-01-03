@@ -29,7 +29,7 @@
     "dev:webpack": "cross-env NODE_ENV=\"development\" webpack --progress",
     "dev:electron": "wait-on dist/main.js dist/index.html && electronmon .",
     "package": "electron-packager ./dist PasswordManager --icon=./dist/assets/Aegis.ico --overwrite --out=release",
-    "release": "npm run build && npm run package"
+    "release": "npm run build && electron-builder --win nsis --publish never"
   },
   "lint-staged": {
     "src/**/*.{ts,tsx}": [
@@ -55,6 +55,7 @@
     "@reduxjs/toolkit": "^2.0.1",
     "class-transformer": "^0.5.1",
     "electron-store": "^8.2.0",
+    "electron-updater": "^6.6.2",
     "normalize.css": "^8.0.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
@@ -83,6 +84,7 @@
     "cross-env": "^10.0.0",
     "css-loader": "^7.1.2",
     "electron": "^35.0.0",
+    "electron-builder": "^26.0.12",
     "electronmon": "^2.0.2",
     "eslint": "^9.32.0",
     "eslint-config-prettier": "^10.1.8",
