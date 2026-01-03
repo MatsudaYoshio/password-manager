@@ -9,6 +9,8 @@ class MainWindow extends BrowserWindow {
       width: 1100,
       height: 600,
       title: 'Password Manager',
+      show: false, // 最初は非表示
+      backgroundColor: '#ffffff', // 背景色を設定
       webPreferences: {
         nodeIntegration: false,
         contextIsolation: true,
@@ -21,6 +23,11 @@ class MainWindow extends BrowserWindow {
     setupAutoBackup(this);
 
     this.loadFile(path.join(__dirname, 'index.html'));
+
+    // コンテンツの準備ができたら表示
+    this.once('ready-to-show', () => {
+      this.show();
+    });
 
     this.on('closed', () => app.quit());
   }
