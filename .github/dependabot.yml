@@ -1,0 +1,68 @@
+version: 2
+updates:
+  # npm パッケージ更新（React, TypeScript, Electron 含む）
+  - package-ecosystem: "npm"
+    directory: "/" # ルートに package.json がある場合
+    schedule:
+      interval: "weekly" # or "daily" にすれば毎日更新
+    open-pull-requests-limit: 20
+    allow:
+      - dependency-type: "all" # devDependenciesも含める
+    commit-message:
+      prefix: "deps"
+      include: "scope"
+    labels:
+      - "dependencies"
+      - "dependabot"
+    rebase-strategy: auto
+    target-branch: "dev"
+    groups:
+      # MUI関連パッケージをまとめる
+      mui-stack:
+        patterns:
+          - "@mui/*"
+          - "@emotion/*"
+      # React関連パッケージをまとめる
+      react-stack:
+        patterns:
+          - "react"
+          - "react-dom"
+          - "@types/react"
+          - "@types/react-dom"
+          - "react-redux"
+          - "react-resizable-panels"
+      # Redux関連パッケージをまとめる
+      redux-stack:
+        patterns:
+          - "@reduxjs/toolkit"
+          - "redux"
+      # TypeScript関連パッケージをまとめる
+      typescript-stack:
+        patterns:
+          - "typescript"
+          - "ts-loader"
+          - "ts-node"
+          - "@types/*"
+      # Webpack関連パッケージをまとめる
+      webpack-stack:
+        patterns:
+          - "webpack"
+          - "webpack-cli"
+          - "*-webpack-plugin"
+          - "*-loader"
+      # Electron関連パッケージをまとめる
+      electron-stack:
+        patterns:
+          - "electron"
+          - "electronmon"
+          - "@electron/*"
+          - "@types/electron"
+      # 開発ツール関連をまとめる
+      dev-tools:
+        patterns:
+          - "rimraf"
+          - "copyfiles"
+          - "cross-env"
+          - "npm-run-all"
+          - "wait-on"
+          - "@trivago/prettier-plugin-sort-imports"
