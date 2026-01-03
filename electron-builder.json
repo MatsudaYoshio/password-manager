@@ -6,7 +6,7 @@
     "buildResources": "dist/assets"
   },
   "files": ["dist/**/*"],
-  "asarUnpack": ["dist/credentials/**/*"],
+  "asarUnpack": ["dist/credentials/sample_credentials.json"],
   "win": {
     "target": [
       {
