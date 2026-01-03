@@ -1,5 +1,7 @@
 import { autoUpdater } from 'electron-updater';
 import { dialog, BrowserWindow, app } from 'electron';
+import * as fs from 'fs';
+import * as path from 'path';
 
 export class AutoUpdater {
   private mainWindow: BrowserWindow;
@@ -70,23 +72,41 @@ export class AutoUpdater {
     });
 
     autoUpdater.on('error', error => {
-      const errorMessage = error.message.toLowerCase();
+      const errorMessage = error.message;
+      const errorStack = error.stack || 'No stack trace available';
+      const timestamp = new Date().toISOString();
 
-      // latest.yml が見つからない場合は警告のみ表示して続行
-      if (errorMessage.includes('latest.yml') || errorMessage.includes('404')) {
-        console.warn('Update check failed: latest.yml not found. Continuing without update check.');
-        dialog.showMessageBox(this.mainWindow, {
-          type: 'warning',
-          title: 'アップデート確認の問題',
-          message:
-            '最新バージョンの情報を取得できませんでした。配布サーバーに問題がある可能性があります。\n\nアプリケーションは通常通り使用できます。',
-          buttons: ['OK']
-        });
-        return;
+      // エラーログをファイルに出力
+      const logMessage = `
+=== Auto-Update Error ===
+Timestamp: ${timestamp}
+Message: ${errorMessage}
+Stack: ${errorStack}
+========================
+`;
+
+      console.error('Update check failed:', logMessage);
+
+      // ログファイルに書き込み
+      const logDir = path.join(app.getPath('userData'), 'logs');
+      const logFile = path.join(logDir, 'auto-update-errors.log');
+
+      try {
+        if (!fs.existsSync(logDir)) {
+          fs.mkdirSync(logDir, { recursive: true });
+        }
+        fs.appendFileSync(logFile, logMessage);
+      } catch (writeError) {
+        console.error('Failed to write error log:', writeError);
       }
 
-      // その他のエラーはログのみ
-      console.error('Update check failed:', error);
+      // ユーザーに通知
+      dialog.showMessageBox(this.mainWindow, {
+        type: 'warning',
+        title: 'アップデート確認の問題',
+        message: `最新バージョンの情報を取得できませんでした。\n\nエラー: ${errorMessage}\n\nログファイル: ${logFile}\n\nアプリケーションは通常通り使用できます。`,
+        buttons: ['OK']
+      });
     });
   }
 

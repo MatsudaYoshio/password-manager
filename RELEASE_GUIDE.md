@@ -1,60 +1,82 @@
 # Release Guide
 
 ## Overview
-This application uses GitHub Releases for automatic updates. When you publish a new release on GitHub, users will be notified and can update automatically.
+This application uses GitHub Releases for automatic updates. The build and upload process is automated via GitHub Actions.
 
-## Release Steps
+## Automated Release Process
 
-### 1. Update Version
-Update the version in `package.json`:
-```json
-{
-  "version": "1.0.1"
-}
-```
+### 1. Create a Release on GitHub
 
-### 2. Build the Application
+**Via Browser:**
+1. Go to repository **Releases** → **Draft a new release**
+2. **Choose a tag** → Enter new tag (e.g., `v1.0.2` or `1.0.2`)
+3. Enter **Release title** (e.g., `Version 1.0.2`)
+4. Write **Description** with release notes
+5. Click **Publish release**
+
+**Via GitHub CLI:**
 ```bash
-npm run release
+gh release create v1.0.2 --title "Version 1.0.2" --notes "Bug fixes and improvements"
 ```
 
-This will:
-- Build the application in production mode
-- Create NSIS installer in `release/` directory
-- Generate `latest.yml` file for auto-update
+### 2. Automatic Build
 
-### 3. Create GitHub Release
-1. Go to your repository on GitHub
-2. Click "Releases" → "Create a new release"
-3. Create a new tag (e.g., `v1.0.1`)
-4. Set release title (e.g., `Version 1.0.1`)
-5. Add release notes
-6. Upload the following files from `release/` directory:
-   - `PasswordManager Setup 1.0.1.exe` (NSIS installer)
+When you publish a release:
+1. GitHub Actions automatically runs the "Release Build" workflow
+2. Extracts version from the tag
+3. Updates `package.json` version
+4. Runs tests
+5. Builds the application
+6. Uploads artifacts to the release:
+   - `PasswordManager Setup X.X.X.exe` (NSIS installer)
    - `latest.yml` (auto-update metadata)
-7. Click "Publish release"
+   - `*.blockmap` (differential update files)
 
-### 4. Auto-Update Process
-Once published:
-- Users will be notified on app startup (after 3 seconds)
-- They can choose to download the update immediately or later
-- After download, they can restart to install
-- The update is also installed automatically on app quit
+### 3. User Distribution
+
+- Existing users receive update notifications on next app startup
+- New users download the `.exe` from the Release page
+
+## Manual Build (if needed)
+
+If you need to build manually without automation:
+
+```bash
+# 1. Update version
+npm version 1.0.2 --no-git-tag-version
+
+# 2. Build
+npm run release
+
+# 3. Create release and upload files
+gh release create v1.0.2 \
+  --title "Version 1.0.2" \
+  --notes "Release notes" \
+  release/*.exe \
+  release/*.yml \
+  release/*.blockmap
+```
 
 ## Important Notes
 
-- **Development mode**: Auto-update is disabled when running via `npm run dev`
-- **GitHub token**: For publishing from CLI, set `GH_TOKEN` environment variable
-- **Version format**: Use semantic versioning (e.g., 1.0.0, 1.0.1, 1.1.0)
-- **Testing**: Test the installer on a clean Windows machine before release
+- **Tag format**: Both `v1.0.2` and `1.0.2` work (the workflow removes `v` prefix automatically)
+- **Draft releases**: Automation only runs when you **publish** (not for drafts)
+- **Pre-releases**: Build runs but won't trigger auto-updates for users
+- **Version**: No need to manually update `package.json` - the workflow handles it
 
 ## Troubleshooting
 
-### Update not detected
-- Verify `latest.yml` is uploaded to the release
-- Check that the version in `latest.yml` matches the release tag
-- Ensure the release is published (not draft)
+### Build fails
+- Check Actions tab for error logs
+- Verify tests pass locally: `npm run test:ci`
+- Check dependency issues
 
-### Download fails
-- Check GitHub release assets are publicly accessible
-- Verify the installer file name matches the pattern in `latest.yml`
+### Artifacts not uploaded
+- Verify workflow completed successfully
+- Check `GITHUB_TOKEN` permissions
+- Verify file paths in workflow
+
+### Update existing release
+```bash
+gh release upload v1.0.2 release/*.exe release/*.yml
+```
