@@ -13,20 +13,49 @@ import { getBackupSettings } from './utils/backupSettings';
 import QuestionDialog from './dialogs/questionDialog';
 import store from './store';
 
-// 開発時はsrc/credentials/、本番時はdist/credentials/を使用
+// 開発時はsrc/credentials/、本番時はユーザーデータディレクトリを使用
 const getCredentialsFilePath = (filename: string) => {
   if (isDevelopment()) {
     // 開発時: src/credentials/
     return path.join(process.cwd(), 'src', 'credentials', filename);
   }
-  // 本番時: dist/credentials/
-  return path.join(__dirname, 'credentials', filename);
+  // 本番時: AppData/PasswordManager/credentials/
+  return path.join(app.getPath('userData'), 'credentials', filename);
+};
+
+// 初回起動時にサンプルファイルをコピーする
+const initializeCredentialsFile = async () => {
+  const credentialsPath = getCredentialsFilePath('credentials.bin');
+  const samplePath = path.join(__dirname, 'credentials', 'sample_credentials.json');
+
+  // credentials.bin が存在しない場合のみ初期化
+  if (!fs.existsSync(credentialsPath)) {
+    const dir = path.dirname(credentialsPath);
+    await fs.promises.mkdir(dir, { recursive: true });
+
+    // サンプルデータを暗号化して保存
+    if (safeStorage.isEncryptionAvailable() && fs.existsSync(samplePath)) {
+      try {
+        const sampleData = JSON.parse(fs.readFileSync(samplePath, 'utf-8'));
+        const encrypted = safeStorage.encryptString(JSON.stringify(sampleData));
+        await fs.promises.writeFile(credentialsPath, new Uint8Array(encrypted));
+        console.log('Initialized credentials.bin from sample data');
+      } catch (err) {
+        console.error('Failed to initialize credentials.bin:', err);
+      }
+    }
+  }
 };
 
 const CREDENTIALS_PATH = getCredentialsFilePath('credentials.bin');
-const SAMPLE_CREDENTIALS_PATH = getCredentialsFilePath('sample_credentials.json');
+const SAMPLE_CREDENTIALS_PATH = path.join(__dirname, 'credentials', 'sample_credentials.json');
 
 const setupIpcHandlers = () => {
+  // 初回起動時の初期化
+  initializeCredentialsFile().catch(err => {
+    console.error('Failed to initialize credentials:', err);
+  });
+
   ipcMain.handle('read-nodes', handleReadNodes);
   ipcMain.handle('save-nodes', handleSaveNodes);
   ipcMain.handle('export-nodes', handleExportNodes);
@@ -43,7 +72,13 @@ const readFile2String = (path: fs.PathOrFileDescriptor, encoding: BufferEncoding
   fs.readFileSync(path, encoding);
 const readFile2Buffer = (path: fs.PathOrFileDescriptor) => fs.readFileSync(path);
 
-const getSampleJsonData = () => JSON.parse(readFile2String(SAMPLE_CREDENTIALS_PATH));
+const getSampleJsonData = () => {
+  if (fs.existsSync(SAMPLE_CREDENTIALS_PATH)) {
+    return JSON.parse(readFile2String(SAMPLE_CREDENTIALS_PATH));
+  }
+  // サンプルファイルが見つからない場合は空配列を返す
+  return [];
+};
 
 const questionDialog = new QuestionDialog();
 
