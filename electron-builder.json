@@ -1,0 +1,31 @@
+{
+  "appId": "com.matsudayoshio.passwordmanager",
+  "productName": "PasswordManager",
+  "directories": {
+    "output": "release",
+    "buildResources": "dist/assets"
+  },
+  "files": ["dist/**/*"],
+  "asarUnpack": ["dist/credentials/sample_credentials.json"],
+  "win": {
+    "target": [
+      {
+        "target": "nsis",
+        "arch": ["x64"]
+      }
+    ],
+    "icon": "dist/assets/Aegis.ico"
+  },
+  "nsis": {
+    "oneClick": false,
+    "allowToChangeInstallationDirectory": true,
+    "createDesktopShortcut": true,
+    "createStartMenuShortcut": true,
+    "artifactName": "${productName}-Setup-${version}.${ext}"
+  },
+  "publish": {
+    "provider": "github",
+    "owner": "MatsudaYoshio",
+    "repo": "password-manager"
+  }
+}
