@@ -1,4 +1,5 @@
 import { app } from 'electron';
+import { setTimeout } from 'timers';
 import setupIpcHandlers from './ipcHandlers';
 import MainMenu from './mainMenu';
 import MainWindow from './mainWindow';
@@ -14,18 +15,9 @@ const createWindow = () => {
   const updater = new AutoUpdater(mainWindow);
 
   // 起動後3秒待ってからチェック
-  const delay = 3000;
-  const startTime = Date.now();
-
-  const checkAfterDelay = () => {
-    if (Date.now() - startTime >= delay) {
-      updater.checkForUpdates();
-    } else {
-      process.nextTick(checkAfterDelay);
-    }
-  };
-
-  process.nextTick(checkAfterDelay);
+  setTimeout(() => {
+    updater.checkForUpdates();
+  }, 3000);
 };
 
 app.whenReady().then(() => {
