@@ -1,9 +1,6 @@
 import { app, BrowserWindow, dialog, Menu, MenuItemConstructorOptions } from 'electron';
 import * as fs from 'fs';
 
-import * as electronBuilder from '../../electron-builder.json';
-import * as packageJson from '../../package.json';
-
 import InfoDialog from './dialogs/infoDialog';
 import QuestionDialog from './dialogs/questionDialog';
 import SettingsWindow from './subWindows/settingsWindow';
@@ -118,11 +115,7 @@ class MainMenu {
           {
             label: 'バージョン',
             click: () => {
-              const version = packageJson.version;
-              const owner = electronBuilder.publish.owner;
-              const repo = electronBuilder.publish.repo;
-              const url = `https://github.com/${owner}/${repo}/releases/tag/${version}`;
-              infoDialog.show(mainWindow, version, url);
+              infoDialog.show(mainWindow);
             }
           }
         ]

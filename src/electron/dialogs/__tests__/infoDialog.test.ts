@@ -16,6 +16,15 @@ jest.mock('electron', () => ({
   }
 }));
 
+jest.mock('../../../../package.json', () => ({ version: '1.2.3' }), { virtual: true });
+jest.mock(
+  '../../../../electron-builder.json',
+  () => ({
+    publish: { owner: 'test-owner', repo: 'test-repo' }
+  }),
+  { virtual: true }
+);
+
 describe('InfoDialog', () => {
   let infoDialog: InfoDialog;
   let mockChildWindow: {
@@ -38,22 +47,20 @@ describe('InfoDialog', () => {
     (BrowserWindow as unknown as jest.Mock).mockReturnValue(mockChildWindow);
   });
 
-  test('should display correct version and github URL', () => {
+  test('should display correct version and github URL from metadata', () => {
     const mockParentWindow = {} as BrowserWindow;
-    const version = '1.0.0';
-    const githubUrl = 'https://github.com/example/repo';
+    const expectedVersion = '1.2.3';
+    const expectedUrl = 'https://github.com/test-owner/test-repo/releases/tag/1.2.3';
 
-    infoDialog.show(mockParentWindow, version, githubUrl);
+    infoDialog.show(mockParentWindow);
 
     const loadURLCall = (mockChildWindow.loadURL as jest.Mock).mock.calls[0][0];
-    // Check if the HTML content contains the version and URL
-    // Decode URI component to check the raw HTML string
     const decodedContent = decodeURIComponent(
       loadURLCall.replace('data:text/html;charset=utf-8,', '')
     );
 
-    expect(decodedContent).toContain(`バージョン: v${version}`);
-    expect(decodedContent).toContain(`href="${githubUrl}"`);
-    expect(decodedContent).toContain(`>${githubUrl}</a>`);
+    expect(decodedContent).toContain(`バージョン: v${expectedVersion}`);
+    expect(decodedContent).toContain(`href="${expectedUrl}"`);
+    expect(decodedContent).toContain(`>${expectedUrl}</a>`);
   });
 });

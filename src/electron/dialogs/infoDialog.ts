@@ -1,7 +1,14 @@
 import { BrowserWindow, shell } from 'electron';
 
+import * as electronBuilder from '../../../electron-builder.json';
+import * as packageJson from '../../../package.json';
+
 class InfoDialog {
-  show(parentWindow: BrowserWindow, version: string, githubUrl: string) {
+  show(parentWindow: BrowserWindow) {
+    const version = packageJson.version;
+    const { owner, repo } = electronBuilder.publish;
+    const githubUrl = `https://github.com/${owner}/${repo}/releases/tag/${version}`;
+
     const child = new BrowserWindow({
       parent: parentWindow,
       modal: true,
