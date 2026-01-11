@@ -1,4 +1,4 @@
-import { BrowserWindow } from 'electron';
+import { BrowserWindow, shell } from 'electron';
 
 import * as electronBuilder from '../../../electron-builder.json';
 import * as packageJson from '../../../package.json';
@@ -29,6 +29,12 @@ class InfoDialog {
     const htmlContent = this.getHtmlContent(version, githubUrl);
 
     child.loadURL(`data:text/html;charset=utf-8,${encodeURIComponent(htmlContent)}`);
+
+    // 外部リンクをデフォルトのブラウザで開く
+    child.webContents.setWindowOpenHandler(({ url }) => {
+      shell.openExternal(url);
+      return { action: 'deny' };
+    });
 
     child.once('ready-to-show', () => {
       child.show();
