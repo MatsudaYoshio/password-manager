@@ -1,9 +1,10 @@
 import { app, BrowserWindow, dialog, Menu, MenuItemConstructorOptions } from 'electron';
 import * as fs from 'fs';
 
-import { isDevelopment } from './utils/environment';
+import InfoDialog from './dialogs/infoDialog';
 import QuestionDialog from './dialogs/questionDialog';
 import SettingsWindow from './subWindows/settingsWindow';
+import { isDevelopment } from './utils/environment';
 
 const readFile2String = (path: fs.PathOrFileDescriptor, encoding: BufferEncoding = 'utf-8') =>
   fs.readFileSync(path, encoding);
@@ -11,6 +12,7 @@ const readFile2String = (path: fs.PathOrFileDescriptor, encoding: BufferEncoding
 class MainMenu {
   constructor(mainWindow: BrowserWindow) {
     const questionDialog = new QuestionDialog();
+    const infoDialog = new InfoDialog();
 
     const menuTemplate = [
       {
@@ -103,6 +105,17 @@ class MainMenu {
             label: '設定',
             click: () => {
               SettingsWindow.focusOrCreate(mainWindow);
+            }
+          }
+        ]
+      },
+      {
+        label: '情報',
+        submenu: [
+          {
+            label: 'バージョン',
+            click: () => {
+              infoDialog.show(mainWindow);
             }
           }
         ]
