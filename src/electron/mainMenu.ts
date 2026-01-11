@@ -2,7 +2,7 @@ import { app, BrowserWindow, dialog, Menu, MenuItemConstructorOptions } from 'el
 import * as fs from 'fs';
 
 import * as electronBuilder from '../../electron-builder.json';
-import * as packageLock from '../../package-lock.json';
+import * as packageJson from '../../package.json';
 
 import InfoDialog from './dialogs/infoDialog';
 import QuestionDialog from './dialogs/questionDialog';
@@ -118,7 +118,7 @@ class MainMenu {
           {
             label: 'バージョン',
             click: () => {
-              const version = packageLock.version;
+              const version = packageJson.version;
               const owner = electronBuilder.publish.owner;
               const repo = electronBuilder.publish.repo;
               const url = `https://github.com/${owner}/${repo}/releases/tag/${version}`;
