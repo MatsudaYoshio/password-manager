@@ -26,7 +26,26 @@ class InfoDialog {
       autoHideMenuBar: true
     });
 
-    const htmlContent = `
+    const htmlContent = this.getHtmlContent(version, githubUrl);
+
+    child.loadURL(`data:text/html;charset=utf-8,${encodeURIComponent(htmlContent)}`);
+
+    // Handle external links
+    child.webContents.setWindowOpenHandler(({ url }) => {
+      if (url.startsWith('http')) {
+        shell.openExternal(url);
+        return { action: 'deny' };
+      }
+      return { action: 'allow' };
+    });
+
+    child.once('ready-to-show', () => {
+      child.show();
+    });
+  }
+
+  private getHtmlContent(version: string, githubUrl: string): string {
+    return `
       <!DOCTYPE html>
       <html>
       <head>
@@ -53,21 +72,6 @@ class InfoDialog {
       </body>
       </html>
     `;
-
-    child.loadURL(`data:text/html;charset=utf-8,${encodeURIComponent(htmlContent)}`);
-
-    // Handle external links
-    child.webContents.setWindowOpenHandler(({ url }) => {
-      if (url.startsWith('http')) {
-        shell.openExternal(url);
-        return { action: 'deny' };
-      }
-      return { action: 'allow' };
-    });
-
-    child.once('ready-to-show', () => {
-      child.show();
-    });
   }
 }
 
