@@ -5,15 +5,10 @@ import InfoDialog from '../infoDialog';
 jest.mock('electron', () => ({
   BrowserWindow: jest.fn().mockImplementation(() => ({
     loadURL: jest.fn(),
-    webContents: {
-      setWindowOpenHandler: jest.fn()
-    },
+    webContents: {},
     once: jest.fn(),
     show: jest.fn()
-  })),
-  shell: {
-    openExternal: jest.fn()
-  }
+  }))
 }));
 
 jest.mock('../../../../package.json', () => ({ version: '1.2.3' }), { virtual: true });
@@ -29,7 +24,6 @@ describe('InfoDialog', () => {
   let infoDialog: InfoDialog;
   let mockChildWindow: {
     loadURL: jest.Mock;
-    webContents: { setWindowOpenHandler: jest.Mock };
     once: jest.Mock;
     show: jest.Mock;
   };
@@ -39,7 +33,6 @@ describe('InfoDialog', () => {
     // Get the mock instance of BrowserWindow
     mockChildWindow = new BrowserWindow() as unknown as {
       loadURL: jest.Mock;
-      webContents: { setWindowOpenHandler: jest.Mock };
       once: jest.Mock;
       show: jest.Mock;
     };
