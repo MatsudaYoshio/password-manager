@@ -19,6 +19,7 @@ class InfoDialog {
       minimizable: false,
       title: '', // タイトルを空にする
       frame: false, // タイトルバー（フレーム）を非表示にする
+      backgroundColor: '#f5f5f5', // HTMLの背景色と一致させてチラつきを防ぐ
       webPreferences: {
         nodeIntegration: false,
         contextIsolation: true
