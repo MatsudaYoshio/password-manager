@@ -41,6 +41,6 @@ jobs:
           name: release-artifacts
           path: |
             release/*.exe
-            release/*.yml
+            release/latest.yml
             release/*.blockmap
           if-no-files-found: error
