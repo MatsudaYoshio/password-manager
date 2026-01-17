@@ -48,7 +48,7 @@ jobs:
         with:
           files: |
             release/*.exe
-            release/*.yml
+            release/latest.yml
             release/*.blockmap
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
