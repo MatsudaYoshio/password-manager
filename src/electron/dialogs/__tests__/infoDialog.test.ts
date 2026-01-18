@@ -1,4 +1,5 @@
 import { BrowserWindow, shell } from 'electron';
+import { CLOSE_DIALOG_ACTION_URL } from '../../../shared/constants';
 import InfoDialog from '../infoDialog';
 
 // Mock Electron
@@ -71,7 +72,9 @@ describe('InfoDialog', () => {
     expect(decodedContent).toContain(`バージョン: v${expectedVersion}`);
     expect(decodedContent).toContain(`href="${expectedUrl}"`);
     expect(decodedContent).toContain(`>${expectedUrl}</a>`);
-    expect(decodedContent).toContain(`onclick="window.open('http://close-dialog', '_blank')"`);
+    expect(decodedContent).toContain(
+      `onclick="window.open('${CLOSE_DIALOG_ACTION_URL}', '_blank')"`
+    );
   });
 
   test('should open external URL using shell.openExternal', () => {
@@ -95,7 +98,7 @@ describe('InfoDialog', () => {
 
     const handler = (mockChildWindow.webContents.setWindowOpenHandler as jest.Mock).mock
       .calls[0][0];
-    const result = handler({ url: 'http://close-dialog/' });
+    const result = handler({ url: CLOSE_DIALOG_ACTION_URL });
 
     expect(mockChildWindow.hide).toHaveBeenCalled();
     expect(mockChildWindow.close).toHaveBeenCalled();
