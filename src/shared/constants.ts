@@ -4,3 +4,5 @@ export const ICON_PATH = path.join(__dirname, 'assets', 'Aegis.ico');
 
 export const STORE_KEY_TREE_VIEW_EXPANDED_ITEMS = 'treeViewExpandedItems';
 export const STORE_KEY_TREE_VIEW_SELECTED_ITEM_ID = 'treeViewSelectedItemId';
+
+export const CLOSE_DIALOG_ACTION_URL = 'http://close-dialog/';
