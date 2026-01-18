@@ -31,8 +31,15 @@ class InfoDialog {
 
     child.loadURL(`data:text/html;charset=utf-8,${encodeURIComponent(htmlContent)}`);
 
-    // 外部リンクをデフォルトのブラウザで開く
+    // 外部リンクや閉じるアクションをハンドリング
     child.webContents.setWindowOpenHandler(({ url }) => {
+      if (url === 'http://close-dialog/') {
+        // 親ウィンドウとの関連を断つとエラーになる場合があるため、
+        // 先に非表示にしてから閉じることでチラつきを軽減する
+        child.hide();
+        child.close();
+        return { action: 'deny' };
+      }
       shell.openExternal(url);
       return { action: 'deny' };
     });
@@ -65,7 +72,7 @@ class InfoDialog {
         <p class="version">バージョン: v${version}</p>
         <p>GitHub: <br><a href="${githubUrl}" target="_blank">${githubUrl}</a></p>
         <div class="button-container">
-          <button onclick="window.close()">OK</button>
+          <button onclick="window.open('http://close-dialog', '_blank')">OK</button>
         </div>
       </body>
       </html>
