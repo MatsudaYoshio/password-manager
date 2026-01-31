@@ -4,6 +4,7 @@ import { Queue } from '../data_structures/queue';
 import TreeNode from '../models/treeNode';
 
 import { plainToInstance } from 'class-transformer';
+import { DropPosition } from '../models/dropPosition';
 
 // ノードをディープコピーする関数
 const deepCloneNodes = (nodes: TreeNode[]): TreeNode[] => structuredClone(nodes);
@@ -139,6 +140,85 @@ export const createItemSlice = (initialState: ItemSliceState) => {
       },
       setExpandedItemIds: (state, action: PayloadAction<string[]>) => {
         state.expandedItemIds = action.payload;
+      },
+      moveItem: (
+        state,
+        action: PayloadAction<{
+          sourceId: string;
+          targetId: string | null;
+          position: DropPosition;
+        }>
+      ) => {
+        const { sourceId, targetId, position } = action.payload;
+        if (sourceId === targetId) return;
+
+        // Find the node to move
+        const sourceNode = findNodeById(sourceId, state.itemData.staging);
+        if (!sourceNode) return;
+
+        // Check if target is a descendant of source (prevent invalid move)
+        if (targetId) {
+          // Check if target is a descendant of source by searching only within the source node's children.
+          const isDescendant = findNodeById(targetId, sourceNode.children || []);
+          if (isDescendant) {
+            return; // Invalid move: target is a descendant of source.
+          }
+        }
+
+        // Remove source node from its current position
+        const sourceParent = findParentNode(sourceId, state.itemData.staging);
+        let removedNode: TreeNode | null = null;
+        if (sourceParent && sourceParent.children) {
+          const index = sourceParent.children.findIndex(child => child.id === sourceId);
+          if (index !== -1) {
+            removedNode = sourceParent.children.splice(index, 1)[0];
+          }
+        } else {
+          // It's a root node
+          const index = state.itemData.staging.findIndex(node => node.id === sourceId);
+          if (index !== -1) {
+            removedNode = state.itemData.staging.splice(index, 1)[0];
+          }
+        }
+
+        if (!removedNode) return;
+
+        // Insert at new position
+        if (!targetId) {
+          // Move to root end if targetId is null (optional behavior, or maybe root start)
+          state.itemData.staging.push(removedNode);
+          return;
+        }
+
+        if (position === DropPosition.INSIDE) {
+          const targetNode = findNodeById(targetId, state.itemData.staging);
+          if (targetNode) {
+            if (!targetNode.children) {
+              targetNode.children = [];
+            }
+            targetNode.children.push(removedNode);
+            // Ensure target is expanded so user sees the dropped item?
+            // Optional: state.expandedItemIds.push(targetId);
+          } else {
+            // Fallback: put back to root
+            state.itemData.staging.push(removedNode);
+          }
+        } else {
+          // before or after
+          const targetParent = findParentNode(targetId, state.itemData.staging);
+          const list = targetParent ? targetParent.children : state.itemData.staging;
+
+          if (list) {
+            const targetIndex = list.findIndex(node => node.id === targetId);
+            if (targetIndex !== -1) {
+              const insertIndex = position === DropPosition.AFTER ? targetIndex + 1 : targetIndex;
+              list.splice(insertIndex, 0, removedNode);
+            } else {
+              // Fallback
+              state.itemData.staging.push(removedNode);
+            }
+          }
+        }
       }
     }
   });
