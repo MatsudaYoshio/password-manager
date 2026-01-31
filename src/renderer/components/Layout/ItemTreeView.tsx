@@ -41,6 +41,8 @@ const CustomTreeItem = forwardRef<HTMLLIElement, CustomTreeItemProps>((props, re
     event.dataTransfer.effectAllowed = 'move';
   };
 
+  const DROP_ZONE_THRESHOLD = 0.25;
+
   const handleDragOver = (event: React.DragEvent<HTMLLIElement>) => {
     event.preventDefault();
     event.stopPropagation();
@@ -50,9 +52,9 @@ const CustomTreeItem = forwardRef<HTMLLIElement, CustomTreeItemProps>((props, re
     const height = rect.height;
     const relativeY = clientY - rect.top;
 
-    if (relativeY < height * 0.25) {
+    if (relativeY < height * DROP_ZONE_THRESHOLD) {
       setDragOverPosition(DropPosition.BEFORE);
-    } else if (relativeY > height * 0.75) {
+    } else if (relativeY > height * (1 - DROP_ZONE_THRESHOLD)) {
       setDragOverPosition(DropPosition.AFTER);
     } else {
       setDragOverPosition(DropPosition.INSIDE);
