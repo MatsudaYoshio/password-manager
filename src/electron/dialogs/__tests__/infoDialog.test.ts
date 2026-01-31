@@ -1,4 +1,5 @@
 import { BrowserWindow, shell } from 'electron';
+import { CLOSE_DIALOG_ACTION_URL } from '../../../shared/constants';
 import InfoDialog from '../infoDialog';
 
 // Mock Electron
@@ -9,7 +10,10 @@ jest.mock('electron', () => ({
       setWindowOpenHandler: jest.fn()
     },
     once: jest.fn(),
-    show: jest.fn()
+    show: jest.fn(),
+    setParentWindow: jest.fn(),
+    close: jest.fn(),
+    hide: jest.fn()
   })),
   shell: {
     openExternal: jest.fn()
@@ -32,6 +36,9 @@ describe('InfoDialog', () => {
     webContents: { setWindowOpenHandler: jest.Mock };
     once: jest.Mock;
     show: jest.Mock;
+    setParentWindow: jest.Mock;
+    close: jest.Mock;
+    hide: jest.Mock;
   };
 
   beforeEach(() => {
@@ -42,6 +49,9 @@ describe('InfoDialog', () => {
       webContents: { setWindowOpenHandler: jest.Mock };
       once: jest.Mock;
       show: jest.Mock;
+      setParentWindow: jest.Mock;
+      close: jest.Mock;
+      hide: jest.Mock;
     };
     (BrowserWindow as unknown as jest.Mock).mockClear();
     (BrowserWindow as unknown as jest.Mock).mockReturnValue(mockChildWindow);
@@ -62,6 +72,9 @@ describe('InfoDialog', () => {
     expect(decodedContent).toContain(`バージョン: v${expectedVersion}`);
     expect(decodedContent).toContain(`href="${expectedUrl}"`);
     expect(decodedContent).toContain(`>${expectedUrl}</a>`);
+    expect(decodedContent).toContain(
+      `onclick="window.open('${CLOSE_DIALOG_ACTION_URL}', '_blank')"`
+    );
   });
 
   test('should open external URL using shell.openExternal', () => {
@@ -75,6 +88,20 @@ describe('InfoDialog', () => {
     const result = handler({ url: testUrl });
 
     expect(shell.openExternal).toHaveBeenCalledWith(testUrl);
+    expect(result).toEqual({ action: 'deny' });
+  });
+
+  test('should handle custom close URL by hiding and closing window', () => {
+    const mockParentWindow = {} as BrowserWindow;
+
+    infoDialog.show(mockParentWindow);
+
+    const handler = (mockChildWindow.webContents.setWindowOpenHandler as jest.Mock).mock
+      .calls[0][0];
+    const result = handler({ url: CLOSE_DIALOG_ACTION_URL });
+
+    expect(mockChildWindow.hide).toHaveBeenCalled();
+    expect(mockChildWindow.close).toHaveBeenCalled();
     expect(result).toEqual({ action: 'deny' });
   });
 });

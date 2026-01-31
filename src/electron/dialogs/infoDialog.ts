@@ -1,4 +1,5 @@
 import { BrowserWindow, shell } from 'electron';
+import { CLOSE_DIALOG_ACTION_URL } from '../../shared/constants';
 
 import * as electronBuilder from '../../../electron-builder.json';
 import * as packageJson from '../../../package.json';
@@ -31,8 +32,15 @@ class InfoDialog {
 
     child.loadURL(`data:text/html;charset=utf-8,${encodeURIComponent(htmlContent)}`);
 
-    // 外部リンクをデフォルトのブラウザで開く
+    // 外部リンクや閉じるアクションをハンドリング
     child.webContents.setWindowOpenHandler(({ url }) => {
+      if (url === CLOSE_DIALOG_ACTION_URL) {
+        // 親ウィンドウとの関連を断つとエラーになる場合があるため、
+        // 先に非表示にしてから閉じることでチラつきを軽減する
+        child.hide();
+        child.close();
+        return { action: 'deny' };
+      }
       shell.openExternal(url);
       return { action: 'deny' };
     });
@@ -65,7 +73,7 @@ class InfoDialog {
         <p class="version">バージョン: v${version}</p>
         <p>GitHub: <br><a href="${githubUrl}" target="_blank">${githubUrl}</a></p>
         <div class="button-container">
-          <button onclick="window.close()">OK</button>
+          <button onclick="window.open('${CLOSE_DIALOG_ACTION_URL}', '_blank')">OK</button>
         </div>
       </body>
       </html>
