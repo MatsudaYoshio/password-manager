@@ -1,10 +1,12 @@
 import SvgIcon, { SvgIconProps } from '@mui/material/SvgIcon';
 import { RichTreeView } from '@mui/x-tree-view/RichTreeView';
+import { TreeItem, TreeItemProps } from '@mui/x-tree-view/TreeItem';
 import { TreeViewBaseItem } from '@mui/x-tree-view/models';
-import { useCallback, useMemo } from 'react';
+import { forwardRef, useCallback, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
 import { alpha } from '@mui/material/styles';
+import { DropPosition } from '../../models/dropPosition';
 import TreeNode from '../../models/treeNode';
 import { itemActions, stagingItemData } from '../../store/item-slice';
 
@@ -25,6 +27,96 @@ const CloseSquare = (props: SvgIconProps) => (
     <path d='M17.485 17.512q-.281.281-.682.281t-.696-.268l-4.12-4.147-4.12 4.147q-.294.268-.696.268t-.682-.281-.281-.682.294-.669l4.12-4.147-4.12-4.147q-.294-.268-.294-.669t.281-.682.682-.281.696 .268l4.12 4.147 4.12-4.147q.294-.268.696-.268t.682.281 .281.669-.294.682l-4.12 4.147 4.12 4.147q.294.268 .294.669t-.281.682zM22.047 22.074v0 0-20.147 0h-20.12v0 20.147 0h20.12zM22.047 24h-20.12q-.803 0-1.365-.562t-.562-1.365v-20.147q0-.776.562-1.351t1.365-.575h20.147q.776 0 1.351.575t.575 1.351v20.147q0 .803-.575 1.365t-1.378.562v0z' />
   </SvgIcon>
 );
+
+type CustomTreeItemProps = TreeItemProps;
+
+const CustomTreeItem = forwardRef<HTMLLIElement, CustomTreeItemProps>((props, ref) => {
+  const { itemId, label, ...other } = props;
+  const dispatch = useDispatch();
+  const [dragOverPosition, setDragOverPosition] = useState<DropPosition | null>(null);
+
+  const handleDragStart = (event: React.DragEvent<HTMLLIElement>) => {
+    event.stopPropagation();
+    event.dataTransfer.setData('application/json', JSON.stringify({ sourceId: itemId }));
+    event.dataTransfer.effectAllowed = 'move';
+  };
+
+  const handleDragOver = (event: React.DragEvent<HTMLLIElement>) => {
+    event.preventDefault();
+    event.stopPropagation();
+
+    const rect = event.currentTarget.getBoundingClientRect();
+    const clientY = event.clientY;
+    const height = rect.height;
+    const relativeY = clientY - rect.top;
+
+    if (relativeY < height * 0.25) {
+      setDragOverPosition(DropPosition.BEFORE);
+    } else if (relativeY > height * 0.75) {
+      setDragOverPosition(DropPosition.AFTER);
+    } else {
+      setDragOverPosition(DropPosition.INSIDE);
+    }
+  };
+
+  const handleDragLeave = (event: React.DragEvent<HTMLLIElement>) => {
+    event.preventDefault();
+    event.stopPropagation();
+    setDragOverPosition(null);
+  };
+
+  const handleDrop = (event: React.DragEvent<HTMLLIElement>) => {
+    event.preventDefault();
+    event.stopPropagation();
+    setDragOverPosition(null);
+
+    const data = event.dataTransfer.getData('application/json');
+    if (!data) return;
+
+    try {
+      const { sourceId } = JSON.parse(data);
+      if (sourceId === itemId) return;
+
+      dispatch(
+        itemActions.moveItem({
+          sourceId,
+          targetId: itemId,
+          position: dragOverPosition || DropPosition.INSIDE
+        })
+      );
+    } catch (e) {
+      console.error('Failed to parse drag data', e);
+    }
+  };
+
+  const dragStyles = useMemo(() => {
+    switch (dragOverPosition) {
+      case DropPosition.BEFORE:
+        return { borderTop: '2px solid #1976d2' };
+      case DropPosition.AFTER:
+        return { borderBottom: '2px solid #1976d2' };
+      case DropPosition.INSIDE:
+        return { backgroundColor: alpha('#1976d2', 0.1) };
+      default:
+        return {};
+    }
+  }, [dragOverPosition]);
+
+  return (
+    <TreeItem
+      ref={ref}
+      itemId={itemId}
+      label={label}
+      draggable
+      onDragStart={handleDragStart}
+      onDragOver={handleDragOver}
+      onDragLeave={handleDragLeave}
+      onDrop={handleDrop}
+      style={{ ...dragStyles }}
+      {...other}
+    />
+  );
+});
 
 export default function ItemTreeView() {
   const dispatch = useDispatch();
@@ -80,7 +172,8 @@ export default function ItemTreeView() {
       slots={{
         collapseIcon: MinusSquare,
         expandIcon: PlusSquare,
-        endIcon: CloseSquare
+        endIcon: CloseSquare,
+        item: CustomTreeItem
       }}
       sx={{
         // Replicate borderLeft for group items if possible
