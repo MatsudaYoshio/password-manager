@@ -158,13 +158,10 @@ export const createItemSlice = (initialState: ItemSliceState) => {
 
         // Check if target is a descendant of source (prevent invalid move)
         if (targetId) {
-          const targetNode = findNodeById(targetId, state.itemData.staging);
-          if (targetNode) {
-            let current = findParentNode(targetId, state.itemData.staging);
-            while (current) {
-              if (current.id === sourceId) return; // Target is descendant of source
-              current = findParentNode(current.id, state.itemData.staging);
-            }
+          // Check if target is a descendant of source by searching only within the source node's children.
+          const isDescendant = findNodeById(targetId, sourceNode.children || []);
+          if (isDescendant) {
+            return; // Invalid move: target is a descendant of source.
           }
         }
 
