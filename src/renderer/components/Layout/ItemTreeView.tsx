@@ -71,6 +71,12 @@ const CustomTreeItem = forwardRef<HTMLLIElement, CustomTreeItemProps>((props, re
   const handleDrop = (event: React.DragEvent<HTMLLIElement>) => {
     event.preventDefault();
     event.stopPropagation();
+
+    if (!dragOverPosition) {
+      setDragOverPosition(null);
+      return;
+    }
+
     setDragOverPosition(null);
 
     const data = event.dataTransfer.getData('application/json');
@@ -84,7 +90,7 @@ const CustomTreeItem = forwardRef<HTMLLIElement, CustomTreeItemProps>((props, re
         itemActions.moveItem({
           sourceId,
           targetId: itemId,
-          position: dragOverPosition || DropPosition.INSIDE
+          position: dragOverPosition
         })
       );
     } catch (e) {
