@@ -5,7 +5,7 @@ import { TreeViewBaseItem } from '@mui/x-tree-view/models';
 import { forwardRef, useCallback, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
-import { alpha } from '@mui/material/styles';
+import { alpha, useTheme } from '@mui/material/styles';
 import { DropPosition } from '../../models/dropPosition';
 import TreeNode from '../../models/treeNode';
 import { itemActions, stagingItemData } from '../../store/item-slice';
@@ -33,6 +33,7 @@ type CustomTreeItemProps = TreeItemProps;
 const CustomTreeItem = forwardRef<HTMLLIElement, CustomTreeItemProps>((props, ref) => {
   const { itemId, label, ...other } = props;
   const dispatch = useDispatch();
+  const theme = useTheme();
   const [dragOverPosition, setDragOverPosition] = useState<DropPosition | null>(null);
 
   const handleDragStart = (event: React.DragEvent<HTMLLIElement>) => {
@@ -94,15 +95,15 @@ const CustomTreeItem = forwardRef<HTMLLIElement, CustomTreeItemProps>((props, re
   const dragStyles = useMemo(() => {
     switch (dragOverPosition) {
       case DropPosition.BEFORE:
-        return { borderTop: '2px solid #1976d2' };
+        return { borderTop: `2px solid ${theme.palette.primary.main}` };
       case DropPosition.AFTER:
-        return { borderBottom: '2px solid #1976d2' };
+        return { borderBottom: `2px solid ${theme.palette.primary.main}` };
       case DropPosition.INSIDE:
-        return { backgroundColor: alpha('#1976d2', 0.1) };
+        return { backgroundColor: alpha(theme.palette.primary.main, 0.1) };
       default:
         return {};
     }
-  }, [dragOverPosition]);
+  }, [dragOverPosition, theme]);
 
   return (
     <TreeItem
