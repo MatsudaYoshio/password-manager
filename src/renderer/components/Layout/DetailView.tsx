@@ -94,12 +94,17 @@ const DetailView = () => {
   };
 
   const addNewCredentialHandler = () => {
+    if (!activeNode) return;
+
     const newCredential = createDefaultCredential(credentials.length);
+    const updatedCredentials = [...credentials, newCredential];
+    setCredentials(updatedCredentials);
+
     const newTreeNode = {
       id: activeNode.id,
       data: {
         title,
-        credentials: [...credentials, newCredential]
+        credentials: updatedCredentials
       }
     };
     dispatch(itemActions.updateActiveNode(newTreeNode));
