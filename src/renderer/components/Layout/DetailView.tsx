@@ -16,7 +16,7 @@ import * as React from 'react';
 import { Fragment } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
-import Credential from '../../models/credential';
+import Credential, { createDefaultCredential } from '../../models/credential';
 import TreeNode from '../../models/treeNode';
 import { itemActions } from '../../store/item-slice';
 
@@ -94,11 +94,17 @@ const DetailView = () => {
   };
 
   const addNewCredentialHandler = () => {
+    if (!activeNode) return;
+
+    const newCredential = createDefaultCredential(credentials.length);
+    const updatedCredentials = [...credentials, newCredential];
+    setCredentials(updatedCredentials);
+
     const newTreeNode = {
       id: activeNode.id,
       data: {
         title,
-        credentials: [...credentials, new Credential({})]
+        credentials: updatedCredentials
       }
     };
     dispatch(itemActions.updateActiveNode(newTreeNode));

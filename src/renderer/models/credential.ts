@@ -12,6 +12,11 @@ class Credential {
   }
 }
 
+export const createDefaultCredential = (index: number): Credential => {
+  const name = index === 0 ? 'アカウントID' : index === 1 ? 'パスワード' : '';
+  return new Credential(name ? { name } : {});
+};
+
 // Credentialクラスのプレーンオブジェクト型
 export type CredentialPlain = {
   [K in keyof Credential]: Credential[K];

@@ -1,14 +1,14 @@
 import { screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import DetailView from '../DetailView';
-import TreeNode from '../../../models/treeNode';
-import Credential from '../../../models/credential';
 import { uuidv7 } from 'uuidv7';
+import Credential from '../../../models/credential';
+import TreeNode from '../../../models/treeNode';
+import DetailView from '../DetailView';
 import {
-  createTestNode,
-  renderWithStore,
   createStoreWithItems,
-  getActiveNode
+  createTestNode,
+  getActiveNode,
+  renderWithStore
 } from './utils/helpers';
 
 describe('DetailView', () => {
@@ -242,6 +242,62 @@ describe('DetailView', () => {
       // 新しいフィールドが表示されることを確認
       expect(screen.getByLabelText('Name')).toBeInTheDocument();
       expect(screen.getByText('Value')).toBeInTheDocument();
+    });
+
+    it('sets first credential default name to アカウントID', async () => {
+      // Given: 前提条件の設定
+      const testNode = createTestNode({ title: 'Test Item', credentials: [] });
+      const { store } = renderDetailView([testNode], testNode);
+
+      // When: テスト対象の実行
+      const addButton = screen.getByLabelText('add-credential');
+      await user.click(addButton);
+
+      // Then: 結果の検証
+      await waitFor(() => {
+        const activeNode = getActiveNode(store);
+        expect(activeNode?.data.credentials[0].name).toBe('アカウントID');
+      });
+    });
+
+    it('sets second credential default name to パスワード', async () => {
+      // Given: 前提条件の設定
+      const credential1 = createTestCredential({ name: 'アカウントID' });
+      const testNode = createTestNode({ title: 'Test Item', credentials: [credential1] });
+      const { store } = renderDetailView([testNode], testNode);
+
+      // When: テスト対象の実行
+      const addButton = screen.getByLabelText('add-credential');
+      await user.click(addButton);
+
+      // Then: 結果の検証
+      await waitFor(() => {
+        const activeNode = getActiveNode(store);
+        expect(activeNode?.data.credentials[1].name).toBe('パスワード');
+      });
+    });
+
+    it('sets third credential default name to empty or default', async () => {
+      // Given: 前提条件の設定
+      const credential1 = createTestCredential({ name: 'アカウントID' });
+      const credential2 = createTestCredential({ name: 'パスワード' });
+      const testNode = createTestNode({
+        title: 'Test Item',
+        credentials: [credential1, credential2]
+      });
+      const { store } = renderDetailView([testNode], testNode);
+
+      // When: テスト対象の実行
+      const addButton = screen.getByLabelText('add-credential');
+      await user.click(addButton);
+
+      // Then: 結果の検証
+      await waitFor(() => {
+        const activeNode = getActiveNode(store);
+        // default of new Credential({}) is likely an empty string or undefined.
+        // As per requirements: "三番目からは特にデフォルト値なしでよい"
+        expect(activeNode?.data.credentials[2].name).toBe('');
+      });
     });
 
     it('removes credential when remove button is clicked', async () => {
