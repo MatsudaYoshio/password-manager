@@ -4,11 +4,11 @@ knowledge_base:
   code_guidelines:
     enabled: true
     filePatterns:
-      - STYLEGUIDE.md
+      - docs/style-guide.md
 
 reviews:
   path_instructions:
     - path: "**/*"
       instructions: |
         ### Code Review Guidelines
-        - Follow STYLEGUIDE.md
+        - Follow docs/style-guide.md
