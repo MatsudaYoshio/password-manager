@@ -16,9 +16,6 @@ When modifying or analyzing code in this repository, you **MUST** adhere to the 
 - [TypeScript](./stack/typescript.md): Strict mode conventions, Interfaces vs. Types, and avoiding `any`.
 - [Electron](./stack/electron.md): Main process responsibilities, secure IPC via `contextBridge`, and security best practices.
 
-### AI Prompts
-
-- [Code Review Prompt](./prompts/code-review.md): A prompt template for conducting code reviews against these guidelines.
 
 ---
 **Core Rule**: Always read the relevant `.md` files in `agents/` and `stack/` before suggesting architectural changes, creating new components, or modifying the IPC layer.
