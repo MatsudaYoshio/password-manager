@@ -110,7 +110,7 @@ it('delivery_with_a_past_date_is_invalid', () => { ... })
 - モック呼び出し回数（`toHaveBeenCalledTimes`）を**常に検証**し、想定外の呼び出しがないかも保証する。
 
 ### Electronと環境面へのモック
-- レンダラープロセスのテストはjsdom（DOM環境）で動くため、ElectronネイティブのAPIが存在しない。必ず `window.electronAPI` などを `jest.mock()` やダミー関数でモックする。
+- レンダラープロセスのテストはjsdom（DOM環境）で動くため、ElectronネイティブのAPIが存在しない。必ず `window.api` などを `jest.mock()` やダミー関数でモックする。
 
 ---
 

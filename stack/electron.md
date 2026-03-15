@@ -30,19 +30,19 @@ When creating a new piece of logic:
    ```
 2. Expose it in Preload using `contextBridge`.
    ```ts
-   // In preload.ts
-   contextBridge.exposeInMainWorld('electronAPI', {
+   // In src/electron/preload.ts
+   contextBridge.exposeInMainWorld('api', {
        getSecureData: (args) => ipcRenderer.invoke('get-secure-data', args)
    });
    ```
 3. Add it to the global types (usually in `src/shared/types/`).
    ```ts
-   export interface IElectronAPI {
+   export interface ElectronAPI {
        getSecureData: (args: unknown) => Promise<unknown>;
    }
    declare global {
        interface Window {
-           electronAPI: IElectronAPI;
+           api: ElectronAPI;
        }
    }
    ```
