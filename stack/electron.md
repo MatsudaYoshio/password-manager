@@ -38,7 +38,7 @@ When creating a new piece of logic:
 3. Add it to the global types (usually in `src/shared/types/`).
    ```ts
    export interface IElectronAPI {
-       getSecureData: (args: any) => Promise<any>;
+       getSecureData: (args: unknown) => Promise<unknown>;
    }
    declare global {
        interface Window {
