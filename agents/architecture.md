@@ -17,7 +17,7 @@ Because `nodeIntegration` is disabled for security reasons, the renderer process
 ### Context Bridge
 We use `contextBridge` to expose specific, safe APIs to the renderer.
 - **Preload Script**: Defined in `src/electron/preload.ts` (or similar). This script runs before the renderer loads.
-- **API Shape**: Usually exposed via `#window.electronAPI#` or similar typed global object. 
+- **API Shape**: Usually exposed via `window.electronAPI` or similar typed global object. 
 
 ### Avoid `remote`
 **Do not use the `remote` module.** It is deprecated and inherently unsecure. Always configure `ipcMain.handle` (Main) and `ipcRenderer.invoke` (via Preload script to Renderer).
