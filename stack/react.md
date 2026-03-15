@@ -27,7 +27,7 @@ We use **Redux Toolkit (RTK)** for complex global state, combined with `react-re
 ## UI Framework (Material-UI)
 
 We extensively use **Material-UI (MUI)**.
-- **Imports**: Import components directly from `@mui/material` (e.g., `import Box from '@mui/material/Box'`).
+- **Imports**: Import components directly from their subpath (e.g., `import Box from '@mui/material/Box'`, `import Stack from '@mui/material/Stack'`) to align for tree-shaking best practices.
 - **Styling**: Prefer the `sx` prop for simple styling needs. 
 - **Theming**: Do not use hardcoded hex variables. Always use `theme.palette.*` to ensure dark mode support natively.
 - **Icons**: Utilize `@mui/icons-material`.
