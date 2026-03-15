@@ -23,7 +23,7 @@ To communicate between the two, we use Preload scripts.
 When creating a new piece of logic:
 1. Define the handler in the Main process using `ipcMain.handle()`.
    ```ts
-   // In main/ipcHandlers.ts
+   // In src/electron/ipcHandlers.ts
    ipcMain.handle('get-secure-data', async (event, args) => {
        return await performSecureTask(args);
    });
