@@ -12,7 +12,7 @@ Writing secure desktop implementations requires treating the renderer process as
 
 2. **Renderer Process (`src/renderer/`)**: 
    - Runs purely in Chromium. 
-   - Has NO Node.js access. Wait, `nodeIntegration: false` is critical.
+   - Has NO Node.js access. It is critical that `nodeIntegration: false` is set.
    - **Never** expose raw `fs`, `path`, or `child_process` directly to the renderer.
 
 ## IPC (Inter-Process Communication)
