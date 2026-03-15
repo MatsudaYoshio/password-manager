@@ -5,7 +5,7 @@ This repository enforces a unified coding style through automated tools. Always 
 ## File Naming
 
 - **React Components**: PascalCase (e.g., `Button.tsx`, `TreeView.tsx`).
-- **Hooks, Utils, Slices**: camelCase (e.g., `useDrag.ts`, `item-slice.ts`, `auth.ts`).
+- **Hooks, Utils, Slices**: camelCase (e.g., `useDrag.ts`, `itemSlice.ts`, `auth.ts`).
 - **CSS Modules/Files**: match the associated component name (e.g., `App.css`).
 
 ## Automated Formatting & Linting
