@@ -93,7 +93,7 @@ describe('MainWindow', () => {
     // Then
     expect(sut.restore).not.toHaveBeenCalled();
     expect(sut.show).not.toHaveBeenCalled();
-    expect(sut.focus).toHaveBeenCalledTimes(1);
+    expect(sut.focus).not.toHaveBeenCalled();
   });
 
   it('second_instance_handler_is_ignored_when_window_is_destroyed', () => {

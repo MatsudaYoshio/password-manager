@@ -43,8 +43,10 @@ class MainWindow extends BrowserWindow {
 
   private readonly handleSecondInstance = () => {
     if (this.isDestroyed()) return;
-    if (this.isMinimized()) this.restore();
-    this.focus();
+    if (this.isMinimized()) {
+      this.restore();
+      this.focus();
+    }
     if (!this.isVisible()) this.show();
   };
 }
