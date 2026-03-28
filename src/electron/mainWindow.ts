@@ -29,6 +29,10 @@ class MainWindow extends BrowserWindow {
       this.show();
     });
 
+    this.on('minimize', () => {
+      this.hide();
+    });
+
     this.on('closed', () => app.quit());
   }
 }

@@ -21,7 +21,14 @@ class PasswordManagerTray extends Tray {
     this.on('right-click', this.onRightClick.bind(this));
   }
 
-  onClick = () => (this.mainWindow.isVisible() ? this.mainWindow.hide() : this.mainWindow.show());
+  onClick = () => {
+    if (this.mainWindow.isVisible()) {
+      this.mainWindow.hide();
+    } else {
+      this.mainWindow.show();
+      this.mainWindow.restore();
+    }
+  };
   onRightClick = () => this.popUpContextMenu(PasswordManagerTray.MENU_CONFIG);
 }
 
