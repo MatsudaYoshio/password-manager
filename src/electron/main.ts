@@ -20,9 +20,15 @@ const createWindow = () => {
   }, 3000);
 };
 
-app.whenReady().then(() => {
-  createWindow();
-  setupIpcHandlers();
-});
+const gotTheLock = app.requestSingleInstanceLock();
 
-app.once('window-all-closed', () => app.quit());
+if (!gotTheLock) {
+  app.quit();
+} else {
+  app.whenReady().then(() => {
+    createWindow();
+    setupIpcHandlers();
+  });
+
+  app.once('window-all-closed', () => app.quit());
+}
