@@ -12,12 +12,14 @@ jest.mock('electron', () => {
   mockBrowserWindow.prototype.focus = jest.fn();
   mockBrowserWindow.prototype.isMinimized = jest.fn();
   mockBrowserWindow.prototype.isVisible = jest.fn();
+  mockBrowserWindow.prototype.isDestroyed = jest.fn();
 
   return {
     BrowserWindow: mockBrowserWindow,
     app: {
       quit: jest.fn(),
-      on: jest.fn()
+      on: jest.fn(),
+      off: jest.fn()
     }
   };
 });
@@ -61,6 +63,7 @@ describe('MainWindow', () => {
 
     const secondInstanceHandler = secondInstanceCall[1];
 
+    (sut.isDestroyed as jest.Mock).mockReturnValue(false);
     (sut.isMinimized as jest.Mock).mockReturnValue(true);
     (sut.isVisible as jest.Mock).mockReturnValue(false);
 
@@ -80,6 +83,7 @@ describe('MainWindow', () => {
 
     const secondInstanceHandler = secondInstanceCall[1];
 
+    (sut.isDestroyed as jest.Mock).mockReturnValue(false);
     (sut.isMinimized as jest.Mock).mockReturnValue(false);
     (sut.isVisible as jest.Mock).mockReturnValue(true);
 
@@ -90,5 +94,36 @@ describe('MainWindow', () => {
     expect(sut.restore).not.toHaveBeenCalled();
     expect(sut.show).not.toHaveBeenCalled();
     expect(sut.focus).toHaveBeenCalledTimes(1);
+  });
+
+  it('second_instance_handler_is_ignored_when_window_is_destroyed', () => {
+    // Given
+    const onCalls = (app.on as jest.Mock).mock.calls;
+    const secondInstanceCall = onCalls.find(call => call[0] === 'second-instance');
+    const secondInstanceHandler = secondInstanceCall[1];
+
+    (sut.isDestroyed as jest.Mock).mockReturnValue(true);
+
+    // When
+    secondInstanceHandler();
+
+    // Then
+    expect(sut.restore).not.toHaveBeenCalled();
+    expect(sut.show).not.toHaveBeenCalled();
+    expect(sut.focus).not.toHaveBeenCalled();
+  });
+
+  it('second_instance_listener_is_removed_on_close', () => {
+    // Given
+    const onCalls = (BrowserWindow.prototype.on as jest.Mock).mock.calls;
+    const closeHandlerCall = onCalls.find(call => call[0] === 'closed');
+    const closeHandler = closeHandlerCall[1];
+
+    // When
+    closeHandler();
+
+    // Then
+    expect(app.off).toHaveBeenCalledWith('second-instance', expect.any(Function));
+    expect(app.quit).toHaveBeenCalledTimes(1);
   });
 });

@@ -33,18 +33,20 @@ class MainWindow extends BrowserWindow {
       this.hide();
     });
 
-    this.on('closed', () => app.quit());
-
-    app.on('second-instance', () => {
-      if (this.isMinimized()) {
-        this.restore();
-      }
-      if (!this.isVisible()) {
-        this.show();
-      }
-      this.focus();
+    this.on('closed', () => {
+      app.off('second-instance', this.handleSecondInstance);
+      app.quit();
     });
+
+    app.on('second-instance', this.handleSecondInstance);
   }
+
+  private readonly handleSecondInstance = () => {
+    if (this.isDestroyed()) return;
+    if (this.isMinimized()) this.restore();
+    this.focus();
+    if (!this.isVisible()) this.show();
+  };
 }
 
 export default MainWindow;
