@@ -16,7 +16,7 @@ A secure, offline-first Desktop Application for password and credential manageme
 
 ### Prerequisites
 
-- [Node.js](https://nodejs.org/) (v20.19.0 recommended via Volta)
+- [Node.js](https://nodejs.org/) (v25.9.0 recommended via Volta)
 - `npm` (usually bundled with Node.js)
 
 ### Installation
