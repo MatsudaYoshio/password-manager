@@ -1,9 +1,5 @@
-import { ElectronAPI } from '../../shared/types/ElectronAPI';
+declare module '*.css';
 
-declare global {
-  interface Window {
-    api: ElectronAPI;
-  }
+interface Window {
+  api: import('../../shared/types/ElectronAPI').ElectronAPI;
 }
-
-export {};
