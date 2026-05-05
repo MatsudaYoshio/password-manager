@@ -1,6 +1,6 @@
 import { grey } from '@mui/material/colors';
 import { Fragment } from 'react';
-import { Panel, PanelGroup, PanelResizeHandle } from 'react-resizable-panels';
+import { Group, Panel, Separator } from 'react-resizable-panels';
 
 import './App.css';
 import DetailView from './components/Layout/DetailView';
@@ -14,11 +14,11 @@ export const App = () => {
   return (
     <Fragment>
       <Header />
-      <PanelGroup direction='horizontal'>
+      <Group orientation='horizontal'>
         <Panel
-          defaultSize={20}
-          minSize={10}
-          maxSize={30}
+          defaultSize='20%'
+          minSize='10%'
+          maxSize='30%'
           style={{
             overflowY: 'auto',
             overflowX: 'hidden'
@@ -26,11 +26,11 @@ export const App = () => {
         >
           <ItemTreeView />
         </Panel>
-        <PanelResizeHandle style={{ width: '1px', backgroundColor: grey[300] }} />
+        <Separator style={{ width: '1px', backgroundColor: grey[300] }} />
         <Panel style={{ overflow: 'auto' }}>
           <DetailView />
         </Panel>
-      </PanelGroup>
+      </Group>
     </Fragment>
   );
 };
