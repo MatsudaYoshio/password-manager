@@ -70,6 +70,7 @@ updates:
           - "webpack-cli"
           - "*-webpack-plugin"
           - "*-loader"
+          - "mini-css-extract-plugin"
       # Electron関連パッケージをまとめる
       electron-stack:
         patterns:
