@@ -54,7 +54,7 @@ const Header = () => {
           </Typography>
         </Toolbar>
       </AppBar>
-      <Box borderBottom={1} borderColor='grey.500' />
+      <Box sx={{ borderBottom: 1, borderColor: 'grey.500' }} />
     </Box>
   );
 };
