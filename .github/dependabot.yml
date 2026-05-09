@@ -45,7 +45,6 @@ updates:
           - "@testing-library/*"
           - "@types/jest"
           - "identity-obj-proxy"
-          - "jest-transform-stub"
       # Linter・Formatter関連パッケージをまとめる
       lint-stack:
         patterns:
