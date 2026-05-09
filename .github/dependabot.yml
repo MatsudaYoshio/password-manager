@@ -4,7 +4,7 @@ updates:
   - package-ecosystem: "npm"
     directory: "/" # ルートに package.json がある場合
     schedule:
-      interval: "weekly" # or "daily" にすれば毎日更新
+      interval: "daily" # 3日に1回の指定は仕様上不可のため、最も近い「毎日」に設定
     open-pull-requests-limit: 20
     allow:
       - dependency-type: "all" # devDependenciesも含める
@@ -36,11 +36,30 @@ updates:
         patterns:
           - "@reduxjs/toolkit"
           - "redux"
+      # テスト関連パッケージをまとめる
+      test-stack:
+        patterns:
+          - "jest"
+          - "jest-*"
+          - "ts-jest"
+          - "@testing-library/*"
+          - "@types/jest"
+          - "identity-obj-proxy"
+      # Linter・Formatter関連パッケージをまとめる
+      lint-stack:
+        patterns:
+          - "eslint"
+          - "eslint-*"
+          - "@eslint/*"
+          - "@typescript-eslint/*"
+          - "prettier"
+          - "@trivago/prettier-plugin-sort-imports"
+          - "lint-staged"
+          - "husky"
       # TypeScript関連パッケージをまとめる
       typescript-stack:
         patterns:
           - "typescript"
-          - "ts-loader"
           - "ts-node"
           - "@types/*"
       # Webpack関連パッケージをまとめる
@@ -50,13 +69,14 @@ updates:
           - "webpack-cli"
           - "*-webpack-plugin"
           - "*-loader"
+          - "mini-css-extract-plugin"
       # Electron関連パッケージをまとめる
       electron-stack:
         patterns:
           - "electron"
           - "electronmon"
+          - "electron-*"
           - "@electron/*"
-          - "@types/electron"
       # 開発ツール関連をまとめる
       dev-tools:
         patterns:
@@ -65,4 +85,3 @@ updates:
           - "cross-env"
           - "npm-run-all"
           - "wait-on"
-          - "@trivago/prettier-plugin-sort-imports"
