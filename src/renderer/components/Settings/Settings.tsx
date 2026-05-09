@@ -17,7 +17,7 @@ const Settings: React.FC = () => {
   }, [selectBackupPath]);
 
   return (
-    <Box display='flex' alignItems='center' gap={2}>
+    <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
       <FormControlLabel
         control={
           <Checkbox checked={backupEnabled} onChange={handleCheckboxChange} color='primary' />
