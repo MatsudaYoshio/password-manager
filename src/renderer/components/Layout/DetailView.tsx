@@ -127,7 +127,7 @@ const DetailView = () => {
     return credentials.map(credential => {
       return (
         <div key={credential.id}>
-          <Box display='flex' alignItems='center' sx={{ flexGrow: 1 }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', flexGrow: 1 }}>
             <IconButton
               onClick={() => navigator.clipboard.writeText(credential.name)}
               aria-label='copy-name'
@@ -202,7 +202,15 @@ const DetailView = () => {
           <div>{showCredentials()}</div>
         </Typography>
       </Box>
-      <Box display='flex' alignItems='left' justifyContent='left' sx={{ flexGrow: 1, ml: 40 }}>
+      <Box
+        sx={{
+          display: 'flex',
+          alignItems: 'flex-start',
+          justifyContent: 'flex-start',
+          flexGrow: 1,
+          ml: 40
+        }}
+      >
         <IconButton color='primary' onClick={addNewCredentialHandler} aria-label='add-credential'>
           <AddBoxIcon />
         </IconButton>
