@@ -85,3 +85,16 @@ updates:
           - "cross-env"
           - "npm-run-all"
           - "wait-on"
+  
+  # GitHub Actions の更新
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "daily"
+    open-pull-requests-limit: 10
+    commit-message:
+      prefix: "deps"
+    labels:
+      - "dependencies"
+      - "dependabot"
+    target-branch: "dev"
