@@ -185,6 +185,8 @@ export default function ItemTreeView() {
         item: CustomTreeItem
       }}
       sx={{
+        mt: 0,
+        pt: 0,
         // Replicate borderLeft for group items if possible
         // This might require more specific selectors if RichTreeView doesn't directly support this
         '& .MuiTreeItem-group': {
