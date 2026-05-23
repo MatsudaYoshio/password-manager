@@ -11,7 +11,7 @@ export const App = () => {
   useEventListeners();
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', height: '100vh' }}>
+    <>
       <Header />
       <div style={{ flexGrow: 1, minHeight: 0 }}>
         <Group orientation='horizontal'>
@@ -32,6 +32,6 @@ export const App = () => {
           </Panel>
         </Group>
       </div>
-    </div>
+    </>
   );
 };
