@@ -1,5 +1,4 @@
 import { grey } from '@mui/material/colors';
-import { Fragment } from 'react';
 import { Group, Panel, Separator } from 'react-resizable-panels';
 
 import './App.css';
@@ -12,25 +11,27 @@ export const App = () => {
   useEventListeners();
 
   return (
-    <Fragment>
+    <div style={{ display: 'flex', flexDirection: 'column', height: '100vh' }}>
       <Header />
-      <Group orientation='horizontal'>
-        <Panel
-          defaultSize='20%'
-          minSize='10%'
-          maxSize='30%'
-          style={{
-            overflowY: 'auto',
-            overflowX: 'hidden'
-          }}
-        >
-          <ItemTreeView />
-        </Panel>
-        <Separator style={{ width: '1px', backgroundColor: grey[300] }} />
-        <Panel style={{ overflow: 'auto' }}>
-          <DetailView />
-        </Panel>
-      </Group>
-    </Fragment>
+      <div style={{ flexGrow: 1, minHeight: 0 }}>
+        <Group orientation='horizontal'>
+          <Panel
+            defaultSize='20%'
+            minSize='10%'
+            maxSize='30%'
+            style={{
+              overflowY: 'auto',
+              overflowX: 'hidden'
+            }}
+          >
+            <ItemTreeView />
+          </Panel>
+          <Separator style={{ width: '1px', backgroundColor: grey[300] }} />
+          <Panel style={{ overflow: 'auto' }}>
+            <DetailView />
+          </Panel>
+        </Group>
+      </div>
+    </div>
   );
 };

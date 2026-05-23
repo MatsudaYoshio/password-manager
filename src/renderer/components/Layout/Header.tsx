@@ -21,7 +21,7 @@ const Header = () => {
   const RemoveSubTreeHandler = useRemoveSubtree();
 
   return (
-    <Box sx={{ flexGrow: 1 }}>
+    <Box>
       <AppBar position='static' elevation={0} sx={{ backgroundColor: '#e0e0e0' }}>
         <Toolbar>
           <Typography variant='h6' component='div' sx={{ flexGrow: 1 }}>

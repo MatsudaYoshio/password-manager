@@ -1,7 +1,13 @@
-#root {
-  height: 90vh;
+html,
+body {
+  margin: 0;
+  padding: 0;
 }
 
 body {
   overflow: hidden;
+}
+
+#root {
+  height: 100vh;
 }
