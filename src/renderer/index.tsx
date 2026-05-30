@@ -1,10 +1,11 @@
+import 'normalize.css';
 import React from 'react';
 import { createRoot } from 'react-dom/client';
 import { Provider } from 'react-redux';
-import 'normalize.css';
 
-import store, { initializeProductionStore } from './store/index';
 import { App } from './App';
+import { AppLoadingSpinner } from './components/UI/AppLoadingSpinner';
+import store, { initializeProductionStore } from './store/index';
 
 // アプリケーション初期化コンポーネント
 const AppWithInitialization = () => {
@@ -27,7 +28,7 @@ const AppWithInitialization = () => {
   }, []);
 
   if (!isInitialized) {
-    return <div>Loading...</div>;
+    return <AppLoadingSpinner />;
   }
 
   return (
