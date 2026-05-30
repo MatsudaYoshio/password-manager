@@ -12,7 +12,7 @@ export const AppLoadingSpinner: React.FC = () => {
         height: '100vh'
       }}
     >
-      <CircularProgress />
+      <CircularProgress aria-label='loading' />
     </Box>
   );
 };
