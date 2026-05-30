@@ -1,8 +1,7 @@
 import Box from '@mui/material/Box';
 import CircularProgress from '@mui/material/CircularProgress';
-import React from 'react';
 
-export const AppLoadingSpinner: React.FC = () => {
+export const AppLoadingSpinner = () => {
   return (
     <Box
       sx={{
