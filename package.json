@@ -74,7 +74,7 @@
     "@types/electron": "^1.6.12",
     "@types/jest": "^30.0.0",
     "@types/jsonfile": "^6.1.4",
-    "@types/node": "^25.6.0",
+    "@types/node": "^26.0.1",
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
     "@types/uuid": "^11.0.0",
