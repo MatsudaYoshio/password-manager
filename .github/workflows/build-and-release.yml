@@ -20,17 +20,16 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Install depcheck
-        run: npm install -g depcheck
+      - parallel:
+          - name: Check for unused dependencies (ignore devDependencies)
+            shell: bash
+            run: |
+              npm install -g depcheck
+              IGNORES=$(node -p "Object.keys(require('./package.json').devDependencies).join(',')")
+              depcheck --ignores="$IGNORES,electron,webpack,webpack-cli,@eslint/js" || (echo "Unused dependencies found" && exit 1)
 
-      - name: Check for unused dependencies (ignore devDependencies)
-        shell: bash
-        run: |
-          IGNORES=$(node -p "Object.keys(require('./package.json').devDependencies).join(',')")
-          depcheck --ignores="$IGNORES,electron,webpack,webpack-cli,@eslint/js" || (echo "Unused dependencies found" && exit 1)
-
-      - name: Run tests
-        run: npm run test:ci
+          - name: Run tests
+            run: npm run test:ci
 
       - name: Run release (build & package)
         run: npm run release
