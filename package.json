@@ -108,7 +108,7 @@
     "ts-jest": "^29.4.1",
     "ts-loader": "^9.4.4",
     "ts-node": "^10.9.2",
-    "typescript": "^6.0.3",
+    "typescript": "^7.0.2",
     "wait-on": "^9.0.3",
     "webpack": "^5.88.2",
     "webpack-cli": "^7.0.2"
