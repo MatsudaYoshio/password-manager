@@ -61,7 +61,9 @@ const api: ElectronAPI = {
   getTreeViewExpandedItems: () => ipcRenderer.invoke('get-tree-view-expanded-items'),
   saveTreeViewSelectedItemId: (selectedItemId: string | null) =>
     ipcRenderer.invoke('save-tree-view-selected-item-id', selectedItemId),
-  getTreeViewSelectedItemId: () => ipcRenderer.invoke('get-tree-view-selected-item-id')
+  getTreeViewSelectedItemId: () => ipcRenderer.invoke('get-tree-view-selected-item-id'),
+  saveLeftPanelSize: (size: number) => ipcRenderer.invoke('save-left-panel-size', size),
+  getLeftPanelSize: () => ipcRenderer.invoke('get-left-panel-size')
 };
 
 contextBridge.exposeInMainWorld('api', api);

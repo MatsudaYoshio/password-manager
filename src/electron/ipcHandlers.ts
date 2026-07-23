@@ -4,14 +4,15 @@ import path from 'path';
 
 import { TreeNodePlain } from '../renderer/models/treeNode';
 import {
+  STORE_KEY_LEFT_PANEL_SIZE,
   STORE_KEY_TREE_VIEW_EXPANDED_ITEMS,
   STORE_KEY_TREE_VIEW_SELECTED_ITEM_ID
 } from '../shared/constants';
 import { BackupSettings } from '../shared/types/BackupSettings';
-import { isDevelopment } from './utils/environment';
-import { getBackupSettings } from './utils/backupSettings';
 import QuestionDialog from './dialogs/questionDialog';
 import store from './store';
+import { getBackupSettings } from './utils/backupSettings';
+import { isDevelopment } from './utils/environment';
 
 // 開発時はsrc/credentials/、本番時はユーザーデータディレクトリを使用
 const getCredentialsFilePath = (filename: string) => {
@@ -66,6 +67,8 @@ const setupIpcHandlers = () => {
   ipcMain.handle('get-tree-view-expanded-items', handleGetTreeViewExpandedItems);
   ipcMain.handle('save-tree-view-selected-item-id', handleSaveTreeViewSelectedItemId);
   ipcMain.handle('get-tree-view-selected-item-id', handleGetTreeViewSelectedItemId);
+  ipcMain.handle('save-left-panel-size', handleSaveLeftPanelSize);
+  ipcMain.handle('get-left-panel-size', handleGetLeftPanelSize);
 };
 
 const readFile2String = (path: fs.PathOrFileDescriptor, encoding: BufferEncoding = 'utf-8') =>
@@ -247,6 +250,14 @@ const handleSaveTreeViewSelectedItemId = (
 const handleGetTreeViewSelectedItemId = (): string | undefined => {
   // store.get は値がない場合 undefined を返すので、そのまま返す
   return store.get(STORE_KEY_TREE_VIEW_SELECTED_ITEM_ID) as string | undefined;
+};
+
+const handleSaveLeftPanelSize = (_: Electron.IpcMainInvokeEvent, size: number) => {
+  store.set(STORE_KEY_LEFT_PANEL_SIZE, size);
+};
+
+const handleGetLeftPanelSize = (): number | undefined => {
+  return store.get(STORE_KEY_LEFT_PANEL_SIZE) as number | undefined;
 };
 
 export default setupIpcHandlers;
