@@ -8,6 +8,7 @@ import {
   STORE_KEY_TREE_VIEW_EXPANDED_ITEMS,
   STORE_KEY_TREE_VIEW_SELECTED_ITEM_ID
 } from '../shared/constants';
+import { LeftPanelSize } from '../shared/domain/LeftPanelSize';
 import { BackupSettings } from '../shared/types/BackupSettings';
 import QuestionDialog from './dialogs/questionDialog';
 import store from './store';
@@ -252,12 +253,14 @@ const handleGetTreeViewSelectedItemId = (): string | undefined => {
   return store.get(STORE_KEY_TREE_VIEW_SELECTED_ITEM_ID) as string | undefined;
 };
 
-const handleSaveLeftPanelSize = (_: Electron.IpcMainInvokeEvent, size: number) => {
-  store.set(STORE_KEY_LEFT_PANEL_SIZE, size);
+const handleSaveLeftPanelSize = (_: Electron.IpcMainInvokeEvent, size: unknown) => {
+  const leftPanelSize = LeftPanelSize.create(size);
+  store.set(STORE_KEY_LEFT_PANEL_SIZE, leftPanelSize.toPrimitive());
 };
 
-const handleGetLeftPanelSize = (): number | undefined => {
-  return store.get(STORE_KEY_LEFT_PANEL_SIZE) as number | undefined;
+const handleGetLeftPanelSize = (): number => {
+  const raw = store.get(STORE_KEY_LEFT_PANEL_SIZE);
+  return LeftPanelSize.create(raw).toPrimitive();
 };
 
 export default setupIpcHandlers;

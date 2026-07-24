@@ -19,7 +19,7 @@ export interface ElectronAPI {
   saveTreeViewSelectedItemId(itemId: string | null): Promise<void>;
   saveTreeViewExpandedItems(expandedItemIds: string[]): Promise<void>;
   saveLeftPanelSize(size: number): Promise<void>;
-  getLeftPanelSize(): Promise<number | undefined>;
+  getLeftPanelSize(): Promise<number>;
 
   // Event listeners
   onSaveData(callback: VoidCallback): IpcEventHandler;

@@ -1,7 +1,7 @@
 import { ComponentProps, ReactNode, useCallback, useEffect, useRef, useState } from 'react';
 import { Panel } from 'react-resizable-panels';
 
-const DEFAULT_SIZE = 20;
+import { LeftPanelSize } from '../../../shared/domain/LeftPanelSize';
 
 const LeftPanel = ({ children }: { children: ReactNode }) => {
   const [initialSize, setInitialSize] = useState<number | null>(null);
@@ -10,7 +10,7 @@ const LeftPanel = ({ children }: { children: ReactNode }) => {
   useEffect(() => {
     const fetchSize = async () => {
       const size = await window.api.getLeftPanelSize();
-      setInitialSize(size ?? DEFAULT_SIZE);
+      setInitialSize(size ?? LeftPanelSize.DEFAULT);
     };
     fetchSize();
 
@@ -38,8 +38,8 @@ const LeftPanel = ({ children }: { children: ReactNode }) => {
   return (
     <Panel
       defaultSize={`${initialSize}%`}
-      minSize='10%'
-      maxSize='30%'
+      minSize={`${LeftPanelSize.MIN}%`}
+      maxSize={`${LeftPanelSize.MAX}%`}
       onResize={handleResize}
       style={{
         overflowY: 'auto',
