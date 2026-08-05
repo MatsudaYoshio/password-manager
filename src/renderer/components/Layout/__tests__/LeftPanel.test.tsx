@@ -4,26 +4,21 @@
  * パネルのリサイズ、サイズの保存/読み込み機能を検証する
  */
 
-import { render, screen, waitFor } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import LeftPanel from '../LeftPanel';
+
+interface PanelMockProps {
+  children: React.ReactNode;
+  onResize?: (size: { asPercentage: number }) => void;
+  defaultSize?: string;
+  minSize?: string;
+  maxSize?: string;
+  style?: React.CSSProperties;
+}
 
 // react-resizable-panelsのモック
 jest.mock('react-resizable-panels', () => ({
-  Panel: ({
-    children,
-    onResize,
-    defaultSize,
-    minSize,
-    maxSize,
-    style
-  }: {
-    children: React.ReactNode;
-    onResize?: () => void;
-    defaultSize?: string;
-    minSize?: string;
-    maxSize?: string;
-    style?: React.CSSProperties;
-  }) => (
+  Panel: ({ children, onResize, defaultSize, minSize, maxSize, style }: PanelMockProps) => (
     <div
       data-testid='resizable-panel'
       data-default-size={defaultSize}
@@ -32,6 +27,11 @@ jest.mock('react-resizable-panels', () => ({
       data-onresize={onResize ? 'defined' : 'undefined'}
       style={style}
     >
+      {onResize && (
+        <button data-testid='resize-trigger' onClick={() => onResize({ asPercentage: 25 })}>
+          Resize
+        </button>
+      )}
       {children}
     </div>
   )
@@ -269,7 +269,7 @@ describe('LeftPanel', () => {
 
     it('debounces_save_operation_on_resize', async () => {
       // Given: コンポーネントがレンダリングされている
-      const { rerender } = render(
+      render(
         <LeftPanel>
           <div>Test Content</div>
         </LeftPanel>
@@ -278,28 +278,20 @@ describe('LeftPanel', () => {
       await waitFor(() => screen.getByTestId('resizable-panel'));
 
       // When: 短時間に複数回リサイズイベントが発生
-      const mockOnResize = jest.fn();
-      window.api.saveLeftPanelSize = mockOnResize;
+      const resizeTrigger = screen.getByTestId('resize-trigger');
+      fireEvent.click(resizeTrigger);
+      fireEvent.click(resizeTrigger);
 
-      // リサイズのシミュレーション（実際のPanelコンポーネントではないため、直接呼び出しはできない）
-      // この場合、デバウンス動作が実装されていることを確認
-
-      // 500ms未満の間隔でリサイズが発生する場合、保存は一度だけ実行される
+      // 500ms未満の間隔では保存されない
       jest.advanceTimersByTime(100);
-
-      // Then: 即座には保存されない（デバウンスされる）
-      expect(mockOnResize).not.toHaveBeenCalled();
+      expect(mockSaveLeftPanelSize).not.toHaveBeenCalled();
 
       // When: デバウンス時間が経過
-      jest.advanceTimersByTime(500);
+      jest.advanceTimersByTime(400);
 
-      // 実際のリサイズイベントはモックされたPanelから呼ばれないため、
-      // ここではデバウンスロジックが存在することを確認
-      rerender(
-        <LeftPanel>
-          <div>Test Content</div>
-        </LeftPanel>
-      );
+      // Then: デバウンス完了後に保存が1回実行される
+      expect(mockSaveLeftPanelSize).toHaveBeenCalledTimes(1);
+      expect(mockSaveLeftPanelSize).toHaveBeenCalledWith(25);
     });
   });
 
@@ -318,13 +310,15 @@ describe('LeftPanel', () => {
 
       await waitFor(() => screen.getByTestId('resizable-panel'));
 
+      // When: リサイズイベントが発生
+      const resizeTrigger = screen.getByTestId('resize-trigger');
+      fireEvent.click(resizeTrigger);
+
       // When: コンポーネントがアンマウントされる
       unmount();
 
-      // Then: タイムアウトがクリアされる（エラーが発生しない）
+      // Then: タイムアウトがクリアされる（アンマウント後に保存処理が実行されない）
       jest.advanceTimersByTime(1000);
-
-      // アンマウント後に保存処理が実行されないことを確認
       expect(mockSaveLeftPanelSize).not.toHaveBeenCalled();
     });
   });
