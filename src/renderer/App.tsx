@@ -4,6 +4,7 @@ import { Group, Panel, Separator } from 'react-resizable-panels';
 import './App.css';
 import DetailView from './components/Layout/DetailView';
 import Header from './components/Layout/Header';
+import LeftPanel from './components/Layout/LeftPanel';
 import ItemTreeView from './components/Layout/ItemTreeView';
 import useEventListeners from './hooks/useEventListeners';
 
@@ -15,17 +16,9 @@ export const App = () => {
       <Header />
       <div style={{ flexGrow: 1, minHeight: 0 }}>
         <Group orientation='horizontal'>
-          <Panel
-            defaultSize='20%'
-            minSize='10%'
-            maxSize='30%'
-            style={{
-              overflowY: 'auto',
-              overflowX: 'hidden'
-            }}
-          >
+          <LeftPanel>
             <ItemTreeView />
-          </Panel>
+          </LeftPanel>
           <Separator style={{ width: '1px', backgroundColor: grey[300] }} />
           <Panel style={{ overflow: 'auto' }}>
             <DetailView />

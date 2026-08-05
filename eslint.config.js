@@ -26,7 +26,11 @@ const commonGlobals = {
   process: true,
   console: true,
   BufferEncoding: true,
-  Electron: true
+  Electron: true,
+  setTimeout: true,
+  clearTimeout: true,
+  setInterval: true,
+  clearInterval: true
 };
 
 const commonPlugins = {
