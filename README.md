@@ -46,12 +46,12 @@ Before pushing changes, ensure the codebase is properly formatted and linted:
 npm run lint-and-format
 ```
 
-#### Git Hooks (Husky)
+#### Git Hooks (Lefthook)
 
-This project uses [Husky](https://typicode.github.io/husky/) and `lint-staged` to enforce code quality before commits.
-When you run `npm install`, the Husky hooks are automatically set up (`npm run prepare`).
+This project uses [Lefthook](https://github.com/evilmartians/lefthook) to enforce code quality before commits.
+When you run `npm install`, the Lefthook hooks are automatically set up (`npm run prepare`).
 
-On every `git commit`, Husky will trigger a pre-commit hook that runs Prettier and ESLint on your staged files, ensuring formatting and linting rules are met. If linting fails, the commit will be aborted.
+On every `git commit`, Lefthook will trigger a pre-commit hook that runs Prettier and ESLint on your staged files, ensuring formatting and linting rules are met. If linting fails, the commit will be aborted.
 
 #### CI/CD (GitHub Actions)
 

@@ -54,8 +54,7 @@ updates:
           - "@typescript-eslint/*"
           - "prettier"
           - "@trivago/prettier-plugin-sort-imports"
-          - "lint-staged"
-          - "husky"
+          - "lefthook"
       # TypeScript関連パッケージをまとめる
       typescript-stack:
         patterns:
