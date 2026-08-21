@@ -10,14 +10,16 @@ This repository enforces a unified coding style through automated tools. Always 
 
 ## Automated Formatting & Linting
 
-We utilize Prettier and ESLint. 
+We utilize Prettier and ESLint.
 
 ### Prettier
+
 - Read the `.prettierrc.json` file for specific configuration.
 - To run Prettier: `npm run format`.
 - Always verify your generated code passes Prettier conventions before committing.
 
 ### ESLint
+
 - Read `eslint.config.js` for rules.
 - To test: `npm run lint` or `npm run lint:fix`.
 
