@@ -55,6 +55,8 @@ updates:
           - "prettier"
           - "@trivago/prettier-plugin-sort-imports"
           - "lefthook"
+          - "markdownlint*"
+
       # TypeScript関連パッケージをまとめる
       typescript-stack:
         patterns:

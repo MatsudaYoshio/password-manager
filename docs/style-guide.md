@@ -1,10 +1,10 @@
 # Coding Style Guide
 
-This document outlines the coding style and best practices to be followed in this repository. 
+This document outlines the coding style and best practices to be followed in this repository.
 
 ## Formatting (Prettier)
 
-We use [Prettier](https://prettier.io/) for automatic code formatting. 
+We use [Prettier](https://prettier.io/) for automatic code formatting.
 The Prettier configuration is defined in the `.prettierrc.json` file. Please refer to it for the complete set of rules.
 
 ## Linting (ESLint)

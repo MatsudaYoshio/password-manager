@@ -2,7 +2,7 @@
 
 A secure, offline-first Desktop Application for password and credential management, built with modern web and desktop technologies.
 
-## 🛠 Technology Stack
+## Technology Stack
 
 - **Framework**: [Electron](https://www.electronjs.org/) (Desktop runtime)
 - **UI library**: [React 18](https://reactjs.org/)
@@ -12,7 +12,7 @@ A secure, offline-first Desktop Application for password and credential manageme
 - **Build Tool**: [Webpack](https://webpack.js.org/)
 - **Testing**: [Jest](https://jestjs.io/) & [React Testing Library](https://testing-library.com/)
 
-## 🚀 Getting Started
+## Getting Started
 
 ### Prerequisites
 
@@ -57,38 +57,48 @@ On every `git commit`, Lefthook will trigger a pre-commit hook that runs Prettie
 
 This repository utilizes GitHub Actions to automate workflows. Upon pushing or opening a Pull Request, our CI pipeline automatically runs formatting checks, linting, and unit tests (using `npm run test:ci`). This ensures continuous quality and prevents regressions before they are merged.
 
-## 🧪 Testing
+## Testing
 
 We use Jest for unit and integration testing. Tests are colocated within `__tests__` directories next to the source files.
 
 - **Run all tests**:
-  ```bash
+
+```bash
   npm run test
-  ```
+```
+
 - **Run tests in watch mode** (useful for development):
-  ```bash
+
+```bash
   npm run test:watch
-  ```
+```
+
 - **Run tests with coverage**:
-  ```bash
+
+```bash
   npm run test:coverage
-  ```
+```
 
 For detailed instructions on creating and reviewing tests (including Mocking strategies and React Testing Library conventions), please consult our [Testing Guidelines](agents/testing.md).
 
-## 🏗 Build & Release
+## Build & Release
 
 To compile the application for production and package it into an executable installer:
 
 1. **Build the production bundle**:
+
    ```bash
    npm run build
    ```
+
 2. **Package without installer** (Output to `release/`):
+
    ```bash
    npm run package
    ```
+
 3. **Full Release** (Builds the NSIS installer via electron-builder):
+
    ```bash
    npm run release
    ```
