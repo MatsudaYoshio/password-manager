@@ -1,9 +1,0 @@
-node_modules
-dist
-release
-.system_generated
-.agent
-.gemini
-.github
-.vscode
-
