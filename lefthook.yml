@@ -9,7 +9,14 @@ pre-commit:
       stage_fixed: true
     lint-and-format-md:
       glob: "**/*.md"
-      exclude: "(^\\.|/\\.|node_modules|dist|release)"
+      exclude:
+        - "node_modules/**"
+        - "dist/**"
+        - "release/**"
+        - ".*/**"
+        - "**/.*/**"
+        - ".*"
+        - "**/.*"
       run: npx markdownlint --fix {staged_files} && npx prettier --write {staged_files}
       stage_fixed: true
     format-other:

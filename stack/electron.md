@@ -7,7 +7,7 @@ Writing secure desktop implementations requires treating the renderer process as
 1. **Main Process (`src/electron/`)**:
    - Has full Node.js access.
    - Manages OS native elements (Windows, Menus, Dialogs).
-   - Operates database or file-system level tasks (e.g., reading JSON/SQLite, saving files).
+   - Performs database- or file-system-level tasks (e.g., reading JSON/SQLite, saving files).
    - Responsible for launching the `BrowserWindow`.
 
 2. **Renderer Process (`src/renderer/`)**:
@@ -68,7 +68,7 @@ const mainWindow = new BrowserWindow({
     nodeIntegration: false,
     contextIsolation: true, // Must be true
     preload: MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY,
-    sandbox: true // Highly recommended enabled
+    sandbox: true // Highly recommended
   }
 });
 ```
