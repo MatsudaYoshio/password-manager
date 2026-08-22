@@ -1,0 +1,10 @@
+self-hosted-runner:
+  labels: []
+
+paths:
+  .github/workflows/lint-and-format.yml:
+    ignore:
+      - 'step must run script with "run" section or run action with "uses" section'
+  .github/workflows/build-and-release.yml:
+    ignore:
+      - 'step must run script with "run" section or run action with "uses" section'
