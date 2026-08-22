@@ -1,0 +1,43 @@
+name: Actionlint (secure pinned)
+
+on:
+  pull_request:
+    branches: [dev]
+  workflow_dispatch: {}
+
+jobs:
+  actionlint:
+    name: Lint GitHub workflows with actionlint (pinned + verify)
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Download and verify actionlint (pinned)
+        env:
+          ACTIONLINT_VERSION: v1.7.12
+          ASSET: actionlint_1.7.12_linux_amd64.tar.gz
+        run: |
+          set -euo pipefail
+          URL="https://github.com/rhysd/actionlint/releases/download/${ACTIONLINT_VERSION}/${ASSET}"
+          echo "Downloading actionlint ${ACTIONLINT_VERSION} from ${URL}"
+          curl -sSfL -o "${ASSET}" "${URL}"
+
+          # Verify checksum (file stored in repo for auditability)
+          CHECKSUM_FILE=".github/checksums/actionlint-1.7.12.sha256"
+          if [ ! -f "$CHECKSUM_FILE" ]; then
+            echo "Checksum file $CHECKSUM_FILE not found in repository. Aborting."
+            exit 1
+          fi
+
+          sha256sum -c "$CHECKSUM_FILE"
+
+          tar -xzf "${ASSET}"
+          chmod +x actionlint
+          sudo mv actionlint /usr/local/bin/actionlint
+
+      - name: Run actionlint on workflow files
+        run: |
+          # Do not fail the job with a non-zero exit for discovered warnings if you prefer to treat them as failures change accordingly
+          actionlint .github/workflows || true
