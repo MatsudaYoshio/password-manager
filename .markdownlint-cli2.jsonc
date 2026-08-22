@@ -1,0 +1,13 @@
+{
+  // markdownlint ルール設定
+  "config": {
+    "default": true,
+    "MD013": false,
+    "MD024": {
+      "siblings_only": true
+    },
+    "MD033": false
+  },
+  // リント対象外ディレクトリ
+  "ignores": ["node_modules/**", "dist/**", "release/**", "coverage/**", ".github/**"]
+}
